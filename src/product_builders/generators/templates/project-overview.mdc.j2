@@ -1,0 +1,98 @@
+---
+description: "{{ profile.metadata.name }} — Product overview, tech stack, and contributor context"
+globs:
+alwaysApply: true
+priority: 40
+---
+
+# {{ profile.metadata.name }}
+
+{% if profile.metadata.description %}
+{{ profile.metadata.description }}
+{% endif %}
+
+## Tech Stack
+
+{% if profile.tech_stack.primary_language %}
+- **Primary language**: {{ profile.tech_stack.primary_language }}
+{% endif %}
+{% if profile.tech_stack.languages %}
+- **Languages**: {{ profile.tech_stack.languages.keys() | join(', ') }}
+{% endif %}
+{% if profile.tech_stack.frameworks %}
+- **Frameworks**: {% for fw in profile.tech_stack.frameworks %}{{ fw.name }}{% if fw.version %} ({{ fw.version }}){% endif %}{% if not loop.last %}, {% endif %}{% endfor %}
+
+{% endif %}
+{% if profile.tech_stack.build_tools %}
+- **Build tools**: {{ profile.tech_stack.build_tools | join(', ') }}
+{% endif %}
+{% if profile.tech_stack.package_managers %}
+- **Package managers**: {{ profile.tech_stack.package_managers | join(', ') }}
+{% endif %}
+
+## Project Structure
+
+{% if profile.structure.module_organization %}
+- **Organization**: {{ profile.structure.module_organization }}
+{% endif %}
+{% if profile.structure.source_directories %}
+- **Source directories**: {{ profile.structure.source_directories | join(', ') }}
+{% endif %}
+{% if profile.structure.is_monorepo %}
+- **Monorepo**: Yes{% if profile.structure.monorepo_tool %} ({{ profile.structure.monorepo_tool }}){% endif %}
+
+{% endif %}
+
+{% if profile.database.orm %}
+## Database
+
+- **ORM**: {{ profile.database.orm }}{% if profile.database.orm_version %} {{ profile.database.orm_version }}{% endif %}
+
+{% if profile.database.migration_tool %}
+- **Migrations**: {{ profile.database.migration_tool }}
+{% endif %}
+{% if profile.database.database_type %}
+- **Database**: {{ profile.database.database_type }}
+{% endif %}
+
+> **CRITICAL**: Never create or modify database migrations directly. Migration changes require engineering team involvement.
+{% endif %}
+
+{% if profile.git_workflow.git_platform %}
+## Git Workflow
+
+- **Platform**: {{ profile.git_workflow.git_platform }}
+{% if profile.git_workflow.commit_message_format %}
+- **Commit format**: {{ profile.git_workflow.commit_message_format }}
+{% endif %}
+{% if profile.git_workflow.branch_naming_strategy %}
+- **Branch strategy**: {{ profile.git_workflow.branch_naming_strategy }}
+{% endif %}
+{% endif %}
+
+{% if role %}
+## Contributor Context
+
+You are assisting a **{{ role_display_name }}** working on **{{ profile.metadata.name }}**.
+
+{% if writable_summary %}
+### You CAN help with:
+{% for item in writable_summary %}
+- {{ item }}
+{% endfor %}
+{% endif %}
+
+{% if readonly_summary %}
+### Read-only (can view but not modify):
+{% for item in readonly_summary %}
+- {{ item }}
+{% endfor %}
+{% endif %}
+
+{% if forbidden_summary %}
+### Requires engineering involvement:
+{% for item in forbidden_summary %}
+- {{ item }} → suggest creating a Jira issue
+{% endfor %}
+{% endif %}
+{% endif %}

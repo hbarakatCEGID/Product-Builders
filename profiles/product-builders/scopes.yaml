@@ -1,0 +1,37 @@
+zones:
+  tests:
+    paths:
+    - tests/**
+  configuration:
+    paths:
+    - .env*
+    - config/**
+contributor_scopes:
+  engineer:
+    allowed_zones:
+    - configuration
+    - tests
+    read_only_zones: []
+    forbidden_zones: []
+  technical_pm:
+    allowed_zones: []
+    read_only_zones:
+    - tests
+    forbidden_zones:
+    - configuration
+  product_manager:
+    allowed_zones: []
+    read_only_zones: []
+    forbidden_zones:
+    - configuration
+  designer:
+    allowed_zones: []
+    read_only_zones: []
+    forbidden_zones:
+    - configuration
+  qa_tester:
+    allowed_zones:
+    - tests
+    read_only_zones: []
+    forbidden_zones:
+    - configuration

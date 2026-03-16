@@ -1,0 +1,72 @@
+---
+description: "Design system and UI component patterns for {{ profile.metadata.name }}"
+globs:
+  {% for d in profile.design_ui.styling_directories %}- "{{ d }}/**"
+  {% endfor %}
+  - "**/*.css"
+  - "**/*.scss"
+  - "**/*.less"
+alwaysApply: false
+priority: 25
+---
+
+# Design System & UI
+
+{% if profile.design_ui.component_library %}
+**Component library**: {{ profile.design_ui.component_library }}{% if profile.design_ui.component_library_version %} {{ profile.design_ui.component_library_version }}{% endif %}
+
+{% endif %}
+{% if profile.design_ui.css_methodology %}
+**CSS methodology**: {{ profile.design_ui.css_methodology }}
+{% endif %}
+
+## Rules
+
+{% if profile.design_ui.component_library %}
+1. Use **{{ profile.design_ui.component_library }}** components as the primary building blocks
+2. Do not introduce alternative component libraries
+3. Check existing components before creating new ones
+{% endif %}
+
+{% if profile.design_ui.css_methodology == 'tailwind' %}
+4. Use Tailwind utility classes — avoid custom CSS unless absolutely necessary
+5. Extract repeated patterns into components, not utility classes
+6. Use the project's Tailwind config for colors, spacing, and typography
+{% elif profile.design_ui.css_methodology == 'modules' %}
+4. Use CSS Modules for component-scoped styles
+5. Follow BEM naming within modules where applicable
+{% elif profile.design_ui.css_methodology == 'css-in-js' %}
+4. Use the project's CSS-in-JS solution for all component styles
+5. Keep styles co-located with their components
+{% elif profile.design_ui.css_methodology %}
+4. Follow **{{ profile.design_ui.css_methodology }}** patterns consistently
+{% endif %}
+
+{% if profile.design_ui.uses_shared_design_system %}
+## Shared Design System
+
+{% if profile.design_ui.shared_design_system_name %}
+This project uses the **{{ profile.design_ui.shared_design_system_name }}** shared design system.
+{% endif %}
+
+- Follow the design system's guidelines for components, tokens, and patterns
+- Do not override design system tokens without approval
+{% endif %}
+
+{% if profile.design_ui.design_tokens_path %}
+## Design Tokens
+
+- Tokens file: `{{ profile.design_ui.design_tokens_path }}`
+{% if profile.design_ui.design_tokens_format %}
+- Format: {{ profile.design_ui.design_tokens_format }}
+{% endif %}
+- Use design tokens for colors, spacing, typography — never hardcode values
+{% endif %}
+
+{% if profile.design_ui.responsive_strategy %}
+## Responsive Design
+
+Strategy: **{{ profile.design_ui.responsive_strategy }}**
+
+All UI changes must be responsive. Test on mobile, tablet, and desktop viewports.
+{% endif %}

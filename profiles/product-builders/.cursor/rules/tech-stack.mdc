@@ -1,0 +1,33 @@
+---
+description: "Tech stack constraints and version requirements for product-builders"
+globs:
+alwaysApply: true
+priority: 35
+---
+
+# Tech Stack
+
+**Primary language**: Python
+
+## Languages & Versions
+
+- **Python**: 100.0% of codebase
+
+## Runtime Versions
+
+- python: >=3.11,<4.0
+
+> Always match these versions. Do not introduce APIs from newer runtime versions.
+
+## Frameworks
+
+- **fastapi** (web)
+
+> Use only the frameworks listed above. Never introduce a new framework or major dependency without explicit approval.
+
+
+## Package Managers
+
+pip
+
+> Use **pip** for all dependency operations. Do not mix package managers.

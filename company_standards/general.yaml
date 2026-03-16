@@ -1,0 +1,29 @@
+name: General Engineering Principles
+version: "1.0.0"
+description: Company-wide engineering principles
+
+rules:
+  - id: GEN-001
+    severity: high
+    description: Follow the principle of least surprise. Code should behave as readers expect.
+    rationale: Surprising behavior causes bugs and wastes debugging time.
+
+  - id: GEN-002
+    severity: medium
+    description: Prefer composition over inheritance for code reuse.
+    rationale: Composition is more flexible and easier to test.
+
+  - id: GEN-003
+    severity: medium
+    description: Keep dependencies up to date. Address security advisories promptly.
+    rationale: Outdated dependencies accumulate security vulnerabilities and compatibility issues.
+
+  - id: GEN-004
+    severity: low
+    description: Document non-obvious decisions and trade-offs in code comments or ADRs.
+    rationale: Future maintainers need to understand why, not just what.
+
+  - id: GEN-005
+    severity: medium
+    description: Use environment variables or config files for all environment-specific values.
+    rationale: Hardcoded values prevent deployment across environments.

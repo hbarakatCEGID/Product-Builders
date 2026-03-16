@@ -1,0 +1,34 @@
+name: Code Quality Standards
+version: "1.0.0"
+description: Company-wide quality and code review standards
+
+rules:
+  - id: QUA-001
+    severity: high
+    description: All new code must include corresponding tests.
+    rationale: Tests prevent regressions and document expected behavior.
+
+  - id: QUA-002
+    severity: high
+    description: Follow the existing code style and conventions of the project.
+    rationale: Consistency reduces cognitive load and merge conflicts.
+
+  - id: QUA-003
+    severity: medium
+    description: Functions should do one thing. Keep functions under 50 lines where possible.
+    rationale: Small functions are easier to test, understand, and maintain.
+
+  - id: QUA-004
+    severity: medium
+    description: Use meaningful variable and function names. Avoid single-letter names except in short lambdas.
+    rationale: Code is read far more than it is written.
+
+  - id: QUA-005
+    severity: medium
+    description: Handle errors explicitly. Never swallow exceptions silently.
+    rationale: Silent failures hide bugs and make debugging extremely difficult.
+
+  - id: QUA-006
+    severity: low
+    description: Remove dead code, unused imports, and commented-out code before merging.
+    rationale: Dead code creates confusion about what is actually used.

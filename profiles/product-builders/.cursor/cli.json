@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "deny": {
+      "write": [
+        ".env*",
+        "config/**"
+      ]
+    }
+  },
+  "_meta": {
+    "role": "product_manager",
+    "role_display_name": "Product Manager",
+    "description": "Hard filesystem deny rules for Product Manager role. Files matching these patterns cannot be created, edited, or deleted."
+  }
+}

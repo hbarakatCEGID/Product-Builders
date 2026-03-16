@@ -1,0 +1,21 @@
+---
+description: "Git workflow and commit conventions for product-builders"
+globs:
+alwaysApply: true
+priority: 30
+---
+
+# Git Workflow
+
+
+## Commit Messages
+
+Write clear, descriptive commit messages. Start with a verb in imperative mood.
+
+
+
+## Rules
+
+1. Never force-push to the main branch
+2. Keep commits atomic — one logical change per commit
+3. Run tests locally before pushing

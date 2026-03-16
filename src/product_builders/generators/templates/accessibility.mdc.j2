@@ -1,0 +1,57 @@
+---
+description: "Accessibility requirements for {{ profile.metadata.name }}"
+globs:
+  - "**/*.tsx"
+  - "**/*.jsx"
+  - "**/*.vue"
+  - "**/*.svelte"
+  - "**/*.html"
+alwaysApply: false
+priority: 25
+---
+
+# Accessibility
+
+{% if profile.accessibility.wcag_level %}
+**WCAG compliance target**: Level {{ profile.accessibility.wcag_level }}
+{% endif %}
+
+## Rules
+
+1. All interactive elements must be keyboard-accessible
+2. All images must have descriptive `alt` text (or `alt=""` for decorative images)
+3. Use semantic HTML elements (`<nav>`, `<main>`, `<article>`, `<button>`, etc.)
+4. Form inputs must have associated `<label>` elements
+5. Color must not be the sole means of conveying information
+6. Maintain sufficient color contrast ratios (4.5:1 for text, 3:1 for large text)
+7. ARIA attributes should supplement, not replace, semantic HTML
+
+{% if profile.accessibility.a11y_testing_tools %}
+## Testing Tools
+
+{% for tool in profile.accessibility.a11y_testing_tools %}
+- {{ tool }}
+{% endfor %}
+
+Run accessibility tests before submitting UI changes.
+{% endif %}
+
+{% if profile.accessibility.aria_usage_detected %}
+## ARIA Patterns
+
+This project uses ARIA attributes. Follow these guidelines:
+- Use `aria-label` for elements without visible text
+- Use `aria-describedby` for additional descriptions
+- Use `aria-live` regions for dynamic content updates
+- Use `role` attributes only when semantic HTML is insufficient
+{% endif %}
+
+## Checklist
+
+Before submitting any UI change:
+
+- [ ] Keyboard navigation works (Tab, Enter, Escape, Arrow keys)
+- [ ] Screen reader announces content correctly
+- [ ] Focus indicators are visible
+- [ ] Color contrast meets minimum ratios
+- [ ] No content is lost when zoomed to 200%

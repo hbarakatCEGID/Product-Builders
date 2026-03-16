@@ -1,0 +1,68 @@
+---
+description: "API conventions and patterns for {{ profile.metadata.name }}"
+globs:
+  {% for d in profile.api.api_directories %}- "{{ d }}/**"
+  {% endfor %}
+alwaysApply: false
+priority: 30
+---
+
+# API Patterns
+
+{% if profile.api.api_style %}
+**Style**: {{ profile.api.api_style | upper }}
+{% endif %}
+{% if profile.api.versioning_strategy %}
+**Versioning**: {{ profile.api.versioning_strategy }}
+{% endif %}
+{% if profile.api.response_format %}
+**Response format**: {{ profile.api.response_format }}
+{% endif %}
+
+## Rules
+
+{% if profile.api.api_style == 'rest' %}
+1. Follow RESTful resource naming conventions (plural nouns, e.g. `/users`, `/orders`)
+2. Use appropriate HTTP methods: GET (read), POST (create), PUT/PATCH (update), DELETE (remove)
+3. Return appropriate HTTP status codes (200, 201, 400, 401, 403, 404, 500)
+4. Include pagination for list endpoints
+{% elif profile.api.api_style == 'graphql' %}
+1. Follow existing GraphQL schema conventions
+2. Use query batching and fragments to minimize requests
+3. Implement proper error handling in resolvers
+4. Add authorization at the resolver level, not the schema level
+{% else %}
+1. Follow existing API conventions
+2. Use consistent request/response formats
+3. Include proper error handling
+{% endif %}
+
+{% if profile.api.request_validation %}
+## Request Validation
+
+Library: **{{ profile.api.request_validation }}**
+
+All API inputs must be validated using the existing validation library.
+{% endif %}
+
+{% if profile.api.route_structure %}
+## Route Structure
+
+Pattern: `{{ profile.api.route_structure }}`
+{% endif %}
+
+{% if profile.api.openapi_spec_path %}
+## API Documentation
+
+OpenAPI spec: `{{ profile.api.openapi_spec_path }}`
+
+Update the spec when modifying API endpoints.
+{% endif %}
+
+{% if profile.api.pagination_pattern %}
+## Pagination
+
+Pattern: **{{ profile.api.pagination_pattern }}**
+
+All list endpoints must support pagination.
+{% endif %}

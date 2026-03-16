@@ -1,0 +1,55 @@
+---
+description: "Authentication & authorization patterns for {{ profile.metadata.name }}"
+globs:
+  {% for d in profile.auth.auth_directories %}- "{{ d }}/**"
+  {% endfor %}
+alwaysApply: true
+priority: 50
+---
+
+# Authentication & Authorization
+
+{% if profile.auth.auth_strategy %}
+**Strategy**: {{ profile.auth.auth_strategy | upper }}
+{% endif %}
+{% if profile.auth.permission_model %}
+**Permission model**: {{ profile.auth.permission_model | upper }}
+{% endif %}
+
+## Critical Rules
+
+1. **NEVER** bypass authentication middleware or guards
+2. **NEVER** hardcode credentials, API keys, or tokens in source code
+3. **NEVER** expose internal user IDs or session tokens in API responses
+4. **ALWAYS** validate and sanitize authentication inputs (tokens, passwords, etc.)
+5. **ALWAYS** check authorization before performing data mutations
+
+{% if profile.auth.auth_middleware %}
+## Auth Middleware Stack
+
+{% for mw in profile.auth.auth_middleware %}
+- `{{ mw }}`
+{% endfor %}
+
+> All new endpoints must use the existing auth middleware. Do not create custom auth logic.
+{% endif %}
+
+{% if profile.auth.protected_route_patterns %}
+## Protected Route Patterns
+
+Use these existing patterns for route protection:
+
+{% for pattern in profile.auth.protected_route_patterns %}
+- `{{ pattern }}`
+{% endfor %}
+{% endif %}
+
+{% if profile.auth.auth_directories %}
+## Auth Code Location
+
+{% for d in profile.auth.auth_directories %}
+- `{{ d }}/`
+{% endfor %}
+
+> Auth-related changes require security review. If you need to modify auth logic, create a task for the engineering team.
+{% endif %}

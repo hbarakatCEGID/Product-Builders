@@ -1,0 +1,60 @@
+---
+description: "Testing conventions and requirements for {{ profile.metadata.name }}"
+globs:
+  {% for d in profile.testing.test_directories %}- "{{ d }}/**"
+  {% endfor %}
+alwaysApply: false
+priority: 25
+---
+
+# Testing
+
+{% if profile.testing.test_framework %}
+**Framework**: {{ profile.testing.test_framework }}
+{% endif %}
+{% if profile.testing.test_runner %}
+**Runner**: {{ profile.testing.test_runner }}
+{% endif %}
+{% if profile.testing.e2e_framework %}
+**E2E**: {{ profile.testing.e2e_framework }}
+{% endif %}
+
+## Rules
+
+1. Every new feature and bug fix must include tests
+2. Use the existing test framework — do not introduce alternatives
+{% if profile.testing.test_file_pattern %}
+3. Test file naming: `{{ profile.testing.test_file_pattern }}`
+{% endif %}
+{% if profile.testing.test_directories %}
+4. Place tests in: {% for d in profile.testing.test_directories %}`{{ d }}`{% if not loop.last %}, {% endif %}{% endfor %}
+
+{% endif %}
+5. Tests must be independent — no shared mutable state between tests
+6. Prefer descriptive test names that explain the expected behavior
+
+{% if profile.testing.mocking_library %}
+## Mocking
+
+- Library: `{{ profile.testing.mocking_library }}`
+- Mock external dependencies, not internal modules
+- Prefer dependency injection over monkey-patching
+{% endif %}
+
+{% if profile.testing.coverage_tool %}
+## Coverage
+
+- Tool: `{{ profile.testing.coverage_tool }}`
+{% if profile.testing.coverage_config_path %}
+- Config: `{{ profile.testing.coverage_config_path }}`
+{% endif %}
+- Maintain or improve coverage — do not merge code that reduces coverage
+{% endif %}
+
+{% if profile.testing.fixture_patterns %}
+## Fixture Patterns
+
+{% for fp in profile.testing.fixture_patterns %}
+- `{{ fp }}`
+{% endfor %}
+{% endif %}

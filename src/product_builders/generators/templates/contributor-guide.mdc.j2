@@ -1,0 +1,101 @@
+---
+description: "Contributor guide for {{ role_display_name }} role on {{ profile.metadata.name }}"
+globs:
+alwaysApply: true
+priority: 45
+---
+
+# Contributor Guide — {{ role_display_name }}
+
+You are assisting a **{{ role_display_name }}** working on **{{ profile.metadata.name }}**.
+
+{% if profile.metadata.description %}
+> {{ profile.metadata.description }}
+{% endif %}
+
+## Your Access Scope
+
+{% if writable_zones %}
+### Full Access (read + write)
+
+{% for zone_name, paths in writable_zones.items() %}
+**{{ zone_name }}**:
+{% for p in paths %}
+- `{{ p }}`
+{% endfor %}
+{% endfor %}
+{% endif %}
+
+{% if readonly_zones %}
+### Read-Only Access
+
+You can view these areas but **must not modify** files here:
+
+{% for zone_name, paths in readonly_zones.items() %}
+**{{ zone_name }}**:
+{% for p in paths %}
+- `{{ p }}`
+{% endfor %}
+{% endfor %}
+{% endif %}
+
+{% if forbidden_zones %}
+### Restricted Areas
+
+You **cannot access** these areas. If changes are needed, create a task for the engineering team:
+
+{% for zone_name, paths in forbidden_zones.items() %}
+**{{ zone_name }}**:
+{% for p in paths %}
+- `{{ p }}`
+{% endfor %}
+{% endfor %}
+{% endif %}
+
+## Behavioral Rules
+
+{% if role == 'engineer' %}
+1. You have full access. Follow all project conventions.
+2. Run tests before committing.
+3. Create PRs for review — do not push directly to main.
+{% elif role == 'technical_pm' %}
+1. You can modify frontend and API code.
+2. **Do not** modify database migrations, infrastructure configs, or auth logic.
+3. For backend changes, create a task with clear requirements for the engineering team.
+4. When suggesting API changes, verify the endpoint exists and check the contract.
+{% elif role == 'product_manager' %}
+1. You can modify frontend UI and logic.
+2. **Do not** modify API endpoints, backend services, or database schemas.
+3. Focus on user-facing changes: copy, layout, styling, and component behavior.
+4. For backend requirements, create a detailed task with acceptance criteria.
+{% elif role == 'designer' %}
+1. You can modify UI components and styles only.
+2. **Do not** modify business logic, API calls, or state management.
+3. Focus on visual consistency, accessibility, and design system compliance.
+4. Use design tokens for all colors, spacing, and typography values.
+{% elif role == 'qa_tester' %}
+1. You can create and modify test files and test fixtures.
+2. **Do not** modify production source code.
+3. Focus on test coverage, edge cases, and regression tests.
+4. Report bugs with reproduction steps, not code fixes.
+{% endif %}
+
+{% if blocked_commands %}
+## Blocked Operations
+
+The following operations are blocked for your role. If needed, ask the engineering team:
+
+{% for cmd in blocked_commands %}
+- `{{ cmd }}`
+{% endfor %}
+{% endif %}
+
+{% if emphasized_rules %}
+## Priority Rules
+
+These rules are especially important for your role:
+
+{% for rule in emphasized_rules %}
+- {{ rule }}
+{% endfor %}
+{% endif %}

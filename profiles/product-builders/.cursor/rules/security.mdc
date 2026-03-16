@@ -1,0 +1,30 @@
+---
+description: "Security rules and patterns for product-builders"
+globs:
+alwaysApply: true
+priority: 50
+---
+
+# Security
+
+## Critical Rules
+
+1. **NEVER** hardcode secrets, API keys, or passwords in source code
+2. **NEVER** commit `.env` files, private keys, or credentials
+3. **NEVER** log sensitive data (passwords, tokens, PII, financial data)
+4. **NEVER** disable security middleware or authentication guards
+5. **ALWAYS** validate and sanitize all user inputs
+6. **ALWAYS** use parameterized queries — never string-concatenate SQL
+
+
+
+
+
+
+## Before You Submit
+
+- [ ] No secrets in code or configuration files
+- [ ] All inputs validated
+- [ ] SQL queries parameterized
+- [ ] Auth checks on all protected endpoints
+- [ ] Error messages do not leak internal details

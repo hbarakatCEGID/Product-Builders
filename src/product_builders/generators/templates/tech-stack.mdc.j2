@@ -1,0 +1,53 @@
+---
+description: "Tech stack constraints and version requirements for {{ profile.metadata.name }}"
+globs:
+alwaysApply: true
+priority: 35
+---
+
+# Tech Stack
+
+{% if profile.tech_stack.primary_language %}
+**Primary language**: {{ profile.tech_stack.primary_language }}
+{% endif %}
+
+## Languages & Versions
+
+{% for lang, pct in profile.tech_stack.languages.items() %}
+- **{{ lang }}**: {{ "%.1f"|format(pct) }}% of codebase
+{% endfor %}
+
+{% if profile.tech_stack.runtime_versions %}
+## Runtime Versions
+
+{% for runtime, version in profile.tech_stack.runtime_versions.items() %}
+- {{ runtime }}: {{ version }}
+{% endfor %}
+
+> Always match these versions. Do not introduce APIs from newer runtime versions.
+{% endif %}
+
+{% if profile.tech_stack.frameworks %}
+## Frameworks
+
+{% for fw in profile.tech_stack.frameworks %}
+- **{{ fw.name }}**{% if fw.version %} {{ fw.version }}{% endif %}{% if fw.category %} ({{ fw.category }}){% endif %}
+
+{% endfor %}
+
+> Use only the frameworks listed above. Never introduce a new framework or major dependency without explicit approval.
+{% endif %}
+
+{% if profile.tech_stack.build_tools %}
+## Build Tools
+
+{{ profile.tech_stack.build_tools | join(', ') }}
+{% endif %}
+
+{% if profile.tech_stack.package_managers %}
+## Package Managers
+
+{{ profile.tech_stack.package_managers | join(', ') }}
+
+> Use **{{ profile.tech_stack.package_managers[0] }}** for all dependency operations. Do not mix package managers.
+{% endif %}

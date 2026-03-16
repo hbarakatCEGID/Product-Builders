@@ -1,0 +1,29 @@
+name: Git Workflow Standards
+version: "1.0.0"
+description: Company-wide Git conventions
+
+rules:
+  - id: GIT-001
+    severity: high
+    description: Use descriptive branch names following the pattern type/description (e.g. feature/add-user-preferences, fix/login-redirect).
+    rationale: Branch names communicate intent and integrate with CI/CD automation.
+
+  - id: GIT-002
+    severity: high
+    description: Write meaningful commit messages. Prefer Conventional Commits format (feat:, fix:, docs:, chore:, refactor:).
+    rationale: Consistent commit messages enable automated changelogs and clear history.
+
+  - id: GIT-003
+    severity: medium
+    description: Keep PRs focused and small. One PR should address one concern.
+    rationale: Large PRs are harder to review and more likely to introduce bugs.
+
+  - id: GIT-004
+    severity: medium
+    description: Always include a PR description explaining what changed and why.
+    rationale: Context helps reviewers understand the intent and catch issues.
+
+  - id: GIT-005
+    severity: high
+    description: Never force-push to main/master or shared branches.
+    rationale: Force-pushing rewrites history and can cause data loss for other contributors.

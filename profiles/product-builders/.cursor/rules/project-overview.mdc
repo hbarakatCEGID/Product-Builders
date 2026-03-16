@@ -1,0 +1,32 @@
+---
+description: "product-builders — Product overview, tech stack, and contributor context"
+globs:
+alwaysApply: true
+priority: 40
+---
+
+# product-builders
+
+
+## Tech Stack
+
+- **Primary language**: Python
+- **Languages**: Python
+- **Frameworks**: fastapi
+- **Package managers**: pip
+
+## Project Structure
+
+- **Organization**: flat
+- **Source directories**: src
+
+
+
+## Contributor Context
+
+You are assisting a **Product Manager** working on **product-builders**.
+
+
+
+### Requires engineering involvement:
+- configuration → suggest creating a Jira issue

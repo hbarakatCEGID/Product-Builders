@@ -1,0 +1,84 @@
+---
+description: "Bootstrap meta-rule: structured deep analysis prompts for {{ profile.metadata.name }}"
+globs:
+alwaysApply: false
+priority: 10
+---
+
+# Deep Analysis — {{ profile.metadata.name }}
+
+This rule provides structured prompts for Cursor-assisted deep analysis.
+Run each step in sequence. Each step builds on the previous one.
+
+## Prerequisites
+
+Heuristic analysis has been completed. The following was detected:
+{% if profile.tech_stack.primary_language %}- Primary language: {{ profile.tech_stack.primary_language }}{% endif %}
+
+{% if profile.tech_stack.frameworks %}- Frameworks: {% for fw in profile.tech_stack.frameworks %}{{ fw.name }}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}
+
+{% if profile.database.orm %}- ORM: {{ profile.database.orm }}{% endif %}
+
+{% if profile.auth.auth_strategy %}- Auth: {{ profile.auth.auth_strategy }}{% endif %}
+
+---
+
+## Step 1: Architecture Deep-Dive
+
+Analyze the codebase architecture:
+
+1. What layering pattern is used? (MVC, Clean Architecture, Hexagonal, etc.)
+2. What is the dependency direction? (top-down, dependency inversion, etc.)
+3. Identify bounded contexts or domain boundaries
+4. Map module boundaries — which modules depend on which?
+
+{% if profile.structure.source_directories %}
+Start by examining: {{ profile.structure.source_directories | join(', ') }}
+{% endif %}
+
+> Save findings to the deep analysis profile.
+
+---
+
+## Step 2: Domain Model Analysis
+
+Analyze the domain model:
+
+1. List the core domain vocabulary (key nouns/verbs used throughout the code)
+2. Map entity relationships (1:1, 1:N, M:N)
+3. Locate business logic — where do domain rules live?
+4. Identify value objects vs entities vs aggregates
+
+{% if profile.database.orm %}
+Start by examining {{ profile.database.orm }} models/entities.
+{% endif %}
+
+> Save findings to the deep analysis profile.
+
+---
+
+## Step 3: Implicit Conventions
+
+Identify conventions not captured by linters or formatters:
+
+1. Naming philosophy — is the project verbose or terse? Domain-specific terms?
+2. Abstraction level — thin controllers + fat services? Or logic in controllers?
+3. Code organization habits — how are new features added? What's the "shape" of a feature?
+4. Error handling philosophy — fail fast? Defensive? Optimistic?
+
+Examine at least 5 representative files across different areas of the codebase.
+
+> Save findings to the deep analysis profile.
+
+---
+
+## Step 4: Rule Refinement
+
+Using the deep analysis results, refine the generated Cursor rules:
+
+1. Review each .mdc rule file in `.cursor/rules/`
+2. Add project-specific constraints discovered in steps 1-3
+3. Add examples from the actual codebase where helpful
+4. Verify that forbidden patterns match actual anti-patterns found
+
+> After this step, the rules are production-ready.

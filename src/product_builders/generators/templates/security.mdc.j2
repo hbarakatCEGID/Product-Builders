@@ -1,0 +1,69 @@
+---
+description: "Security rules and patterns for {{ profile.metadata.name }}"
+globs:
+alwaysApply: true
+priority: 50
+---
+
+# Security
+
+## Critical Rules
+
+1. **NEVER** hardcode secrets, API keys, or passwords in source code
+2. **NEVER** commit `.env` files, private keys, or credentials
+3. **NEVER** log sensitive data (passwords, tokens, PII, financial data)
+4. **NEVER** disable security middleware or authentication guards
+5. **ALWAYS** validate and sanitize all user inputs
+6. **ALWAYS** use parameterized queries — never string-concatenate SQL
+
+{% if profile.security.input_validation %}
+## Input Validation
+
+Library: **{{ profile.security.input_validation }}**
+
+- Validate all inputs at the boundary (API endpoints, form submissions)
+- Use the existing validation library — do not write custom validation
+- Validate both request body and URL parameters
+{% endif %}
+
+{% if profile.security.cors_config %}
+## CORS
+
+Configuration: `{{ profile.security.cors_config }}`
+
+Do not modify CORS configuration without security review.
+{% endif %}
+
+{% if profile.security.secrets_management %}
+## Secrets Management
+
+Approach: **{{ profile.security.secrets_management }}**
+
+- Access secrets through the configured secret management system
+- Never pass secrets as command-line arguments
+- Rotate secrets regularly
+{% endif %}
+
+{% if profile.security.security_middleware %}
+## Security Middleware
+
+{% for mw in profile.security.security_middleware %}
+- `{{ mw }}`
+{% endfor %}
+
+Do not remove or reorder security middleware.
+{% endif %}
+
+{% if profile.security.csp_headers %}
+## Content Security Policy
+
+CSP headers are configured. Do not add `unsafe-inline` or `unsafe-eval` without security review.
+{% endif %}
+
+## Before You Submit
+
+- [ ] No secrets in code or configuration files
+- [ ] All inputs validated
+- [ ] SQL queries parameterized
+- [ ] Auth checks on all protected endpoints
+- [ ] Error messages do not leak internal details

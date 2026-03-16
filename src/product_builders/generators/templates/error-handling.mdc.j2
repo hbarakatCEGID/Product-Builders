@@ -1,0 +1,74 @@
+---
+description: "Error handling and logging conventions for {{ profile.metadata.name }}"
+globs:
+alwaysApply: true
+priority: 30
+---
+
+# Error Handling & Logging
+
+{% if profile.error_handling.error_strategy %}
+**Strategy**: {{ profile.error_handling.error_strategy }}
+{% endif %}
+{% if profile.error_handling.logging_framework %}
+**Logger**: {{ profile.error_handling.logging_framework }}
+{% endif %}
+{% if profile.error_handling.monitoring_integration %}
+**Monitoring**: {{ profile.error_handling.monitoring_integration }}
+{% endif %}
+
+## Rules
+
+{% if profile.error_handling.error_strategy == 'exceptions' %}
+1. Use custom error classes instead of generic `Error` or `Exception`
+2. Always include meaningful error messages with context
+3. Catch specific exceptions — never catch-all without re-throwing
+4. Log errors before re-throwing or returning error responses
+{% elif profile.error_handling.error_strategy == 'result-types' %}
+1. Use Result/Either types for expected failures
+2. Reserve exceptions for truly exceptional circumstances
+3. Always handle both success and error paths
+4. Propagate errors with context — don't swallow them
+{% else %}
+1. Follow the project's existing error handling patterns
+2. Always include meaningful error messages
+3. Log errors with appropriate severity levels
+{% endif %}
+
+{% if profile.error_handling.logging_framework %}
+## Logging
+
+- Use `{{ profile.error_handling.logging_framework }}` — do not introduce alternative loggers
+{% if profile.error_handling.logging_config_file %}
+- Config: `{{ profile.error_handling.logging_config_file }}`
+{% endif %}
+- Use appropriate log levels: DEBUG for development, INFO for operations, WARN for recoverable issues, ERROR for failures
+- Include structured context in log entries (request IDs, user IDs, etc.)
+- Never log sensitive data (passwords, tokens, PII)
+{% endif %}
+
+{% if profile.error_handling.monitoring_integration %}
+## Error Monitoring
+
+- Integration: **{{ profile.error_handling.monitoring_integration }}**
+- All unhandled errors should be captured by the monitoring service
+- Add breadcrumbs for debugging context where available
+{% endif %}
+
+{% if profile.error_handling.custom_error_classes %}
+## Custom Error Classes
+
+Use these existing error classes — do not create duplicates:
+
+{% for cls in profile.error_handling.custom_error_classes %}
+- `{{ cls }}`
+{% endfor %}
+{% endif %}
+
+{% if profile.error_handling.error_response_format %}
+## Error Response Format
+
+Format: **{{ profile.error_handling.error_response_format }}**
+
+All API error responses must follow the same structure. Check existing error handlers for the exact format.
+{% endif %}

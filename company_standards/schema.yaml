@@ -1,0 +1,57 @@
+# JSON Schema for company-wide standards YAML files.
+# Each standard file (security.yaml, quality.yaml, etc.) must conform to this structure.
+
+type: object
+required:
+  - name
+  - version
+  - rules
+
+properties:
+  name:
+    type: string
+    description: Human-readable name of this standard
+
+  version:
+    type: string
+    description: Version of this standard (semver)
+
+  description:
+    type: string
+    description: What this standard covers
+
+  rules:
+    type: array
+    items:
+      type: object
+      required:
+        - id
+        - severity
+        - description
+      properties:
+        id:
+          type: string
+          description: Unique rule identifier (e.g. SEC-001)
+        severity:
+          type: string
+          enum: [critical, high, medium, low]
+        description:
+          type: string
+          description: What this rule requires
+        rationale:
+          type: string
+          description: Why this rule exists
+        examples:
+          type: array
+          items:
+            type: object
+            properties:
+              good:
+                type: string
+              bad:
+                type: string
+        applies_to:
+          type: array
+          items:
+            type: string
+          description: Language/framework filters (e.g. ["python", "javascript"])

@@ -1,0 +1,67 @@
+---
+description: "Performance guidelines for {{ profile.metadata.name }}"
+globs:
+alwaysApply: false
+priority: 20
+---
+
+# Performance
+
+{% if profile.performance.caching_strategy %}
+**Caching**: {{ profile.performance.caching_strategy }}
+{% endif %}
+{% if profile.performance.performance_monitoring %}
+**Monitoring**: {{ profile.performance.performance_monitoring }}
+{% endif %}
+
+## Rules
+
+1. Profile before optimizing — measure, don't guess
+2. Avoid N+1 queries — use eager loading / data loaders where available
+3. Add database indexes for columns used in WHERE, JOIN, and ORDER BY
+4. Use pagination for all list queries
+5. Consider caching for expensive computations and frequently-read data
+
+{% if profile.performance.caching_strategy %}
+## Caching
+
+Strategy: **{{ profile.performance.caching_strategy }}**
+
+- Cache expensive computations and frequently-read data
+- Always set appropriate TTL values
+- Invalidate caches when underlying data changes
+{% endif %}
+
+{% if profile.performance.lazy_loading %}
+## Lazy Loading
+
+Lazy loading is enabled in this project. Continue using lazy loading for:
+- Images and media
+- Below-the-fold components
+- Large library imports
+{% endif %}
+
+{% if profile.performance.code_splitting %}
+## Code Splitting
+
+Code splitting is configured. Use dynamic imports for:
+- Route-level components
+- Large third-party libraries
+- Feature-specific code
+{% endif %}
+
+{% if profile.performance.n_plus_one_prevention %}
+## N+1 Prevention
+
+Strategy: **{{ profile.performance.n_plus_one_prevention }}**
+
+Always use the existing strategy to prevent N+1 queries.
+{% endif %}
+
+{% if profile.performance.image_optimization %}
+## Image Optimization
+
+Tool: **{{ profile.performance.image_optimization }}**
+
+All images must go through the optimization pipeline.
+{% endif %}

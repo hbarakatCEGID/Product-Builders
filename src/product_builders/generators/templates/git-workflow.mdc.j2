@@ -1,0 +1,60 @@
+---
+description: "Git workflow and commit conventions for {{ profile.metadata.name }}"
+globs:
+alwaysApply: true
+priority: 30
+---
+
+# Git Workflow
+
+{% if profile.git_workflow.git_platform %}
+**Platform**: {{ profile.git_workflow.git_platform }}
+{% endif %}
+
+## Commit Messages
+
+{% if profile.git_workflow.commit_message_format == 'conventional' %}
+Use **Conventional Commits** format:
+
+```
+<type>(<scope>): <description>
+
+[optional body]
+[optional footer(s)]
+```
+
+Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `perf`, `ci`, `build`
+
+Examples:
+- `feat(auth): add OAuth2 login flow`
+- `fix(api): handle null response from payment service`
+- `refactor(db): extract query builder helper`
+{% elif profile.git_workflow.commit_message_format %}
+Format: **{{ profile.git_workflow.commit_message_format }}**
+{% else %}
+Write clear, descriptive commit messages. Start with a verb in imperative mood.
+{% endif %}
+
+{% if profile.git_workflow.branch_naming_strategy %}
+## Branch Naming
+
+Strategy: **{{ profile.git_workflow.branch_naming_strategy }}**
+{% endif %}
+
+{% if profile.git_workflow.merge_strategy %}
+## Merge Strategy
+
+Use **{{ profile.git_workflow.merge_strategy }}** merges.
+{% endif %}
+
+## Rules
+
+1. Never force-push to the main branch
+2. Keep commits atomic — one logical change per commit
+3. Run tests locally before pushing
+{% if profile.git_workflow.pr_template_path %}
+4. Use the PR template at `{{ profile.git_workflow.pr_template_path }}`
+{% endif %}
+{% if profile.git_workflow.required_reviewers %}
+5. Minimum reviewers: {{ profile.git_workflow.required_reviewers }}
+{% endif %}

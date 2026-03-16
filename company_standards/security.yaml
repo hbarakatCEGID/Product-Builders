@@ -1,0 +1,42 @@
+name: Security Standards
+version: "1.0.0"
+description: Company-wide security policies for all products
+
+rules:
+  - id: SEC-001
+    severity: critical
+    description: Never hardcode secrets, API keys, passwords, or tokens in source code.
+    rationale: Secrets in source code are exposed in version control history and CI logs.
+    examples:
+      - bad: "API_KEY = 'sk-abc123...'"
+      - good: "API_KEY = os.environ['API_KEY']"
+
+  - id: SEC-002
+    severity: critical
+    description: Always validate and sanitize user input before processing.
+    rationale: Prevents injection attacks (SQL, XSS, command injection).
+
+  - id: SEC-003
+    severity: high
+    description: Use parameterized queries for all database operations. Never concatenate user input into SQL.
+    rationale: Prevents SQL injection.
+
+  - id: SEC-004
+    severity: high
+    description: Configure CORS restrictively. Never use wildcard origins in production.
+    rationale: Wildcard CORS allows any website to make authenticated requests.
+
+  - id: SEC-005
+    severity: high
+    description: Store passwords using bcrypt, argon2, or scrypt. Never use MD5 or SHA for passwords.
+    rationale: MD5/SHA are fast hashes unsuitable for passwords.
+
+  - id: SEC-006
+    severity: medium
+    description: Set appropriate HTTP security headers (X-Frame-Options, CSP, HSTS).
+    rationale: Prevents clickjacking, XSS, and protocol downgrade attacks.
+
+  - id: SEC-007
+    severity: medium
+    description: Never commit .env files or credentials files to version control.
+    rationale: Environment files contain secrets that should not be shared.

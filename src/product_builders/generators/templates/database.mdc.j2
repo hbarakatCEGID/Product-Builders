@@ -1,0 +1,55 @@
+---
+description: "Database patterns, ORM conventions, and migration rules for {{ profile.metadata.name }}"
+globs:
+  {% if profile.database.migration_directory %}- "{{ profile.database.migration_directory }}/**"{% endif %}
+
+  {% if profile.database.seed_directory %}- "{{ profile.database.seed_directory }}/**"{% endif %}
+
+alwaysApply: true
+priority: 50
+---
+
+# Database & Data Layer
+
+{% if profile.database.database_type %}
+**Database**: {{ profile.database.database_type }}
+{% endif %}
+{% if profile.database.orm %}
+**ORM**: {{ profile.database.orm }}{% if profile.database.orm_version %} {{ profile.database.orm_version }}{% endif %}
+
+{% endif %}
+
+## Critical Rules
+
+1. **NEVER** create or modify migration files directly — use the migration tool (`{{ profile.database.migration_tool or 'check project docs' }}`)
+2. **NEVER** write raw SQL when the ORM provides the functionality
+3. **NEVER** modify existing migration files — create a new migration instead
+4. **ALWAYS** test migrations on a local database before committing
+
+{% if profile.database.migration_tool %}
+## Migration Workflow
+
+- Tool: `{{ profile.database.migration_tool }}`
+{% if profile.database.migration_directory %}
+- Migrations directory: `{{ profile.database.migration_directory }}`
+{% endif %}
+- Run migrations locally before committing
+- Each migration should be atomic and reversible when possible
+{% endif %}
+
+{% if profile.database.schema_naming_convention %}
+## Schema Conventions
+
+- Naming convention: **{{ profile.database.schema_naming_convention }}**
+- Follow this convention for all model/table/column names
+{% endif %}
+
+{% if profile.database.has_seeds %}
+## Seed Data
+
+{% if profile.database.seed_directory %}
+- Seed directory: `{{ profile.database.seed_directory }}`
+{% endif %}
+- Update seed data when adding new required fields
+- Seeds must be idempotent — safe to run multiple times
+{% endif %}

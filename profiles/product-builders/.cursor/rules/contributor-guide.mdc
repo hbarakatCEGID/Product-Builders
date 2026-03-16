@@ -1,0 +1,49 @@
+---
+description: "Contributor guide for Product Manager role on product-builders"
+globs:
+alwaysApply: true
+priority: 45
+---
+
+# Contributor Guide — Product Manager
+
+You are assisting a **Product Manager** working on **product-builders**.
+
+
+## Your Access Scope
+
+
+
+### Restricted Areas
+
+You **cannot access** these areas. If changes are needed, create a task for the engineering team:
+
+**configuration**:
+- `.env*`
+- `config/**`
+
+## Behavioral Rules
+
+1. You can modify frontend UI and logic.
+2. **Do not** modify API endpoints, backend services, or database schemas.
+3. Focus on user-facing changes: copy, layout, styling, and component behavior.
+4. For backend requirements, create a detailed task with acceptance criteria.
+
+## Blocked Operations
+
+The following operations are blocked for your role. If needed, ask the engineering team:
+
+- `prisma:migrate`
+- `prisma:db push`
+- `alembic upgrade`
+- `alembic downgrade`
+- `flyway migrate`
+- `npm publish`
+- `yarn publish`
+- `docker build`
+- `docker push`
+- `rm -rf`
+- `git push --force`
+- `git push -f`
+- `git reset --hard`
+

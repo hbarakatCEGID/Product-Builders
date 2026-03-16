@@ -1,0 +1,30 @@
+name: Performance Standards
+version: "1.0.0"
+description: Company-wide performance budgets and standards
+
+rules:
+  - id: PERF-001
+    severity: high
+    description: Avoid N+1 query patterns. Use eager loading or batch queries for related data.
+    rationale: N+1 queries cause exponential performance degradation at scale.
+
+  - id: PERF-002
+    severity: medium
+    description: Use pagination for all list endpoints. Never return unbounded result sets.
+    rationale: Unbounded queries can crash databases and exhaust memory.
+
+  - id: PERF-003
+    severity: medium
+    description: Lazy-load heavy components and images. Use code splitting for large bundles.
+    rationale: Reduces initial page load time and improves Core Web Vitals.
+    applies_to: ["javascript", "typescript"]
+
+  - id: PERF-004
+    severity: low
+    description: Cache expensive computations and API responses where appropriate.
+    rationale: Caching reduces latency and load on backend services.
+
+  - id: PERF-005
+    severity: medium
+    description: Set appropriate cache headers for static assets (immutable for hashed files).
+    rationale: Proper cache headers reduce bandwidth and speed up repeat visits.

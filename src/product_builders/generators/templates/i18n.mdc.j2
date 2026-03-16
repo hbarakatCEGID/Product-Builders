@@ -1,0 +1,53 @@
+---
+description: "Internationalization rules for {{ profile.metadata.name }}"
+globs:
+  {% for d in profile.i18n.translation_directories %}- "{{ d }}/**"
+  {% endfor %}
+alwaysApply: false
+priority: 20
+---
+
+# Internationalization (i18n)
+
+{% if profile.i18n.i18n_framework %}
+**Framework**: {{ profile.i18n.i18n_framework }}
+{% endif %}
+{% if profile.i18n.default_locale %}
+**Default locale**: {{ profile.i18n.default_locale }}
+{% endif %}
+
+## Rules
+
+1. **NEVER** hardcode user-facing strings — always use the i18n framework
+2. Keep translation keys organized and hierarchical
+3. Add translations for all supported locales when introducing new strings
+{% if profile.i18n.i18n_framework %}
+4. Use `{{ profile.i18n.i18n_framework }}` APIs — do not introduce alternative i18n solutions
+{% endif %}
+
+{% if profile.i18n.supported_locales %}
+## Supported Locales
+
+{% for locale in profile.i18n.supported_locales %}
+- `{{ locale }}`
+{% endfor %}
+
+All user-facing text must be translated for every locale listed above.
+{% endif %}
+
+{% if profile.i18n.translation_directories %}
+## Translation Files
+
+{% for d in profile.i18n.translation_directories %}
+- `{{ d }}/`
+{% endfor %}
+{% if profile.i18n.translation_file_format %}
+Format: {{ profile.i18n.translation_file_format }}
+{% endif %}
+{% endif %}
+
+{% if profile.i18n.string_externalization_pattern %}
+## Externalization Pattern
+
+{{ profile.i18n.string_externalization_pattern }}
+{% endif %}

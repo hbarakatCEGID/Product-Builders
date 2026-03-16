@@ -1,0 +1,104 @@
+# {{ profile.metadata.name }} — {{ role_display_name }} Onboarding Guide
+
+Welcome to **{{ profile.metadata.name }}**! This guide will help you set up Cursor with the right permissions and context for your role.
+
+## Quick Setup
+
+1. **Clone the repository**:
+   ```bash
+   git clone {{ profile.metadata.repo_url or '<repo-url>' }}
+   cd {{ profile.metadata.name | lower | replace(' ', '-') }}
+   ```
+
+2. **Install Product Builders CLI** (if not already installed):
+   ```bash
+   pip install product-builders
+   ```
+
+3. **Set up your Cursor environment**:
+   ```bash
+   product-builders setup --name "{{ profile.metadata.name }}" --role {{ role }}
+   ```
+
+   This command generates:
+   - `.cursor/rules/` — AI rules tailored to your role
+   - `.cursor/hooks.json` — Smart guardrails (Layer 2)
+   - `.cursor/cli.json` — Filesystem permissions (Layer 3)
+
+## What You Can Do
+
+{% if writable_zones %}
+### Your Writable Areas
+
+{% for zone_name, paths in writable_zones.items() %}
+**{{ zone_name }}**: {% for p in paths %}`{{ p }}`{% if not loop.last %}, {% endif %}{% endfor %}
+
+{% endfor %}
+{% endif %}
+
+{% if readonly_zones %}
+### Read-Only Areas
+
+You can view these for context, but changes require the engineering team:
+
+{% for zone_name, paths in readonly_zones.items() %}
+- **{{ zone_name }}**: {% for p in paths %}`{{ p }}`{% if not loop.last %}, {% endif %}{% endfor %}
+
+{% endfor %}
+{% endif %}
+
+{% if forbidden_zones %}
+### Restricted Areas
+
+These areas are not accessible for your role:
+
+{% for zone_name in forbidden_zones %}
+- **{{ zone_name }}**
+{% endfor %}
+
+If you need changes in restricted areas, create a task in Jira/Linear with clear requirements.
+{% endif %}
+
+## Tech Stack Overview
+
+{% if profile.tech_stack.primary_language %}
+- **Language**: {{ profile.tech_stack.primary_language }}
+{% endif %}
+{% if profile.tech_stack.frameworks %}
+- **Frameworks**: {% for fw in profile.tech_stack.frameworks %}{{ fw.name }}{% if not loop.last %}, {% endif %}{% endfor %}
+
+{% endif %}
+{% if profile.database.orm %}
+- **Database ORM**: {{ profile.database.orm }}
+{% endif %}
+{% if profile.auth.auth_strategy %}
+- **Auth**: {{ profile.auth.auth_strategy }}
+{% endif %}
+
+{% if blocked_commands %}
+## Commands to Avoid
+
+The following commands are blocked for your role because they can affect production:
+
+{% for cmd in blocked_commands %}
+- `{{ cmd }}`
+{% endfor %}
+
+If you need to run any of these, ask the engineering team.
+{% endif %}
+
+## Getting Help
+
+- **Cursor rules**: Check `.cursor/rules/` for project conventions
+- **Questions**: Tag the engineering team in Slack/Teams
+- **Blocked?**: Create a task describing what you need — the team will help
+
+## Updating Your Setup
+
+If the project rules change, update your local setup:
+
+```bash
+product-builders setup --name "{{ profile.metadata.name }}" --role {{ role }}
+```
+
+This regenerates all rules and permissions from the latest profile.

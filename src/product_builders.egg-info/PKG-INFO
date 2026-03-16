@@ -1,0 +1,33 @@
+Metadata-Version: 2.4
+Name: product-builders
+Version: 0.1.0
+Summary: Analyze product codebases and generate tailored Cursor rules, governance, and onboarding guides
+Author: Platform Team
+License: MIT
+Requires-Python: <4.0,>=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: click>=8.1
+Requires-Dist: jinja2>=3.1
+Requires-Dist: pyyaml>=6.0
+Requires-Dist: rich>=13.0
+Requires-Dist: pydantic>=2.0
+Provides-Extra: dev
+Requires-Dist: pytest>=8.0; extra == "dev"
+Requires-Dist: pytest-cov>=5.0; extra == "dev"
+Requires-Dist: ruff>=0.4; extra == "dev"
+Requires-Dist: mypy>=1.10; extra == "dev"
+Provides-Extra: webapp
+Requires-Dist: fastapi>=0.111; extra == "webapp"
+Requires-Dist: uvicorn[standard]>=0.30; extra == "webapp"
+
+# Product Builders
+
+A CLI tool and web application that analyzes product codebases and generates tailored Cursor rules, governance (hooks, permissions), and onboarding guides — enabling PMs, designers, and engineers to contribute via AI agents that respect each product's architecture and conventions.
+
+## Documentation
+
+- [PROJECT_PROPOSAL.md](PROJECT_PROPOSAL.md) — High-level proposal and major decisions
+- [ARCHITECTURE.md](ARCHITECTURE.md) — Solution architecture, diagrams, implementation phases
+- [product_builders_agent_generator_cb6755d9.plan.md](product_builders_agent_generator_cb6755d9.plan.md) — Implementation plan and todos
+- [docs/HOOKS_RESEARCH.md](docs/HOOKS_RESEARCH.md) — Cursor hooks validation research (preToolUse, ENAMETOOLONG, best practices)
+

@@ -1,0 +1,424 @@
+{
+  "metadata": {
+    "name": "product-builders",
+    "description": "",
+    "repo_path": "C:\\Users\\BARAKAT\\OneDrive - CEGID\\Documents\\GitHub\\Product-Builders",
+    "repo_url": "",
+    "git_platform": null,
+    "sub_project": null,
+    "analysis_timestamp": "2026-03-16T13:48:11.721623Z",
+    "analysis_version": "0.1.0",
+    "last_commit_sha": null,
+    "product_family": null
+  },
+  "tech_stack": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "languages": {
+      "Python": 100.0
+    },
+    "primary_language": "Python",
+    "frameworks": [
+      {
+        "name": "fastapi",
+        "version": null,
+        "category": "web"
+      }
+    ],
+    "build_tools": [],
+    "package_managers": [
+      "pip"
+    ],
+    "runtime_versions": {
+      "python": ">=3.11,<4.0"
+    }
+  },
+  "database": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "database_type": null,
+    "orm": null,
+    "orm_version": null,
+    "migration_tool": null,
+    "migration_directory": null,
+    "schema_naming_convention": null,
+    "relationship_patterns": [],
+    "has_seeds": false,
+    "seed_directory": null
+  },
+  "auth": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "auth_strategy": null,
+    "auth_middleware": [],
+    "permission_model": "rbac",
+    "protected_route_patterns": [
+      "@login_required",
+      "@permission_required",
+      "@requires_auth",
+      "isAuthenticated",
+      "ensureAuthenticated",
+      "requireAuth",
+      "withAuth"
+    ],
+    "token_handling": null,
+    "session_management": null,
+    "auth_directories": []
+  },
+  "dependencies": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "dependencies": [
+      {
+        "name": "click",
+        "version": ">=8.1",
+        "is_dev": false,
+        "category": ""
+      },
+      {
+        "name": "jinja2",
+        "version": ">=3.1",
+        "is_dev": false,
+        "category": ""
+      },
+      {
+        "name": "pyyaml",
+        "version": ">=6.0",
+        "is_dev": false,
+        "category": ""
+      },
+      {
+        "name": "rich",
+        "version": ">=13.0",
+        "is_dev": false,
+        "category": ""
+      },
+      {
+        "name": "pydantic",
+        "version": ">=2.0",
+        "is_dev": false,
+        "category": "validation"
+      },
+      {
+        "name": "pytest",
+        "version": ">=8.0",
+        "is_dev": false,
+        "category": "testing"
+      },
+      {
+        "name": "pytest-cov",
+        "version": ">=5.0",
+        "is_dev": false,
+        "category": ""
+      },
+      {
+        "name": "ruff",
+        "version": ">=0.4",
+        "is_dev": false,
+        "category": "linting"
+      },
+      {
+        "name": "mypy",
+        "version": ">=1.10",
+        "is_dev": false,
+        "category": "type-checking"
+      },
+      {
+        "name": "fastapi",
+        "version": ">=0.111",
+        "is_dev": false,
+        "category": "web-framework"
+      },
+      {
+        "name": "uvicorn",
+        "version": "[standard]>=0.30",
+        "is_dev": false,
+        "category": ""
+      }
+    ],
+    "dependency_manifest_files": [
+      "requirements.txt",
+      "pyproject.toml"
+    ],
+    "lock_file": null
+  },
+  "error_handling": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "error_strategy": "exceptions",
+    "logging_framework": null,
+    "logging_config_file": null,
+    "monitoring_integration": null,
+    "error_response_format": "json",
+    "custom_error_classes": [
+      "XxxError",
+      "XxxException"
+    ]
+  },
+  "i18n": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "i18n_framework": null,
+    "translation_file_format": null,
+    "translation_directories": [],
+    "default_locale": null,
+    "supported_locales": [],
+    "string_externalization_pattern": null
+  },
+  "state_management": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "state_library": null,
+    "data_fetching_library": null,
+    "store_structure": null,
+    "state_patterns": []
+  },
+  "env_config": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "config_approach": null,
+    "env_files": [],
+    "has_docker": false,
+    "dockerfile_path": null,
+    "docker_compose_path": null,
+    "feature_flags_system": null,
+    "config_directories": []
+  },
+  "git_workflow": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "git_platform": null,
+    "branch_naming_strategy": null,
+    "commit_message_format": null,
+    "pr_template_path": null,
+    "merge_strategy": null,
+    "required_reviewers": null,
+    "ci_config_path": null,
+    "release_tagging": null
+  },
+  "structure": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "root_directories": [
+      "company_standards",
+      "docs",
+      "profiles",
+      "src",
+      "tests"
+    ],
+    "source_directories": [
+      "src"
+    ],
+    "key_directories": [
+      {
+        "path": "docs",
+        "purpose": "Documentation"
+      },
+      {
+        "path": "src",
+        "purpose": "Source code"
+      },
+      {
+        "path": "src/product_builders/models",
+        "purpose": "Data models / entities"
+      },
+      {
+        "path": "tests",
+        "purpose": "Test files"
+      }
+    ],
+    "module_organization": "flat",
+    "is_monorepo": false,
+    "monorepo_tool": null,
+    "sub_projects": []
+  },
+  "conventions": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "linter": "ruff",
+    "linter_config_path": "pyproject.toml",
+    "formatter": null,
+    "formatter_config_path": null,
+    "editorconfig_path": null,
+    "import_ordering": null,
+    "naming_convention": null,
+    "file_naming_convention": "snake_case"
+  },
+  "security": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "input_validation": null,
+    "cors_config": null,
+    "secrets_management": null,
+    "csp_headers": false,
+    "security_middleware": [],
+    "vulnerability_scanning": null
+  },
+  "testing": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "test_framework": null,
+    "test_runner": null,
+    "test_directories": [],
+    "test_file_pattern": null,
+    "mocking_library": null,
+    "coverage_tool": null,
+    "coverage_config_path": null,
+    "fixture_patterns": [],
+    "e2e_framework": null
+  },
+  "cicd": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "platform": null,
+    "config_path": null,
+    "build_steps": [],
+    "deployment_targets": [],
+    "required_checks": []
+  },
+  "design_ui": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "css_methodology": null,
+    "component_library": null,
+    "component_library_version": null,
+    "design_tokens_format": null,
+    "design_tokens_path": null,
+    "responsive_strategy": null,
+    "theme_provider": null,
+    "styling_directories": [],
+    "uses_shared_design_system": false,
+    "shared_design_system_name": null
+  },
+  "accessibility": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "wcag_level": null,
+    "a11y_testing_tools": [],
+    "aria_usage_detected": false,
+    "semantic_html_score": null,
+    "keyboard_navigation": false,
+    "color_contrast_config": null
+  },
+  "api": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "api_style": null,
+    "route_structure": null,
+    "api_directories": [],
+    "openapi_spec_path": null,
+    "request_validation": null,
+    "response_format": null,
+    "pagination_pattern": null,
+    "versioning_strategy": null
+  },
+  "performance": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "caching_strategy": null,
+    "lazy_loading": false,
+    "code_splitting": false,
+    "bundle_size_config": null,
+    "image_optimization": null,
+    "n_plus_one_prevention": null,
+    "performance_monitoring": null
+  },
+  "architecture_deep": {
+    "layering_pattern": null,
+    "dependency_direction": null,
+    "bounded_contexts": [],
+    "module_boundaries": {}
+  },
+  "domain_model_deep": {
+    "domain_vocabulary": [],
+    "entity_relationships": {},
+    "business_logic_locations": []
+  },
+  "implicit_conventions_deep": {
+    "naming_philosophy": null,
+    "abstraction_level": null,
+    "code_organization_habits": []
+  },
+  "scopes": {
+    "zones": [
+      {
+        "name": "tests",
+        "paths": [
+          "tests/**"
+        ]
+      },
+      {
+        "name": "configuration",
+        "paths": [
+          ".env*",
+          "config/**"
+        ]
+      }
+    ],
+    "contributor_scopes": [
+      {
+        "role": "engineer",
+        "allowed_zones": [
+          "configuration",
+          "tests"
+        ],
+        "read_only_zones": [],
+        "forbidden_zones": []
+      },
+      {
+        "role": "technical_pm",
+        "allowed_zones": [],
+        "read_only_zones": [
+          "tests"
+        ],
+        "forbidden_zones": [
+          "configuration"
+        ]
+      },
+      {
+        "role": "product_manager",
+        "allowed_zones": [],
+        "read_only_zones": [],
+        "forbidden_zones": [
+          "configuration"
+        ]
+      },
+      {
+        "role": "designer",
+        "allowed_zones": [],
+        "read_only_zones": [],
+        "forbidden_zones": [
+          "configuration"
+        ]
+      },
+      {
+        "role": "qa_tester",
+        "allowed_zones": [
+          "tests"
+        ],
+        "read_only_zones": [],
+        "forbidden_zones": [
+          "configuration"
+        ]
+      }
+    ]
+  }
+}

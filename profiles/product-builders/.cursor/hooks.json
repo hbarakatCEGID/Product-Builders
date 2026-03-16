@@ -1,0 +1,38 @@
+{
+  "hooks": [
+    {
+      "event": "preToolUse",
+      "tools": [
+        "edit_file",
+        "create_file",
+        "delete_file"
+      ],
+      "pathGlobs": [
+        ".env*",
+        "config/**"
+      ],
+      "message": "🚫 This file is in the **configuration files** zone, which is restricted for your role (Product Manager). This area requires engineering team involvement. Please create a Jira/Linear task describing the change you need.",
+      "action": "block"
+    },
+    {
+      "event": "beforeShellExecution",
+      "commandPatterns": [
+        "prisma:migrate",
+        "prisma:db push",
+        "alembic upgrade",
+        "alembic downgrade",
+        "flyway migrate",
+        "npm publish",
+        "yarn publish",
+        "docker build",
+        "docker push",
+        "rm -rf",
+        "git push --force",
+        "git push -f",
+        "git reset --hard"
+      ],
+      "message": "🚫 This command is restricted for your role (Product Manager). These operations can affect production data or deployment. Please ask the engineering team to run this command.",
+      "action": "block"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+name: Accessibility Standards
+version: "1.0.0"
+description: Company-wide accessibility requirements
+
+rules:
+  - id: A11Y-001
+    severity: high
+    description: All interactive elements must be keyboard accessible.
+    rationale: Users who cannot use a mouse must be able to navigate and interact.
+    applies_to: ["javascript", "typescript"]
+
+  - id: A11Y-002
+    severity: high
+    description: All images must have alt text. Decorative images use alt="".
+    rationale: Screen readers need alt text to convey image content.
+    applies_to: ["javascript", "typescript"]
+
+  - id: A11Y-003
+    severity: high
+    description: Use semantic HTML elements (button, nav, main, article) instead of generic divs with click handlers.
+    rationale: Semantic HTML provides built-in accessibility without extra ARIA.
+    applies_to: ["javascript", "typescript"]
+
+  - id: A11Y-004
+    severity: medium
+    description: Color must not be the only means of conveying information.
+    rationale: Color-blind users cannot distinguish information conveyed solely by color.
+
+  - id: A11Y-005
+    severity: medium
+    description: Ensure sufficient color contrast (WCAG AA minimum — 4.5:1 for text, 3:1 for large text).
+    rationale: Low contrast makes text unreadable for users with low vision.
