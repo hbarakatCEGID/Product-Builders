@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """Tests for hooks generator blocked command filtering."""
 
 from product_builders.profiles.base import filter_blocked_commands

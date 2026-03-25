@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """Tests for zone auto-detection and scope generation."""
 from pathlib import Path
 from product_builders.generators.scopes import auto_detect_zones

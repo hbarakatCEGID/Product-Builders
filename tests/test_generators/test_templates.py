@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """Tests for Jinja2 template rendering correctness."""
 import re
 from pathlib import Path

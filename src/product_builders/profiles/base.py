@@ -44,14 +44,14 @@ class ContributorProfile(BaseModel):
 
 # Mapping: command -> set of dependency names that make the command relevant.
 # Commands not in this dict are considered universal (always blocked).
-_TOOL_SPECIFIC_COMMANDS: dict[str, set[str]] = {
-    "prisma:migrate": {"prisma", "@prisma/client"},
-    "prisma:db push": {"prisma", "@prisma/client"},
-    "alembic upgrade": {"alembic", "sqlalchemy"},
-    "alembic downgrade": {"alembic", "sqlalchemy"},
-    "flyway migrate": {"flyway"},
-    "docker build": {"docker"},
-    "docker push": {"docker"},
+_TOOL_SPECIFIC_COMMANDS: dict[str, frozenset[str]] = {
+    "prisma:migrate": frozenset({"prisma", "@prisma/client"}),
+    "prisma:db push": frozenset({"prisma", "@prisma/client"}),
+    "alembic upgrade": frozenset({"alembic", "sqlalchemy"}),
+    "alembic downgrade": frozenset({"alembic", "sqlalchemy"}),
+    "flyway migrate": frozenset({"flyway"}),
+    "docker build": frozenset({"docker"}),
+    "docker push": frozenset({"docker"}),
 }
 
 

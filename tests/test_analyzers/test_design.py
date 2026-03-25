@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """Tests for design analyzer component library detection."""
 import json
 from pathlib import Path

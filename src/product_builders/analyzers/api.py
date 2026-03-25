@@ -74,10 +74,9 @@ class APIAnalyzer(BaseAnalyzer):
         controllers_dir = repo_path / "src" / "controllers"
         if api_dir.is_dir() or routes_dir.is_dir() or controllers_dir.is_dir():
             return "rest"
-        # Next.js App Router API routes
+        # Next.js App Router API routes (check known locations, avoid recursive glob)
         if "next" in deps:
-            app_api_dirs = list(repo_path.glob("**/app/api"))
-            if app_api_dirs:
+            if (repo_path / "app" / "api").is_dir() or (repo_path / "src" / "app" / "api").is_dir():
                 return "rest"
         return None
 

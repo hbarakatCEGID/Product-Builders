@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """Tests for API analyzer Next.js App Router detection."""
 import json
 from pathlib import Path

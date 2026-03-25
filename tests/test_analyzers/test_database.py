@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """Tests for database analyzer BaaS detection."""
 import json
 from pathlib import Path

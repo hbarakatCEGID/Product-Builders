@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """Tests for overrides.yaml merging into ProductProfile."""
 from product_builders.models.profile import ProductProfile, ProductMetadata
 from product_builders.models.analysis import DatabaseResult

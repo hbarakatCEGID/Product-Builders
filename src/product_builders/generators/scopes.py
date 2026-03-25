@@ -81,33 +81,43 @@ ZONE_DETECTORS: list[tuple[str, list[str]]] = [
 def auto_detect_zones(repo_path: Path) -> list[Zone]:
     """Detect zones by scanning repo for known directory patterns.
 
-    Checks both direct patterns (e.g., ``tests/``) and ``src/``-prefixed
-    variants (e.g., ``src/app/api/``).  Also uses glob to find nested
-    matches like ``src/lib/__tests__/``.
+    Uses a three-tier strategy because many JS/TS projects nest sources
+    under ``src/`` while others don't:
+
+    1. Direct check (``repo_root / pattern``) — fastest.
+    2. ``src/``-prefixed check (``repo_root / src / pattern``).
+    3. Single-walk index lookup — a pre-built ``{dir_name: [paths]}`` map
+       avoids repeated recursive globs.
     """
+    # Build a directory-name index with one walk (avoids N recursive globs).
+    dir_index: dict[str, list[Path]] = {}
+    for dirpath in repo_path.rglob("*"):
+        if not dirpath.is_dir():
+            continue
+        if any(part in _SKIP_DIRS for part in dirpath.relative_to(repo_path).parts):
+            continue
+        dir_index.setdefault(dirpath.name, []).append(dirpath)
+
     zones: list[Zone] = []
     seen_zone_names: set[str] = set()
 
     for zone_name, dir_patterns in ZONE_DETECTORS:
         found_paths: list[str] = []
         for pattern in dir_patterns:
-            # Direct check: repo_root / pattern
             candidate = repo_path / pattern
             if candidate.is_dir():
                 found_paths.append(f"{pattern}/**")
                 continue
-            # Prefixed check: repo_root / src / pattern
             src_candidate = repo_path / "src" / pattern
             if src_candidate.is_dir():
                 found_paths.append(f"src/{pattern}/**")
                 continue
-            # Glob fallback: find nested occurrences (e.g., */__tests__)
+            # Index lookup for nested occurrences (e.g., supabase/migrations)
             leaf = Path(pattern).name
-            for match in repo_path.glob(f"**/{leaf}"):
-                if match.is_dir() and not (_SKIP_DIRS & set(match.relative_to(repo_path).parts)):
-                    rel = match.relative_to(repo_path)
-                    found_paths.append(f"{rel}/**")
-                    break  # one match per pattern is enough
+            for match in dir_index.get(leaf, []):
+                rel = match.relative_to(repo_path)
+                found_paths.append(f"{rel}/**")
+                break
 
         if found_paths and zone_name not in seen_zone_names:
             seen_zone_names.add(zone_name)
