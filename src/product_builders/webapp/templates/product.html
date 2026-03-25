@@ -13,6 +13,12 @@
     <dt>Last analyzed</dt>
     <dd>{{ product.analysis_timestamp or "—" }}</dd>
   </dl>
+
+  <div class="action-row">
+    <a href="/operations?command=analyze&name={{ product.name }}" class="btn btn-ghost btn-sm">Re-analyze</a>
+    <a href="/operations?command=generate&name={{ product.name }}" class="btn btn-ghost btn-sm">Regenerate Rules</a>
+    <a href="/operations?command=check-drift&name={{ product.name }}" class="btn btn-ghost btn-sm">Check Drift</a>
+  </div>
 </section>
 
 <section class="install-block">

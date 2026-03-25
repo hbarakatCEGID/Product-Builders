@@ -1,0 +1,13 @@
+<form onsubmit="submitCommand(event, 'feedback')">
+  <div class="form-grid">
+    <label for="name">Product name <span class="req">*</span></label>
+    <input type="text" id="name" name="name" required placeholder="my-product">
+
+    <label for="rule">Rule name <span class="req">*</span></label>
+    <input type="text" id="rule" name="rule" required placeholder="database">
+
+    <label for="issue">Issue description <span class="req">*</span></label>
+    <textarea id="issue" name="issue" required rows="3" placeholder="Describe the inaccuracy..."></textarea>
+  </div>
+  <button type="submit" class="btn btn-primary" id="submit-btn">Submit Feedback</button>
+</form>

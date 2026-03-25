@@ -1,0 +1,15 @@
+<form onsubmit="submitCommand(event, 'check-drift')">
+  <div class="form-grid">
+    <label for="name">Product name <span class="req">*</span></label>
+    <input type="text" id="name" name="name" required placeholder="my-product">
+
+    <label for="repo_path">Repository path <span class="req">*</span></label>
+    <input type="text" id="repo_path" name="repo_path" required placeholder="/path/to/repo">
+
+    <label for="full">Options</label>
+    <div>
+      <label class="checkbox"><input type="checkbox" name="full"> Full heuristic re-scan</label>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary" id="submit-btn">Run Check Drift</button>
+</form>

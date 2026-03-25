@@ -1,0 +1,8 @@
+<select id="profile" name="profile" {% if required %}required{% endif %}>
+  {% if not required %}<option value="">All roles</option>{% else %}<option value="">Select role...</option>{% endif %}
+  <option value="engineer">Engineer</option>
+  <option value="pm">PM</option>
+  <option value="designer">Designer</option>
+  <option value="qa">QA</option>
+  <option value="technical-pm">Technical PM</option>
+</select>

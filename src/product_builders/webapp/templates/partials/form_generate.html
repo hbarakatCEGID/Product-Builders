@@ -1,0 +1,15 @@
+<form onsubmit="submitCommand(event, 'generate')">
+  <div class="form-grid">
+    <label for="name">Product name <span class="req">*</span></label>
+    <input type="text" id="name" name="name" required placeholder="my-product">
+
+    <label for="profile">Role</label>
+    {% include "partials/role_select.html" %}
+
+    <label for="validate">Options</label>
+    <div>
+      <label class="checkbox"><input type="checkbox" name="validate"> Run validation</label>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary" id="submit-btn">Run Generate</button>
+</form>

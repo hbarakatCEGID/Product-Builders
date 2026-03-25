@@ -45,7 +45,9 @@ where = ["src"]
 product_builders = [
     "webapp/templates/*.html",
     "webapp/templates/docs/*.html",
+    "webapp/templates/partials/*.html",
     "webapp/static/*.css",
+    "webapp/static/*.js",
     "webapp/content/docs/*.md",
 ]
 

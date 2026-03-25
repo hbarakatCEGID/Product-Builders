@@ -11,6 +11,7 @@ from fastapi.templating import Jinja2Templates
 
 from product_builders import __version__
 from product_builders.webapp import services as web_services
+from product_builders.webapp.routes_api import router as api_router
 
 _WEBAPP_DIR = Path(__file__).resolve().parent
 
@@ -42,6 +43,8 @@ def create_app() -> FastAPI:
     static_dir = _WEBAPP_DIR / "static"
     if static_dir.is_dir():
         app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
+
+    app.include_router(api_router)
 
     @app.get("/", response_class=HTMLResponse)
     def home(request: Request) -> HTMLResponse:
@@ -167,6 +170,38 @@ def create_app() -> FastAPI:
     @app.get("/health")
     def health() -> dict[str, str]:
         return {"status": "ok", "version": __version__}
+
+    # --- Operations dashboard ---
+
+    @app.get("/operations", response_class=HTMLResponse)
+    def operations(request: Request, command: str | None = None, name: str | None = None) -> HTMLResponse:
+        return templates.TemplateResponse(
+            request,
+            "operations.html",
+            _template_ctx(
+                request,
+                title="Operations — Product Builders",
+                preselect_command=command,
+                preselect_name=name,
+            ),
+        )
+
+    # Partial form routes for htmx tab swapping
+    _form_templates = {
+        "analyze": "partials/form_analyze.html",
+        "generate": "partials/form_generate.html",
+        "export": "partials/form_export.html",
+        "setup": "partials/form_setup.html",
+        "check-drift": "partials/form_check_drift.html",
+        "feedback": "partials/form_feedback.html",
+    }
+
+    @app.get("/partials/form/{command}", response_class=HTMLResponse)
+    def form_partial(request: Request, command: str) -> HTMLResponse:
+        template_name = _form_templates.get(command)
+        if not template_name:
+            raise HTTPException(status_code=404, detail="Unknown command")
+        return templates.TemplateResponse(request, template_name, {"request": request})
 
     return app
 

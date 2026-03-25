@@ -1,0 +1,18 @@
+<form onsubmit="submitCommand(event, 'analyze')">
+  <div class="form-grid">
+    <label for="repo_path">Repository path <span class="req">*</span></label>
+    <input type="text" id="repo_path" name="repo_path" required placeholder="/path/to/repo">
+
+    <label for="name">Product name <span class="req">*</span></label>
+    <input type="text" id="name" name="name" required placeholder="my-product">
+
+    <label for="heuristic_only">Options</label>
+    <div>
+      <label class="checkbox"><input type="checkbox" name="heuristic_only"> Heuristic only</label>
+    </div>
+
+    <label for="sub_project">Sub-project</label>
+    <input type="text" id="sub_project" name="sub_project" placeholder="apps/web (optional)">
+  </div>
+  <button type="submit" class="btn btn-primary" id="submit-btn">Run Analyze</button>
+</form>

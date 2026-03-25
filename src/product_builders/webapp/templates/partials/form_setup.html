@@ -1,0 +1,10 @@
+<form onsubmit="submitCommand(event, 'setup')">
+  <div class="form-grid">
+    <label for="name">Product name <span class="req">*</span></label>
+    <input type="text" id="name" name="name" required placeholder="my-product">
+
+    <label for="profile">Role <span class="req">*</span></label>
+    {% with required=true %}{% include "partials/role_select.html" %}{% endwith %}
+  </div>
+  <button type="submit" class="btn btn-primary" id="submit-btn">Run Setup</button>
+</form>

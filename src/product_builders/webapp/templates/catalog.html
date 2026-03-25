@@ -7,6 +7,9 @@
     Profiles found under <code>PB_PROFILES_DIR</code> (default: <code>profiles/</code> relative to the app).
     Each row links to analysis metadata and onboarding guides.
   </p>
+  <div class="action-row">
+    <a href="/operations?command=analyze" class="btn btn-primary btn-sm">Analyze New Product</a>
+  </div>
 </section>
 
 {% if not products %}
@@ -19,6 +22,7 @@
       <th>Language</th>
       <th>Last analyzed</th>
       <th>Status</th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
@@ -28,6 +32,7 @@
       <td>{{ p.primary_language or "—" }}</td>
       <td class="muted">{{ p.analysis_timestamp or "—" }}</td>
       <td>{% if p.has_analysis %}<span class="badge ok">profile</span>{% else %}<span class="badge warn">no analysis.json</span>{% endif %}</td>
+      <td><a href="/operations?command=analyze&name={{ p.name }}" class="refresh-link" title="Re-analyze">&#x27f3;</a></td>
     </tr>
     {% endfor %}
   </tbody>

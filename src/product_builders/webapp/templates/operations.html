@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Operations{% endblock %}
+{% block content %}
+<section class="page-intro">
+  <h1 class="page-title">Operations</h1>
+  <p class="lede narrow">Run CLI commands directly from the browser. Output streams in real-time.</p>
+</section>
+
+<div class="ops-tabs" role="tablist">
+  <button class="tab active" hx-get="/partials/form/analyze" hx-target="#form-area" hx-swap="innerHTML" onclick="activateTab(this)">Analyze</button>
+  <button class="tab" hx-get="/partials/form/generate" hx-target="#form-area" hx-swap="innerHTML" onclick="activateTab(this)">Generate</button>
+  <button class="tab" hx-get="/partials/form/export" hx-target="#form-area" hx-swap="innerHTML" onclick="activateTab(this)">Export</button>
+  <button class="tab" hx-get="/partials/form/setup" hx-target="#form-area" hx-swap="innerHTML" onclick="activateTab(this)">Setup</button>
+  <button class="tab" hx-get="/partials/form/check-drift" hx-target="#form-area" hx-swap="innerHTML" onclick="activateTab(this)">Check Drift</button>
+  <button class="tab" hx-get="/partials/form/feedback" hx-target="#form-area" hx-swap="innerHTML" onclick="activateTab(this)">Feedback</button>
+</div>
+
+<div id="form-area" class="ops-form-area">
+  {% include "partials/form_analyze.html" %}
+</div>
+
+<div id="terminal" class="ops-terminal" style="display:none;">
+  <div class="terminal-header">
+    <span class="terminal-title">Output</span>
+    <span id="terminal-status" class="badge"></span>
+  </div>
+  <pre id="terminal-output"></pre>
+</div>
+
+<script src="{{ url_for('static', path='operations.js') }}"></script>
+{% endblock %}
