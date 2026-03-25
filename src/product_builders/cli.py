@@ -10,6 +10,7 @@ Commands:
   check-drift   Check if rules are stale vs. the codebase
   metrics       Show recent metrics events for a product
   feedback      Record feedback on a rule's accuracy
+  wizard        Interactive quick start by roadmap phase (foundation → lifecycle)
 """
 
 from __future__ import annotations
@@ -213,6 +214,13 @@ def generate(ctx: click.Context, name: str, role_alias: str | None, validate: bo
         raise click.ClickException(f"No profile found for '{name}'. Run 'analyze' first.")
 
     profile = ProductProfile.load(profile_path)
+
+    overrides = config.load_overrides(name)
+    if overrides:
+        from product_builders.profiles.overrides import merge_overrides
+        profile = merge_overrides(profile, overrides)
+        console.print("[dim]Applied overrides from overrides.yaml[/dim]")
+
     role = None
     if role_alias:
         try:
@@ -668,6 +676,88 @@ def show_metrics(ctx: click.Context, name: str, limit: int) -> None:
         rest = {k: v for k, v in ev.items() if k not in ("ts", "event")}
         extra = f" {rest}" if rest else ""
         console.print(f"  [dim]{ts}[/dim]  [cyan]{event}[/cyan]{extra}")
+
+
+# ---------------------------------------------------------------------------
+# wizard (phased quick start)
+# ---------------------------------------------------------------------------
+
+@main.command("wizard")
+@click.option(
+    "--phase",
+    type=click.IntRange(1, 5),
+    default=None,
+    help="Run only this phase (1=foundation through 5=lifecycle). Default: all phases in order.",
+)
+@click.option(
+    "--repo",
+    type=click.Path(exists=True, file_okay=False, resolve_path=True),
+    default=None,
+    help="Repository path (for phase 2 / drift; skips prompt when set).",
+)
+@click.option("--name", "-n", default=None, help="Product profile name (phases 2 to 5).")
+@click.option(
+    "--profile",
+    "-p",
+    default=None,
+    help="Contributor role alias for phase 3 generate (e.g. engineer, pm).",
+)
+@click.option(
+    "--validate/--no-validate",
+    default=None,
+    help="For phase 3: run structural validation after generate (default: prompt).",
+)
+@click.option(
+    "--heuristic-only",
+    is_flag=True,
+    help="For phase 2: analyze without bootstrap deep-analysis rule.",
+)
+@click.option(
+    "-y",
+    "--yes",
+    is_flag=True,
+    help="Non-interactive: skip between-phase confirmations; use with --phase and required args.",
+)
+@click.pass_context
+def wizard_cmd(
+    ctx: click.Context,
+    phase: int | None,
+    repo: str | None,
+    name: str | None,
+    profile: str | None,
+    validate: bool | None,
+    heuristic_only: bool,
+    yes: bool,
+) -> None:
+    """Step through install, analyze, generate, and lifecycle, aligned with project phases.
+
+    Phase 1: Foundation (Python, paths, pip hints).
+    Phase 2: Core analysis (writes analysis.json).
+    Phase 3: Rules, hooks, permissions, onboarding.
+    Phase 4: Note on extended analyzers (already in analyze).
+    Phase 5: Drift, metrics, feedback commands.
+
+    Use -y --phase N with explicit --repo / --name when scripting.
+    """
+    if yes:
+        if phase == 2 and (not repo or not name):
+            raise click.UsageError("With -y and --phase 2, provide --repo and --name.")
+        if phase == 3 and not name:
+            raise click.UsageError("With -y and --phase 3, provide --name.")
+
+    from product_builders.cli_wizard import run_wizard
+
+    run_wizard(
+        ctx,
+        console=console,
+        phase=phase,
+        repo=repo,
+        name=name,
+        profile=profile,
+        run_validate=validate,
+        heuristic_only=heuristic_only,
+        yes=yes,
+    )
 
 
 # ---------------------------------------------------------------------------
