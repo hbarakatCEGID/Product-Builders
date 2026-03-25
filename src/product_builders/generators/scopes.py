@@ -12,6 +12,7 @@ from pathlib import Path
 
 import yaml
 
+from product_builders.analyzers.base import SKIP_DIRS as _SKIP_DIRS
 from product_builders.models.profile import ProductProfile
 from product_builders.models.scopes import ContributorRole, ContributorScope, ScopeConfig, Zone
 from product_builders.profiles.base import DEFAULT_PROFILES
@@ -103,7 +104,7 @@ def auto_detect_zones(repo_path: Path) -> list[Zone]:
             # Glob fallback: find nested occurrences (e.g., */__tests__)
             leaf = Path(pattern).name
             for match in repo_path.glob(f"**/{leaf}"):
-                if match.is_dir() and ".git" not in match.parts:
+                if match.is_dir() and not (_SKIP_DIRS & set(match.relative_to(repo_path).parts)):
                     rel = match.relative_to(repo_path)
                     found_paths.append(f"{rel}/**")
                     break  # one match per pattern is enough
