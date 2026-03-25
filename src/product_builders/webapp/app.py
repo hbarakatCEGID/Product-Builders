@@ -11,6 +11,7 @@ from fastapi.templating import Jinja2Templates
 
 from product_builders import __version__
 from product_builders.webapp import services as web_services
+from product_builders.webapp.routes_api import router as api_router
 
 _WEBAPP_DIR = Path(__file__).resolve().parent
 
@@ -42,6 +43,8 @@ def create_app() -> FastAPI:
     static_dir = _WEBAPP_DIR / "static"
     if static_dir.is_dir():
         app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
+
+    app.include_router(api_router)
 
     @app.get("/", response_class=HTMLResponse)
     def home(request: Request) -> HTMLResponse:
