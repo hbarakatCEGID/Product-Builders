@@ -23,7 +23,8 @@ class EnvConfigAnalyzer(BaseAnalyzer):
         return "env_config"
 
     def analyze(self, repo_path: Path, *, index=None) -> EnvConfigResult:
-        config_approach = self._detect_config_approach(repo_path)
+        all_approaches = self._detect_all_config_approaches(repo_path)
+        config_approach = all_approaches[0] if all_approaches else self._detect_config_approach(repo_path)
         env_files = self._detect_env_files(repo_path)
         has_docker, dockerfile, compose = self._detect_docker(repo_path)
         feature_flags = self._detect_feature_flags(repo_path)
@@ -72,6 +73,7 @@ class EnvConfigAnalyzer(BaseAnalyzer):
         result = EnvConfigResult(
             status=AnalysisStatus.SUCCESS,
             config_approach=config_approach,
+            config_approaches=all_approaches,
             env_files=env_files,
             has_docker=has_docker,
             dockerfile_path=dockerfile,
@@ -111,6 +113,25 @@ class EnvConfigAnalyzer(BaseAnalyzer):
         if (repo_path / "appsettings.json").exists():
             return "dotnet-config"
         return None
+
+    def _detect_all_config_approaches(self, repo_path: Path) -> list[str]:
+        """Detect ALL config approaches used (not just the first)."""
+        approaches: list[str] = []
+        if list(repo_path.glob(".env*")):
+            approaches.append("dotenv")
+        config_dir = repo_path / "config"
+        if config_dir.is_dir():
+            if list(config_dir.glob("*.yaml")) or list(config_dir.glob("*.yml")):
+                approaches.append("yaml")
+            if list(config_dir.glob("*.json")):
+                approaches.append("json")
+        if (repo_path / "vault.hcl").exists():
+            approaches.append("vault")
+        if (repo_path / "application.properties").exists() or (repo_path / "application.yml").exists():
+            approaches.append("spring-config")
+        if (repo_path / "appsettings.json").exists():
+            approaches.append("dotnet-config")
+        return approaches
 
     def _detect_env_files(self, repo_path: Path) -> list[str]:
         env_patterns = [".env", ".env.example", ".env.local", ".env.development",

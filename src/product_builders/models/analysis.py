@@ -61,6 +61,7 @@ class DatabaseResult(AnalysisResult):
     """Dimension 2: ORM, migrations, schema conventions."""
 
     database_type: str | None = None  # postgres, mysql, sqlite, mongodb, etc.
+    database_types: list[str] = Field(default_factory=list)
     orm: str | None = None
     orm_version: str | None = None
     migration_tool: str | None = None
@@ -111,6 +112,7 @@ class ErrorHandlingResult(AnalysisResult):
 
     error_strategy: str | None = None  # exceptions, result-types, error-codes
     logging_framework: str | None = None
+    logging_frameworks: list[str] = Field(default_factory=list)
     logging_config_file: str | None = None
     monitoring_integration: str | None = None  # sentry, datadog, etc.
     error_response_format: str | None = None  # json, html, etc.
@@ -137,7 +139,9 @@ class StateManagementResult(AnalysisResult):
     """Dimension 7: State management patterns."""
 
     state_library: str | None = None  # redux, zustand, mobx, vuex, pinia, ngrx
+    state_libraries: list[str] = Field(default_factory=list)
     data_fetching_library: str | None = None  # react-query, swr, apollo
+    data_fetching_libraries: list[str] = Field(default_factory=list)
     store_structure: str | None = None
     state_patterns: list[str] = Field(default_factory=list)
     form_library: str | None = None
@@ -148,6 +152,7 @@ class EnvConfigResult(AnalysisResult):
     """Dimension 8: Environment & configuration."""
 
     config_approach: str | None = None  # dotenv, yaml, vault, etc.
+    config_approaches: list[str] = Field(default_factory=list)
     env_files: list[str] = Field(default_factory=list)
     has_docker: bool = False
     dockerfile_path: str | None = None

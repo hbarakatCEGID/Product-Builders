@@ -62,8 +62,10 @@ class StateManagementAnalyzer(BaseAnalyzer):
         return "state_management"
 
     def analyze(self, repo_path: Path, *, index=None) -> StateManagementResult:
-        state_lib = self._detect_state_lib(repo_path)
-        data_fetching = self._detect_data_fetching(repo_path)
+        all_state = self._detect_all_state_libs(repo_path)
+        state_lib = all_state[0] if all_state else self._detect_state_lib(repo_path)
+        all_fetching = self._detect_all_data_fetching(repo_path)
+        data_fetching = all_fetching[0] if all_fetching else self._detect_data_fetching(repo_path)
         store_structure = self._detect_store_structure(repo_path)
         patterns = self._detect_patterns(repo_path)
         realtime, form_lib = self._detect_realtime_and_form(repo_path)
@@ -93,7 +95,9 @@ class StateManagementAnalyzer(BaseAnalyzer):
         result = StateManagementResult(
             status=AnalysisStatus.SUCCESS,
             state_library=state_lib,
+            state_libraries=all_state,
             data_fetching_library=data_fetching,
+            data_fetching_libraries=all_fetching,
             store_structure=store_structure,
             state_patterns=patterns,
             realtime_library=realtime,
@@ -167,6 +171,20 @@ class StateManagementAnalyzer(BaseAnalyzer):
                 return name
         return None
 
+    def _detect_all_state_libs(self, repo_path: Path) -> list[str]:
+        """Detect ALL state management libraries (not just the first)."""
+        pkg = self.read_json(repo_path / "package.json")
+        if not pkg:
+            return []
+        deps = {**pkg.get("dependencies", {}), **pkg.get("devDependencies", {})}
+        found = []
+        seen: set[str] = set()
+        for lib, name in _STATE_LIBS.items():
+            if lib in deps and name not in seen:
+                found.append(name)
+                seen.add(name)
+        return found
+
     def _detect_data_fetching(self, repo_path: Path) -> str | None:
         pkg = self.read_json(repo_path / "package.json")
         if not pkg:
@@ -176,6 +194,20 @@ class StateManagementAnalyzer(BaseAnalyzer):
             if lib in deps:
                 return name
         return None
+
+    def _detect_all_data_fetching(self, repo_path: Path) -> list[str]:
+        """Detect ALL data fetching libraries (not just the first)."""
+        pkg = self.read_json(repo_path / "package.json")
+        if not pkg:
+            return []
+        deps = {**pkg.get("dependencies", {}), **pkg.get("devDependencies", {})}
+        found = []
+        seen: set[str] = set()
+        for lib, name in _DATA_FETCHING_LIBS.items():
+            if lib in deps and name not in seen:
+                found.append(name)
+                seen.add(name)
+        return found
 
     def _detect_store_structure(self, repo_path: Path) -> str | None:
         store_dir = repo_path / "src" / "store"

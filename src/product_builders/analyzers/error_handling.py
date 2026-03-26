@@ -56,7 +56,8 @@ class ErrorHandlingAnalyzer(BaseAnalyzer):
 
     def analyze(self, repo_path: Path, *, index=None) -> ErrorHandlingResult:
         dep_names = self._collect_dep_names(repo_path)
-        logging_fw = self._detect_logging_framework(dep_names, repo_path)
+        all_logging = self._detect_all_logging_frameworks(dep_names, repo_path)
+        logging_fw = all_logging[0] if all_logging else None
         logging_config = self._detect_logging_config(repo_path)
         monitoring = self._detect_monitoring(dep_names)
         error_strategy, error_format, custom_errors = self._detect_error_patterns_combined(
@@ -81,6 +82,7 @@ class ErrorHandlingAnalyzer(BaseAnalyzer):
             status=AnalysisStatus.SUCCESS,
             error_strategy=error_strategy,
             logging_framework=logging_fw,
+            logging_frameworks=all_logging,
             logging_config_file=logging_config,
             monitoring_integration=monitoring,
             error_response_format=error_format,
@@ -113,6 +115,23 @@ class ErrorHandlingAnalyzer(BaseAnalyzer):
                 return "python-logging"
 
         return None
+
+    def _detect_all_logging_frameworks(self, dep_names: set[str], repo_path: Path) -> list[str]:
+        """Detect ALL logging frameworks present (not just the first)."""
+        found = []
+        for fw, indicators in LOGGING_FRAMEWORK_INDICATORS.items():
+            if fw == "python-logging":
+                continue
+            if any(ind in dep_names for ind in indicators):
+                found.append(fw)
+        # Check for Python stdlib logging usage
+        if "python-logging" not in found:
+            for py_file in self.find_files(repo_path, "src/**/*.py")[:10]:
+                content = self.read_file(py_file)
+                if content and "import logging" in content:
+                    found.append("python-logging")
+                    break
+        return found
 
     def _detect_logging_config(self, repo_path: Path) -> str | None:
         config_files = [

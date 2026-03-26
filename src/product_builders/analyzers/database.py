@@ -211,7 +211,8 @@ class DatabaseAnalyzer(BaseAnalyzer):
     def analyze(self, repo_path: Path, *, index=None) -> DatabaseResult:
         dep_names = self._collect_dep_names(repo_path)
         orm, orm_version, migration_tool, migration_dir = self._detect_orm(repo_path, dep_names)
-        db_type = self._detect_db_type(dep_names)
+        all_db_types = self._detect_all_db_types(dep_names)
+        db_type = all_db_types[0] if all_db_types else None
         schema_naming = self._detect_schema_naming(repo_path, orm)
         has_seeds, seed_dir = self._detect_seeds(repo_path)
         relationship_patterns = self._detect_relationship_patterns(repo_path, orm)
@@ -238,6 +239,7 @@ class DatabaseAnalyzer(BaseAnalyzer):
         result = DatabaseResult(
             status=AnalysisStatus.SUCCESS,
             database_type=db_type,
+            database_types=all_db_types,
             orm=orm,
             orm_version=orm_version,
             migration_tool=migration_tool,
@@ -362,6 +364,14 @@ class DatabaseAnalyzer(BaseAnalyzer):
             if any(ind in dep_names for ind in indicators):
                 return db_type
         return None
+
+    def _detect_all_db_types(self, dep_names: set[str]) -> list[str]:
+        """Detect ALL database types present (not just the first)."""
+        found = []
+        for db_type, indicators in DB_TYPE_INDICATORS.items():
+            if any(ind in dep_names for ind in indicators):
+                found.append(db_type)
+        return found
 
     def _detect_relationship_patterns(self, repo_path: Path, orm: str | None) -> list[str]:
         """Lightweight markers for how models declare relations (templates / rules)."""
