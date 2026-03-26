@@ -81,6 +81,10 @@ class SecurityAnalyzer(BaseAnalyzer):
             return "hashicorp-vault"
         if (repo_path / ".sops.yaml").exists():
             return "sops"
+        if (repo_path / "doppler.yaml").exists():
+            return "doppler"
+        if (repo_path / ".infisical.json").exists():
+            return "infisical"
         return None
 
     def _detect_csp(self, repo_path: Path) -> bool:
@@ -116,6 +120,12 @@ class SecurityAnalyzer(BaseAnalyzer):
             return "dependabot"
         if (repo_path / "renovate.json").exists() or (repo_path / ".renovaterc").exists():
             return "renovate"
+        if (repo_path / ".trivyignore").exists():
+            return "trivy"
+        if (repo_path / ".brakeman.yml").exists():
+            return "brakeman"
+        if (repo_path / ".github" / "codeql").is_dir():
+            return "codeql"
         pyproject = repo_path / "pyproject.toml"
         if pyproject.exists():
             content = self.read_file(pyproject)

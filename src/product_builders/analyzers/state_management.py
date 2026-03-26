@@ -26,6 +26,10 @@ _STATE_LIBS: dict[str, str] = {
     "@ngrx/store": "ngrx",
     "effector": "effector",
     "xstate": "xstate",
+    "@ngrx/signals": "ngrx-signals",
+    "@legendapp/state": "legend-state",
+    "nanostores": "nanostores",
+    "@tanstack/store": "tanstack-store",
 }
 
 _DATA_FETCHING_LIBS: dict[str, str] = {
@@ -39,6 +43,12 @@ _DATA_FETCHING_LIBS: dict[str, str] = {
     "@tanstack/vue-query": "tanstack-query",
     "nuxt/apollo": "apollo-client",
     "rtk-query": "rtk-query",
+    "@trpc/client": "trpc",
+    "@trpc/server": "trpc",
+    "react-relay": "relay",
+    "relay-runtime": "relay",
+    "ofetch": "ofetch",
+    "ky": "ky",
 }
 
 

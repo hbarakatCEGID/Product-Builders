@@ -106,6 +106,18 @@ class EnvConfigAnalyzer(BaseAnalyzer):
                 return "growthbook"
             if "posthog-js" in deps:
                 return "posthog"
+            if "statsig-js" in deps or "statsig-node" in deps:
+                return "statsig"
+            if "@splitsoftware/splitio" in deps:
+                return "split.io"
+            if "@devcycle/nodejs-server-sdk" in deps:
+                return "devcycle"
+            if "@flipt-io/flipt" in deps:
+                return "flipt"
+            if "@openfeature/server-sdk" in deps or "@openfeature/web-sdk" in deps:
+                return "openfeature"
+            if "configcat-js" in deps or "configcat-node" in deps:
+                return "configcat"
         req = repo_path / "requirements.txt"
         if req.exists():
             content = self.read_file(req)

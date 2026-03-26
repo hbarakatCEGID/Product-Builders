@@ -100,6 +100,84 @@ ORM_INDICATORS: dict[str, dict[str, str | list[str]]] = {
         "migration_tool": "rails",
         "migration_dir": "db/migrate",
     },
+    "mikro_orm": {
+        "orm": "MikroORM",
+        "deps": ["@mikro-orm/core"],
+        "migration_tool": "mikro-orm",
+        "migration_dir": "src/migrations",
+    },
+    "objection": {
+        "orm": "Objection.js",
+        "deps": ["objection"],
+        "migration_tool": "knex",
+        "migration_dir": "migrations",
+    },
+    "jooq": {
+        "orm": "jOOQ",
+        "deps": ["jooq"],
+        "migration_tool": "flyway",
+        "migration_dir": "src/main/resources/db/migration",
+    },
+    "mybatis": {
+        "orm": "MyBatis",
+        "deps": ["mybatis", "mybatis-spring-boot-starter"],
+        "migration_tool": "flyway",
+        "migration_dir": "src/main/resources/db/migration",
+    },
+    "ent": {
+        "orm": "Ent",
+        "deps": ["entgo.io/ent"],
+        "migration_tool": "atlas",
+        "migration_dir": "ent/migrate",
+    },
+    "sqlx_go": {
+        "orm": "sqlx",
+        "deps": ["github.com/jmoiron/sqlx"],
+        "migration_tool": "golang-migrate",
+        "migration_dir": "migrations",
+    },
+    "sqlc": {
+        "orm": "sqlc",
+        "deps": ["github.com/sqlc-dev/sqlc"],
+        "migration_tool": "golang-migrate",
+        "migration_dir": "migrations",
+    },
+    "dapper": {
+        "orm": "Dapper",
+        "deps": ["Dapper"],
+        "migration_tool": "FluentMigrator",
+        "migration_dir": "Migrations",
+    },
+    "exposed": {
+        "orm": "Exposed",
+        "deps": ["org.jetbrains.exposed"],
+        "migration_tool": None,
+        "migration_dir": None,
+    },
+    "peewee": {
+        "orm": "Peewee",
+        "deps": ["peewee"],
+        "migration_tool": "peewee-migrate",
+        "migration_dir": "migrations",
+    },
+    "sqlmodel": {
+        "orm": "SQLModel",
+        "deps": ["sqlmodel"],
+        "migration_tool": "alembic",
+        "migration_dir": "alembic/versions",
+    },
+    "gorm": {
+        "orm": "GORM",
+        "deps": ["gorm.io/gorm"],
+        "migration_tool": "gorm-automigrate",
+        "migration_dir": None,
+    },
+    "sequel": {
+        "orm": "Sequel",
+        "deps": ["sequel"],
+        "migration_tool": "sequel",
+        "migration_dir": "db/migrations",
+    },
 }
 
 DB_TYPE_INDICATORS: dict[str, list[str]] = {
@@ -115,6 +193,9 @@ DB_TYPE_INDICATORS: dict[str, list[str]] = {
     "mssql": ["mssql", "tedious", "pyodbc", "Microsoft.Data.SqlClient"],
     "firebase": ["firebase", "firebase-admin", "@firebase/firestore"],
     "dynamodb": ["@aws-sdk/client-dynamodb", "boto3"],
+    "cassandra": ["cassandra-driver", "gocql"],
+    "cockroachdb": ["cockroachdb"],
+    "turso": ["@libsql/client", "libsql"],
 }
 
 

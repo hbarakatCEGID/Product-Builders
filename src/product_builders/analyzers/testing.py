@@ -40,6 +40,11 @@ _MOCKING_LIBS: dict[str, str] = {
     "moq": "moq",
     "factory_boy": "factory-boy",
     "faker": "faker",
+    "responses": "responses",
+    "requests-mock": "requests-mock",
+    "vcrpy": "vcrpy",
+    "@faker-js/faker": "faker",
+    "mockall": "mockall",
 }
 
 _COVERAGE_TOOLS: dict[str, str] = {
@@ -50,6 +55,8 @@ _COVERAGE_TOOLS: dict[str, str] = {
     "pytest-cov": "pytest-cov",
     "jacoco": "jacoco",
     "simplecov": "simplecov",
+    "cargo-tarpaulin": "tarpaulin",
+    "coverlet.collector": "coverlet",
 }
 
 _E2E_FRAMEWORKS: dict[str, str] = {
@@ -60,6 +67,9 @@ _E2E_FRAMEWORKS: dict[str, str] = {
     "puppeteer": "puppeteer",
     "nightwatch": "nightwatch",
     "testcafe": "testcafe",
+    "webdriverio": "webdriverio",
+    "@wdio/cli": "webdriverio",
+    "detox": "detox",
 }
 
 

@@ -29,6 +29,7 @@ LOGGING_FRAMEWORK_INDICATORS: dict[str, list[str]] = {
     "serilog": ["Serilog"],
     "nlog": ["NLog"],
     "rails-logger": ["Rails.logger"],
+    "consola": ["consola"],
 }
 
 MONITORING_INDICATORS: dict[str, list[str]] = {
@@ -39,6 +40,8 @@ MONITORING_INDICATORS: dict[str, list[str]] = {
     "rollbar": ["rollbar"],
     "honeybadger": ["honeybadger", "@honeybadger-io/js"],
     "application-insights": ["applicationinsights", "Microsoft.ApplicationInsights"],
+    "opentelemetry": ["@opentelemetry/api", "opentelemetry-api", "opentelemetry-sdk"],
+    "grafana": ["@grafana/agent"],
 }
 
 

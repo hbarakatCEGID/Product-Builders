@@ -24,15 +24,22 @@ AUTH_STRATEGY_INDICATORS: dict[str, list[str]] = {
         "jsonwebtoken", "jose", "jwt", "PyJWT", "pyjwt",
         "jwt-decode", "@nestjs/jwt", "flask-jwt-extended",
         "djangorestframework-simplejwt", "System.IdentityModel.Tokens.Jwt",
+        "golang-jwt/jwt", "jjwt", "io.jsonwebtoken",
     ],
     "session": [
         "express-session", "cookie-session", "flask-session",
         "django.contrib.sessions",
+        "devise", "sorcery",
     ],
     "oauth": [
         "passport", "passport-oauth2", "passport-google-oauth20",
         "oauthlib", "django-oauth-toolkit", "authlib",
         "next-auth", "@auth/core", "lucia", "lucia-auth",
+        "goth", "omniauth", "spring-boot-starter-oauth2-client",
+    ],
+    "webauthn": [
+        "@simplewebauthn/server", "@simplewebauthn/browser",
+        "py_webauthn", "go-webauthn", "webauthn4j",
     ],
     "saml": ["passport-saml", "saml2-js", "python3-saml", "django-saml2-auth"],
     "basic": ["passport-http", "express-basic-auth"],
@@ -142,6 +149,24 @@ class AuthAnalyzer(BaseAnalyzer):
             "csurf": "csurf",
             "django.contrib.auth": "django-auth",
             "flask-login": "flask-login",
+            # Go auth libs
+            "golang-jwt/jwt": "golang-jwt",
+            "goth": "goth",
+            "go-oidc": "go-oidc",
+            "go-webauthn": "go-webauthn",
+            # Ruby auth libs
+            "devise": "devise",
+            "omniauth": "omniauth",
+            "sorcery": "sorcery",
+            "rodauth": "rodauth",
+            "doorkeeper": "doorkeeper",
+            # .NET auth libs
+            "Microsoft.AspNetCore.Identity": "aspnet-identity",
+            "Duende.IdentityServer": "duende-identityserver",
+            "Microsoft.Identity.Web": "microsoft-identity-web",
+            # Java auth libs
+            "spring-boot-starter-security": "spring-security",
+            "keycloak-spring-boot-starter": "keycloak",
         }
         for dep, name in known_middleware.items():
             if dep in dep_names:

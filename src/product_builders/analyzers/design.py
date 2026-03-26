@@ -19,7 +19,7 @@ _COMPONENT_LIBS: dict[str, str] = {
     "@ant-design/icons": "ant-design",
     "@chakra-ui/react": "chakra-ui",
     "@mantine/core": "mantine",
-    "primereact": "primereact",
+    "primereact": "PrimeReact",
     "primevue": "primevue",
     "@radix-ui/react-dialog": "radix-ui",
     "@headlessui/react": "headless-ui",
@@ -34,6 +34,19 @@ _COMPONENT_LIBS: dict[str, str] = {
     "@nextui-org/react": "nextui",
     "@park-ui/react": "park-ui",
     "daisyui": "daisyui",
+    "@ark-ui/react": "Ark UI",
+    "@ark-ui/vue": "Ark UI",
+    "@ark-ui/solid": "Ark UI",
+    "react-aria": "React Aria",
+    "react-aria-components": "React Aria",
+    "flowbite": "Flowbite",
+    "flowbite-react": "Flowbite",
+    "@heroui/react": "HeroUI",
+    "@skeletonlabs/skeleton": "Skeleton",
+    "element-plus": "Element Plus",
+    "naive-ui": "Naive UI",
+    "@angular/material": "Angular Material",
+    "primeng": "PrimeNG",
 }
 
 _CSS_METHODOLOGIES: dict[str, str] = {
@@ -46,6 +59,12 @@ _CSS_METHODOLOGIES: dict[str, str] = {
     "sass": "scss",
     "node-sass": "scss",
     "less": "less",
+    "@vanilla-extract/css": "vanilla-extract",
+    "@pandacss/dev": "panda-css",
+    "@stylexjs/stylex": "stylex",
+    "unocss": "unocss",
+    "@linaria/core": "linaria",
+    "lightningcss": "lightningcss",
 }
 
 

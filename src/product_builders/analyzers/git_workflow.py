@@ -43,6 +43,27 @@ PR_TEMPLATE_PATHS: list[str] = [
     ".gitlab/merge_request_templates/default.md",
 ]
 
+CODEOWNERS_PATHS: list[str] = [
+    ".github/CODEOWNERS",
+    "CODEOWNERS",
+    "docs/CODEOWNERS",
+]
+
+CHANGELOG_PATHS: list[str] = [
+    "CHANGELOG.md",
+    "HISTORY.md",
+    "CHANGES.md",
+]
+
+RELEASE_TOOL_PATHS: list[tuple[str, str]] = [
+    (".releaserc", "semantic-release"),
+    ("release.config.js", "semantic-release"),
+    (".changeset/config.json", "changesets"),
+    ("release-please-config.json", "release-please"),
+    (".goreleaser.yml", "goreleaser"),
+    ("cliff.toml", "git-cliff"),
+]
+
 
 class GitWorkflowAnalyzer(BaseAnalyzer):
     @property
@@ -113,6 +134,10 @@ class GitWorkflowAnalyzer(BaseAnalyzer):
                 # Check for commitizen
                 if "commitizen" in all_deps or "cz-conventional-changelog" in all_deps:
                     return "conventional"
+
+                # Check for gitmoji
+                if "gitmoji-cli" in all_deps or "gitmoji-changelog" in all_deps:
+                    return "gitmoji"
 
         # Check for .czrc or .cz.json
         for cz_file in [".czrc", ".cz.json"]:

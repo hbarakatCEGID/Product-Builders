@@ -35,6 +35,15 @@ LINTER_CONFIGS: dict[str, str] = {
     "stylelint.config.js": "stylelint",
     "biome.json": "biome",
     "biome.jsonc": "biome",
+    ".oxlintrc.json": "oxlint",
+    ".golangci.yml": "golangci-lint",
+    ".golangci.yaml": "golangci-lint",
+    "clippy.toml": "clippy",
+    ".clippy.toml": "clippy",
+    "detekt.yml": "detekt",
+    "detekt.yaml": "detekt",
+    "phpstan.neon": "phpstan",
+    "phpcs.xml": "phpcs",
 }
 
 FORMATTER_CONFIGS: dict[str, str] = {
@@ -50,6 +59,10 @@ FORMATTER_CONFIGS: dict[str, str] = {
     "prettier.config.ts": "prettier",
     "biome.json": "biome",
     "biome.jsonc": "biome",
+    "dprint.json": "dprint",
+    "rustfmt.toml": "rustfmt",
+    ".rustfmt.toml": "rustfmt",
+    ".clang-format": "clang-format",
 }
 
 

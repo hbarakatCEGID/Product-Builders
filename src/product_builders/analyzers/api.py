@@ -23,6 +23,10 @@ _GRPC_INDICATORS: list[str] = [
     "grpc", "@grpc/grpc-js", "grpcio", "protobuf",
 ]
 
+_TRPC_INDICATORS: list[str] = [
+    "@trpc/server", "@trpc/client",
+]
+
 
 class APIAnalyzer(BaseAnalyzer):
     @property
@@ -89,6 +93,9 @@ class APIAnalyzer(BaseAnalyzer):
         for indicator in _GRPC_INDICATORS:
             if indicator in deps:
                 return "grpc"
+        for indicator in _TRPC_INDICATORS:
+            if indicator in deps:
+                return "trpc"
         if any(d in deps for d in ["express", "fastify", "koa", "hapi",
                                     "fastapi", "flask", "django", "djangorestframework",
                                     "@nestjs/core", "spring-boot-starter-web"]):

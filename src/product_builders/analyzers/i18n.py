@@ -27,6 +27,13 @@ _I18N_LIBS: dict[str, str] = {
     "django.utils.translation": "django-i18n",
     "babel": "babel",
     "fluent": "fluent",
+    "svelte-i18n": "svelte-i18n",
+    "typesafe-i18n": "typesafe-i18n",
+    "@lingui/react": "lingui",
+    "@lingui/core": "lingui",
+    "@inlang/paraglide-js": "paraglide",
+    "rosetta": "rosetta",
+    "@messageformat/core": "icu-messageformat",
 }
 
 

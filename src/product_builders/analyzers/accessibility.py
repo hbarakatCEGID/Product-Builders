@@ -22,6 +22,13 @@ _A11Y_TOOLS: dict[str, str] = {
     "@testing-library/jest-dom": "testing-library",
     "eslint-plugin-jsx-a11y": "eslint-plugin-jsx-a11y",
     "vue-axe": "vue-axe",
+    "@axe-core/playwright": "axe-playwright",
+    "cypress-axe": "cypress-axe",
+    "@storybook/addon-a11y": "storybook-a11y",
+    "vitest-axe": "vitest-axe",
+    "eslint-plugin-vuejs-accessibility": "eslint-vuejs-a11y",
+    "focus-trap-react": "focus-trap",
+    "focus-trap": "focus-trap",
 }
 
 

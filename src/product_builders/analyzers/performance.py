@@ -52,6 +52,10 @@ class PerformanceAnalyzer(BaseAnalyzer):
             return "django-cache"
         if "lru-cache" in deps:
             return "lru-cache"
+        if "@upstash/redis" in deps:
+            return "upstash-redis"
+        if "keyv" in deps:
+            return "keyv"
         return None
 
     def _detect_lazy_loading(self, repo_path: Path) -> bool:
@@ -152,6 +156,14 @@ class PerformanceAnalyzer(BaseAnalyzer):
             return "opentelemetry"
         if "prom-client" in deps:
             return "prometheus"
+        if "@vercel/analytics" in deps:
+            return "vercel-analytics"
+        if "web-vitals" in deps:
+            return "web-vitals"
+        if "@lhci/cli" in deps:
+            return "lighthouse-ci"
+        if "@datadog/browser-rum" in deps:
+            return "datadog-rum"
         return None
 
 

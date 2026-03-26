@@ -22,6 +22,7 @@ _FORM_LIBS: dict[str, str] = {
     "vee-validate": "vee-validate",
     "vuelidate": "vuelidate",
     "@angular/forms": "angular-forms",
+    "sveltekit-superforms": "superforms",
 }
 
 _ROUTING_LIBS: dict[str, str] = {
@@ -43,6 +44,9 @@ _ANIMATION_LIBS: dict[str, str] = {
     "animejs": "anime.js",
     "lottie-react": "lottie",
     "lottie-web": "lottie",
+    "@formkit/auto-animate": "auto-animate",
+    "react-transition-group": "react-transition-group",
+    "@rive-app/react-canvas": "rive",
 }
 
 _VIRTUALIZATION_LIBS: dict[str, str] = {

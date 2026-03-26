@@ -84,6 +84,24 @@ FRAMEWORK_DETECTORS: dict[str, dict] = {
     # Ruby frameworks
     "rails": {"dep_names": ["rails"], "category": "web"},
     "sinatra": {"dep_names": ["sinatra"], "category": "web"},
+    # Additional JS/TS frameworks
+    "astro": {"dep_names": ["astro"], "category": "web"},
+    "hono": {"dep_names": ["hono"], "category": "web"},
+    "elysia": {"dep_names": ["elysia", "@elysiajs/core"], "category": "web"},
+    "sveltekit": {"dep_names": ["@sveltejs/kit"], "category": "web"},
+    "solidjs": {"dep_names": ["solid-js"], "category": "web"},
+    "solidstart": {"dep_names": ["@solidjs/start"], "category": "web"},
+    "qwik": {"dep_names": ["@builder.io/qwik"], "category": "web"},
+    "qwikcity": {"dep_names": ["@builder.io/qwik-city"], "category": "web"},
+    "h3": {"dep_names": ["h3"], "category": "web"},
+    "nitro": {"dep_names": ["nitropack"], "category": "web"},
+    "tanstack-start": {"dep_names": ["@tanstack/start"], "category": "web"},
+    "analog": {"dep_names": ["@analogjs/platform"], "category": "web"},
+    # Additional Python frameworks
+    "litestar": {"dep_names": ["litestar"], "category": "web"},
+    "fasthtml": {"dep_names": ["python-fasthtml", "fasthtml"], "category": "web"},
+    "quart": {"dep_names": ["quart"], "category": "web"},
+    "sanic": {"dep_names": ["sanic"], "category": "web"},
 }
 
 BUILD_TOOL_FILES: dict[str, str] = {
@@ -107,6 +125,9 @@ BUILD_TOOL_FILES: dict[str, str] = {
     "Gemfile": "bundler",
     "mix.exs": "mix",
     "go.mod": "go-modules",
+    "deno.json": "deno",
+    "deno.jsonc": "deno",
+    "bunfig.toml": "bun",
 }
 
 PACKAGE_MANAGER_FILES: dict[str, str] = {
@@ -125,6 +146,12 @@ PACKAGE_MANAGER_FILES: dict[str, str] = {
     "packages.lock.json": "nuget",
     "paket.lock": "paket",
     "composer.lock": "composer",
+    "deno.lock": "deno",
+    "pixi.lock": "pixi",
+    "pixi.toml": "pixi",
+    "Package.swift": "swift-pm",
+    "pubspec.lock": "pub",
+    "Podfile.lock": "cocoapods",
 }
 
 

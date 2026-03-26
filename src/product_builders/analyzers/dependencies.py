@@ -42,6 +42,14 @@ KNOWN_CATEGORIES: dict[str, str] = {
     "pytest": "testing", "requests": "http-client", "httpx": "http-client",
     "pydantic": "validation", "sentry-sdk": "monitoring",
     "ruff": "linting", "black": "formatting", "mypy": "type-checking",
+    # RPC
+    "@trpc/client": "rpc", "@trpc/server": "rpc",
+    # Additional web frameworks
+    "hono": "web-framework", "elysia": "web-framework", "astro": "web-framework",
+    # Additional testing / validation / styling
+    "@playwright/test": "e2e-testing",
+    "valibot": "validation",
+    "@vanilla-extract/css": "styling", "@pandacss/dev": "styling", "unocss": "styling",
 }
 
 

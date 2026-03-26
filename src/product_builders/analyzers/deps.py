@@ -21,6 +21,8 @@ VALIDATION_PACKAGE_TO_NAME: dict[str, str] = {
     "wtforms": "wtforms",
     "django.forms": "django-forms",
     "FluentValidation": "fluent-validation",
+    "valibot": "valibot",
+    "@sinclair/typebox": "typebox",
 }
 
 SECURITY_MIDDLEWARE_PACKAGE_TO_NAME: dict[str, str] = {

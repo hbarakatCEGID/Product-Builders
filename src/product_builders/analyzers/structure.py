@@ -22,6 +22,7 @@ MONOREPO_MARKERS: dict[str, str] = {
     "nx.json": "nx",
     "turbo.json": "turborepo",
     "rush.json": "rush",
+    ".moon/workspace.yml": "moon",
 }
 
 KNOWN_DIRECTORY_PURPOSES: dict[str, str] = {
@@ -77,6 +78,10 @@ KNOWN_DIRECTORY_PURPOSES: dict[str, str] = {
     "redux": "Redux store",
     "auth": "Authentication module",
     "guards": "Route / permission guards",
+    "entities": "Domain entities",
+    "widgets": "Widget components",
+    "features": "Feature modules",
+    "shared": "Shared utilities and components",
 }
 
 ORGANIZATION_PATTERNS: list[tuple[str, list[str]]] = [

@@ -23,6 +23,11 @@ _CI_PLATFORMS: list[tuple[str, str, str]] = [
     ("cloudbuild.yaml", "google-cloud-build", "cloudbuild.yaml"),
     ("cloudbuild.yml", "google-cloud-build", "cloudbuild.yml"),
     ("buildspec.yml", "aws-codebuild", "buildspec.yml"),
+    (".drone.yml", "drone", ".drone.yml"),
+    (".woodpecker.yml", "woodpecker", ".woodpecker.yml"),
+    (".buildkite/pipeline.yml", "buildkite", ".buildkite/pipeline.yml"),
+    ("dagger.json", "dagger", "dagger.json"),
+    ("appveyor.yml", "appveyor", "appveyor.yml"),
 ]
 
 
@@ -118,6 +123,18 @@ class CICDAnalyzer(BaseAnalyzer):
             targets.append("heroku")
         if (repo_path / "k8s").is_dir() or (repo_path / "kubernetes").is_dir():
             targets.append("kubernetes")
+        if (repo_path / "railway.toml").exists() or (repo_path / "railway.json").exists():
+            targets.append("railway")
+        if (repo_path / "sst.config.ts").exists():
+            targets.append("sst")
+        if (repo_path / "Pulumi.yaml").exists():
+            targets.append("pulumi")
+        if (repo_path / "cdk.json").exists():
+            targets.append("aws-cdk")
+        if (repo_path / "Chart.yaml").exists():
+            targets.append("helm")
+        if (repo_path / "kustomization.yaml").exists():
+            targets.append("kustomize")
         return targets
 
     def _detect_required_checks(
