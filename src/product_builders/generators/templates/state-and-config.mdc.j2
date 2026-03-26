@@ -17,6 +17,12 @@ priority: 25
 {% if profile.state_management.store_structure %}
 - **Store structure**: {{ profile.state_management.store_structure }}
 {% endif %}
+{% if profile.state_management.form_library %}
+- **Form state**: {{ profile.state_management.form_library }}
+{% endif %}
+{% if profile.state_management.realtime_library %}
+- **Realtime**: {{ profile.state_management.realtime_library }}
+{% endif %}
 
 {% if profile.state_management.state_patterns %}
 ### Patterns
@@ -54,6 +60,22 @@ priority: 25
 - `{{ dir }}/`
 {% endfor %}
 {% endif %}
+{% endif %}
+
+{% if profile.env_config.secrets_management %}
+## Secrets Management
+
+Tool: **{{ profile.env_config.secrets_management }}**
+
+> Never hardcode secrets in source code. Use the configured secrets manager for all sensitive values.
+{% endif %}
+
+{% if profile.env_config.kubernetes_detected %}
+## Container Orchestration
+
+Kubernetes manifests detected.
+
+> Follow existing resource definitions, naming conventions, and namespace structure. Do not modify resource limits without review.
 {% endif %}
 
 {% if profile.env_config.has_docker %}

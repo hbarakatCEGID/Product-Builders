@@ -99,7 +99,7 @@ class GitWorkflowAnalyzer(BaseAnalyzer):
                 release_tool = tool
                 break
 
-        return GitWorkflowResult(
+        result = GitWorkflowResult(
             status=AnalysisStatus.SUCCESS,
             git_platform=platform,
             branch_naming_strategy=branch_strategy,
@@ -110,6 +110,17 @@ class GitWorkflowAnalyzer(BaseAnalyzer):
             changelog_path=changelog_path,
             release_tool=release_tool,
         )
+
+        anti_patterns = []
+        if not result.codeowners_path:
+            anti_patterns.append("MEDIUM: no CODEOWNERS file — code review responsibility is unclear")
+        if not result.changelog_path:
+            anti_patterns.append("LOW: no changelog maintained — release notes will lack context")
+        if result.commit_message_format is None:
+            anti_patterns.append("LOW: no commit message convention enforced")
+        result.anti_patterns = anti_patterns
+
+        return result
 
     def _detect_platform(self, repo_path: Path) -> str | None:
         for marker, platform in PLATFORM_MARKERS:

@@ -149,7 +149,7 @@ class DesignUIAnalyzer(BaseAnalyzer):
                     font_strategy = "google-fonts-cdn"
                     break
 
-        return DesignUIResult(
+        result = DesignUIResult(
             status=AnalysisStatus.SUCCESS,
             css_methodology=css_method,
             component_library=component_lib,
@@ -165,6 +165,15 @@ class DesignUIAnalyzer(BaseAnalyzer):
             component_doc_tool=component_doc_tool,
             font_strategy=font_strategy,
         )
+
+        anti_patterns = []
+        if result.css_methodology is None and result.component_library is None:
+            anti_patterns.append("MEDIUM: no CSS methodology or component library — styling will lack consistency")
+        if not result.responsive_strategy:
+            anti_patterns.append("MEDIUM: no responsive strategy detected — may have mobile usability issues")
+        result.anti_patterns = anti_patterns
+
+        return result
 
     def _detect_component_library(self, repo_path: Path) -> tuple[str | None, str | None]:
         pkg = self.read_json(repo_path / "package.json")

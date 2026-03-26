@@ -49,7 +49,7 @@ class UserFlowsAnalyzer(BaseAnalyzer):
                 lazy_routes = True
                 break
 
-        return UserFlowsResult(
+        result = UserFlowsResult(
             status=AnalysisStatus.SUCCESS,
             route_count=route_count,
             route_files=route_files,
@@ -61,6 +61,15 @@ class UserFlowsAnalyzer(BaseAnalyzer):
             dynamic_routes=dynamic_routes,
             lazy_routes=lazy_routes,
         )
+
+        anti_patterns = []
+        if result.route_count > 0 and not result.has_404_page:
+            anti_patterns.append("MEDIUM: no 404 page — users will see default browser error")
+        if result.route_count > 0 and not result.has_error_page:
+            anti_patterns.append("MEDIUM: no error page — unhandled errors will show raw stack traces")
+        result.anti_patterns = anti_patterns
+
+        return result
 
     def _detect_page_dirs(self, repo_path: Path) -> list[str]:
         candidates = [

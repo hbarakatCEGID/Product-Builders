@@ -57,7 +57,7 @@ class I18nAnalyzer(BaseAnalyzer):
         rtl_locale_prefixes = {"ar", "he", "fa", "ur", "ps", "ku", "sd", "ug", "yi"}
         rtl_languages = [loc for loc in locales if loc[:2] in rtl_locale_prefixes]
 
-        return I18nResult(
+        result = I18nResult(
             status=AnalysisStatus.SUCCESS,
             i18n_framework=framework,
             translation_file_format=file_format,
@@ -68,6 +68,15 @@ class I18nAnalyzer(BaseAnalyzer):
             translation_management=translation_management,
             rtl_languages=rtl_languages,
         )
+
+        anti_patterns = []
+        if result.i18n_framework and not result.translation_management:
+            anti_patterns.append("MEDIUM: i18n framework detected but no translation management tool (Crowdin, Lokalise, etc.)")
+        if len(result.supported_locales) <= 1 and result.i18n_framework:
+            anti_patterns.append("LOW: only one locale detected — translation workflow may not be tested")
+        result.anti_patterns = anti_patterns
+
+        return result
 
     def _detect_translation_management(self, repo_path: Path) -> str | None:
         """Detect translation management system from config files."""

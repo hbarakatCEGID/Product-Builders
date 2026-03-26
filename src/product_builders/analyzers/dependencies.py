@@ -103,15 +103,102 @@ class DependencyAnalyzer(BaseAnalyzer):
                             category=KNOWN_CATEGORIES.get(name.lower(), ""),
                         ))
 
-        # pyproject.toml
+        # pyproject.toml — parse [project.dependencies] and [tool.poetry.dependencies]
         pyproject = repo_path / "pyproject.toml"
         if pyproject.exists():
             manifest_files.append("pyproject.toml")
+            content = self.read_file(pyproject)
+            if content:
+                in_deps = False
+                for line in content.splitlines():
+                    stripped = line.strip()
+                    if stripped in (
+                        "[project.dependencies]",
+                        "[tool.poetry.dependencies]",
+                    ):
+                        in_deps = True
+                        continue
+                    if stripped.startswith("[") and in_deps:
+                        in_deps = False
+                        continue
+                    if in_deps and stripped and not stripped.startswith("#"):
+                        # Handle both "requests>=2.28" and name = "^1.0"
+                        parts = re.split(r"[>=<~^!=]", stripped, maxsplit=1)
+                        dep_name = parts[0].strip().strip('"').strip("'")
+                        if dep_name and dep_name != "python":
+                            deps.append(DependencyInfo(
+                                name=dep_name,
+                                category=KNOWN_CATEGORIES.get(dep_name.lower(), ""),
+                            ))
 
         # Pipfile
         pipfile = repo_path / "Pipfile"
         if pipfile.exists():
             manifest_files.append("Pipfile")
+
+        # Gemfile — parse gem declarations
+        gemfile = repo_path / "Gemfile"
+        if gemfile.exists():
+            manifest_files.append("Gemfile")
+            content = self.read_file(gemfile)
+            if content:
+                for line in content.splitlines():
+                    match = re.match(r"""gem\s+['"]([^'"]+)['"]""", line.strip())
+                    if match:
+                        deps.append(DependencyInfo(
+                            name=match.group(1),
+                            category=KNOWN_CATEGORIES.get(match.group(1).lower(), ""),
+                        ))
+
+        # go.mod — parse require blocks
+        go_mod = repo_path / "go.mod"
+        if go_mod.exists():
+            manifest_files.append("go.mod")
+            content = self.read_file(go_mod)
+            if content:
+                in_require = False
+                for line in content.splitlines():
+                    stripped = line.strip()
+                    if stripped == "require (" or stripped.startswith("require ("):
+                        in_require = True
+                        continue
+                    if stripped == ")" and in_require:
+                        in_require = False
+                        continue
+                    if in_require and stripped and not stripped.startswith("//"):
+                        parts = stripped.split()
+                        if parts:
+                            deps.append(DependencyInfo(name=parts[0]))
+                    elif stripped.startswith("require ") and "(" not in stripped:
+                        parts = stripped.split()
+                        if len(parts) >= 2:
+                            deps.append(DependencyInfo(name=parts[1]))
+
+        # Cargo.toml — parse [dependencies] and [dev-dependencies]
+        cargo = repo_path / "Cargo.toml"
+        if cargo.exists():
+            manifest_files.append("Cargo.toml")
+            content = self.read_file(cargo)
+            if content:
+                in_deps = False
+                is_dev = False
+                for line in content.splitlines():
+                    stripped = line.strip()
+                    if stripped == "[dependencies]":
+                        in_deps = True
+                        is_dev = False
+                        continue
+                    if stripped == "[dev-dependencies]":
+                        in_deps = True
+                        is_dev = True
+                        continue
+                    if stripped.startswith("[") and in_deps:
+                        in_deps = False
+                        continue
+                    if in_deps and "=" in stripped and not stripped.startswith("#"):
+                        dep_name = stripped.split("=")[0].strip()
+                        if dep_name:
+                            deps.append(DependencyInfo(name=dep_name, is_dev=is_dev))
 
         # pom.xml
         pom = repo_path / "pom.xml"
@@ -140,12 +227,21 @@ class DependencyAnalyzer(BaseAnalyzer):
                 lock_file = lf_value
                 break
 
-        return DependenciesResult(
+        result = DependenciesResult(
             status=AnalysisStatus.SUCCESS,
             dependencies=deps,
             dependency_manifest_files=manifest_files,
             lock_file=lock_file,
         )
+
+        anti_patterns = []
+        if not result.lock_file:
+            anti_patterns.append("HIGH: no lock file found — dependency versions will not be reproducible")
+        if not result.dependency_manifest_files:
+            anti_patterns.append("HIGH: no dependency manifest file detected")
+        result.anti_patterns = anti_patterns
+
+        return result
 
 
 register(DependencyAnalyzer())

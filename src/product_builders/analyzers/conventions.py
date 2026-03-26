@@ -136,7 +136,7 @@ class ConventionsAnalyzer(BaseAnalyzer):
                     formatter = "black"
                     formatter_path = "pyproject.toml"
 
-        return ConventionsResult(
+        result = ConventionsResult(
             status=AnalysisStatus.SUCCESS,
             linter=linter,
             linter_config_path=linter_path,
@@ -146,6 +146,15 @@ class ConventionsAnalyzer(BaseAnalyzer):
             naming_convention=naming,
             file_naming_convention=file_naming,
         )
+
+        anti_patterns = []
+        if result.linter is None:
+            anti_patterns.append("MEDIUM: no linter configured — code quality issues will not be caught automatically")
+        if result.formatter is None:
+            anti_patterns.append("MEDIUM: no formatter configured — code style will be inconsistent")
+        result.anti_patterns = anti_patterns
+
+        return result
 
     def _detect_linter(self, repo_path: Path) -> tuple[str | None, str | None]:
         for filename, linter_name in LINTER_CONFIGS.items():

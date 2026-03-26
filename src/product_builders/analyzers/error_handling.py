@@ -77,7 +77,7 @@ class ErrorHandlingAnalyzer(BaseAnalyzer):
                     if cls.name not in custom_errors:
                         custom_errors.append(cls.name)
 
-        return ErrorHandlingResult(
+        result = ErrorHandlingResult(
             status=AnalysisStatus.SUCCESS,
             error_strategy=error_strategy,
             logging_framework=logging_fw,
@@ -87,6 +87,17 @@ class ErrorHandlingAnalyzer(BaseAnalyzer):
             custom_error_classes=custom_errors,
             structured_logging=structured_logging,
         )
+
+        anti_patterns = []
+        if result.error_strategy is None:
+            anti_patterns.append("HIGH: no error handling strategy detected")
+        if not result.structured_logging:
+            anti_patterns.append("MEDIUM: no structured logging — log aggregation will be difficult")
+        if result.monitoring_integration is None:
+            anti_patterns.append("MEDIUM: no error monitoring integration (Sentry, Datadog, etc.)")
+        result.anti_patterns = anti_patterns
+
+        return result
 
     def _detect_logging_framework(self, dep_names: set[str], repo_path: Path) -> str | None:
         for fw, indicators in LOGGING_FRAMEWORK_INDICATORS.items():

@@ -69,7 +69,7 @@ class EnvConfigAnalyzer(BaseAnalyzer):
                     secrets_mgmt = name
                     break
 
-        return EnvConfigResult(
+        result = EnvConfigResult(
             status=AnalysisStatus.SUCCESS,
             config_approach=config_approach,
             env_files=env_files,
@@ -81,6 +81,17 @@ class EnvConfigAnalyzer(BaseAnalyzer):
             kubernetes_detected=kubernetes_detected,
             secrets_management=secrets_mgmt,
         )
+
+        anti_patterns = []
+        if result.kubernetes_detected and not result.secrets_management:
+            anti_patterns.append("HIGH: Kubernetes detected but no secrets management — secrets may be in plain manifests")
+        if result.has_docker and not result.config_approach:
+            anti_patterns.append("MEDIUM: Docker detected but no config approach — env vars may be hardcoded")
+        if not result.feature_flags_system:
+            anti_patterns.append("LOW: no feature flag system detected — feature rollout requires redeployment")
+        result.anti_patterns = anti_patterns
+
+        return result
 
     def _detect_config_approach(self, repo_path: Path) -> str | None:
         env_files = list(repo_path.glob(".env*"))

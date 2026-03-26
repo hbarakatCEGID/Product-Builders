@@ -172,7 +172,7 @@ class TechStackAnalyzer(BaseAnalyzer):
         pkg_managers = self._detect_package_managers(repo_path)
         runtime_versions = self._detect_runtime_versions(repo_path)
 
-        return TechStackResult(
+        result = TechStackResult(
             status=AnalysisStatus.SUCCESS,
             languages=languages,
             primary_language=primary,
@@ -182,11 +182,29 @@ class TechStackAnalyzer(BaseAnalyzer):
             runtime_versions=runtime_versions,
         )
 
+        anti_patterns = []
+        if not result.languages:
+            anti_patterns.append("CRITICAL: no source code files detected")
+        if not result.frameworks:
+            anti_patterns.append("MEDIUM: no framework detected — project structure may be unclear to AI assistants")
+        result.anti_patterns = anti_patterns
+
+        return result
+
+    # Directories excluded from language % to avoid skewing by tests/docs/examples
+    _LANG_EXCLUDE_DIRS: frozenset[str] = frozenset({
+        "tests", "test", "__tests__", "spec", "specs",
+        "docs", "doc", "examples", "example", "fixtures",
+        "e2e", "cypress", "playwright",
+    })
+
     def _detect_languages(self, repo_path: Path) -> dict[str, float]:
         counter: Counter[str] = Counter()
         total = 0
         for path in repo_path.rglob("*"):
             if any(skip in path.parts for skip in SKIP_DIRS):
+                continue
+            if any(excl in path.parts for excl in self._LANG_EXCLUDE_DIRS):
                 continue
             if path.is_file():
                 lang = LANGUAGE_EXTENSIONS.get(path.suffix.lower())
@@ -271,7 +289,7 @@ class TechStackAnalyzer(BaseAnalyzer):
 
                 frameworks.append(FrameworkInfo(
                     name=fw_name,
-                    version=version,
+                    version=self._normalize_version(version) if version else None,
                     category=cfg["category"],
                 ))
 
@@ -309,7 +327,7 @@ class TechStackAnalyzer(BaseAnalyzer):
             if data and "engines" in data:
                 node_ver = data["engines"].get("node")
                 if node_ver:
-                    versions["node"] = node_ver
+                    versions["node"] = self._normalize_version(node_ver)
 
         # Python version from .python-version, pyproject.toml, runtime.txt
         py_ver_file = repo_path / ".python-version"
@@ -324,7 +342,7 @@ class TechStackAnalyzer(BaseAnalyzer):
             if content:
                 match = re.search(r'requires-python\s*=\s*"([^"]+)"', content)
                 if match:
-                    versions["python"] = match.group(1)
+                    versions["python"] = self._normalize_version(match.group(1))
 
         # Java version from pom.xml or build.gradle
         pom = repo_path / "pom.xml"

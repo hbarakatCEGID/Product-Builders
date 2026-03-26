@@ -108,7 +108,7 @@ class StructureAnalyzer(BaseAnalyzer):
         org_pattern = self._detect_organization(repo_path)
         is_mono, mono_tool, sub_projects = self._detect_monorepo(repo_path)
 
-        return StructureResult(
+        result = StructureResult(
             status=AnalysisStatus.SUCCESS,
             root_directories=root_dirs,
             source_directories=source_dirs,
@@ -118,6 +118,17 @@ class StructureAnalyzer(BaseAnalyzer):
             monorepo_tool=mono_tool,
             sub_projects=sub_projects,
         )
+
+        anti_patterns = []
+        if result.is_monorepo and not result.monorepo_tool:
+            anti_patterns.append("MEDIUM: monorepo structure but no monorepo tooling (Turborepo, Nx, etc.)")
+        if not result.source_directories:
+            anti_patterns.append("MEDIUM: no standard source directory (src/, lib/, app/) — project layout may be unclear")
+        if result.module_organization == "flat":
+            anti_patterns.append("LOW: flat module organization — consider feature-based or layered structure for scaling")
+        result.anti_patterns = anti_patterns
+
+        return result
 
     def _get_root_directories(self, repo_path: Path) -> list[str]:
         return sorted(

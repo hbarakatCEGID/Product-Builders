@@ -83,6 +83,13 @@ class BaseAnalyzer(ABC):
 
     # ---- Utility methods for subclasses ----
 
+    @staticmethod
+    def _normalize_version(raw: str) -> str:
+        """Strip semver constraint prefixes: ``'^18.0.0'`` -> ``'18.0.0'``."""
+        if not raw:
+            return raw
+        return re.sub(r"^[~^>=<!\s]+", "", raw).strip()
+
     def find_files(self, repo_path: Path, *patterns: str) -> list[Path]:
         """Find files matching glob patterns relative to the repo root."""
         matches: list[Path] = []

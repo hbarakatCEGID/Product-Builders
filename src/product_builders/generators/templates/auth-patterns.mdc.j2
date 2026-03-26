@@ -16,6 +16,24 @@ priority: 50
 **Permission model**: {{ profile.auth.permission_model | upper }}
 {% endif %}
 
+{% if profile.auth.oauth_providers %}
+## OAuth Providers
+
+{% for provider in profile.auth.oauth_providers %}
+- {{ provider }}
+{% endfor %}
+
+> Protect OAuth callback endpoints. Validate redirect URIs.
+{% endif %}
+
+{% if profile.auth.mfa_methods %}
+## Multi-Factor Authentication
+
+Methods: {{ profile.auth.mfa_methods | join(", ") }}
+
+> MFA flows must handle token expiry and fallback recovery codes.
+{% endif %}
+
 ## Critical Rules
 
 1. **NEVER** bypass authentication middleware or guards

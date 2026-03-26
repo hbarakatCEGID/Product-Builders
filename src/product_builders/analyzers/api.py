@@ -71,7 +71,7 @@ class APIAnalyzer(BaseAnalyzer):
                         api_style = "graphql"
                         break
 
-        return APIResult(
+        result = APIResult(
             status=AnalysisStatus.SUCCESS,
             api_style=api_style,
             route_structure=route_structure,
@@ -82,6 +82,15 @@ class APIAnalyzer(BaseAnalyzer):
             pagination_pattern=pagination,
             versioning_strategy=versioning,
         )
+
+        anti_patterns = []
+        if result.api_style == "rest" and not result.openapi_spec_path:
+            anti_patterns.append("MEDIUM: REST API without OpenAPI spec — API documentation will be incomplete")
+        if result.api_style and not result.request_validation:
+            anti_patterns.append("HIGH: API detected but no request validation — will accept invalid input")
+        result.anti_patterns = anti_patterns
+
+        return result
 
     def _detect_api_style(self, repo_path: Path) -> str | None:
         deps = self.collect_dependency_names(

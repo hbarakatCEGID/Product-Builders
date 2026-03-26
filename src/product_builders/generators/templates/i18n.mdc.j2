@@ -12,8 +12,19 @@ priority: 20
 {% if profile.i18n.i18n_framework %}
 **Framework**: {{ profile.i18n.i18n_framework }}
 {% endif %}
+{% if profile.i18n.translation_management %}
+**Translation platform**: {{ profile.i18n.translation_management }}
+{% endif %}
 {% if profile.i18n.default_locale %}
 **Default locale**: {{ profile.i18n.default_locale }}
+{% endif %}
+
+{% if profile.i18n.rtl_languages %}
+## RTL Language Support
+
+RTL support needed for: {{ profile.i18n.rtl_languages | join(", ") }}
+
+> Use CSS logical properties (margin-inline-start, padding-inline-end) instead of physical properties (margin-left, padding-right). Set dir="rtl" on the root element for RTL locales.
 {% endif %}
 
 ## Rules

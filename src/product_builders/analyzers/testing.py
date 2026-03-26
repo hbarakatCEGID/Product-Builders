@@ -162,6 +162,20 @@ class TestingAnalyzer(BaseAnalyzer):
                 visual_regression_tool = name
                 break
 
+        # Contract testing detection
+        contract_testing_tool = None
+        contract_deps = {
+            "@pact-foundation/pact": "pact",
+            "pact-python": "pact",
+            "spring-cloud-contract-verifier": "spring-cloud-contract",
+        }
+        for dep, name in contract_deps.items():
+            if dep in dep_names:
+                contract_testing_tool = name
+                break
+        if not contract_testing_tool and self.find_files(repo_path, "pact/**", "pacts/**"):
+            contract_testing_tool = "pact"
+
         result = TestingResult(
             status=AnalysisStatus.SUCCESS,
             test_framework=framework,
@@ -177,6 +191,7 @@ class TestingAnalyzer(BaseAnalyzer):
             snapshot_testing=snapshot_testing,
             api_testing_tools=api_testing_tools,
             visual_regression_tool=visual_regression_tool,
+            contract_testing_tool=contract_testing_tool,
         )
 
         # Anti-pattern detection
