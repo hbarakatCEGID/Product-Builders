@@ -415,46 +415,163 @@ Deep analysis of all 20 offline heuristic analyzers. For each: what it does toda
 
 ---
 
-## PRIORITIZED ACTION PLAN
+## IMPLEMENTATION PLAN (Merged with Best Practices Research)
 
-### Tier 1: Quick Wins (LOW effort, HIGH impact)
+*Incorporates findings from 5 specialized research agents covering auth/security, database/state, testing/CI-CD, frontend/a11y, and devops/quality best practices.*
 
-1. **Create `dependencies.mdc.j2` and `cicd.mdc.j2` templates** — 2 dimensions currently produce dead data
-2. **Return arrays instead of single values** for: auth_strategies, state_libraries, data_fetching_libraries, logging_frameworks, config_approaches, database types
-3. **Wire unused fields into templates** or remove them (10+ wasted fields)
-4. **Add 10+ missing frameworks** to tech_stack (Astro, Hono, Litestar, Phoenix, etc.)
-5. **Add CODEOWNERS detection** to git_workflow
-6. **Add MFA/2FA detection** to auth (scan for totp, authenticator deps)
-7. **Tighten `_should_generate()`** for auth-patterns, accessibility, api-patterns
+---
 
-### Tier 2: Medium Effort, High Value
+### Phase A: Quick Wins — Add Items to Detection Lists (2-3 days)
 
-8. **Extract ORM versions** from package.json/lock files
-9. **Parse pyproject.toml dependencies** properly (currently skipped)
-10. **Add OAuth provider detection** (Google, GitHub, Microsoft configs)
-11. **Add structured logging detection** (JSON logs, OpenTelemetry)
-12. **Normalize version strings** to semver across all analyzers
-13. **Weight language percentages** (exclude tests/config/docs from counts)
-14. **Parse actual linter/formatter config rules** in conventions analyzer
-15. **Detect test organization** (unit/integration/e2e directory separation)
+Data-only changes. No logic, no new fields, no new templates.
 
-### Tier 3: Higher Effort, Medium Value
+| Analyzer | What to Add | Count |
+|----------|-------------|-------|
+| **tech_stack** | 17 frameworks (Astro, Hono, Elysia, SvelteKit, SolidJS, Qwik, Litestar, FastHTML, Phoenix, H3, Nitro, TanStack Start, Analog, Quart, Sanic, SolidStart, Play) + 6 package managers (deno, pixi, conda, swift-pm, pub, cocoapods) + 2 build tools (deno, bun) | +25 |
+| **database** | 13 ORMs (MikroORM, Objection, jOOQ, MyBatis, Ent, sqlx, sqlc, Dapper, Exposed, Peewee, SQLModel, GORM, Sequel) + 6 DB types (Cassandra, CockroachDB, Neon, PlanetScale, Turso, Supabase explicit) | +19 |
+| **auth** | WebAuthn/passkeys, better-auth libs + Go (golang-jwt, goth, go-oidc) + Ruby (devise, omniauth, sorcery, rodauth) + .NET (ASP.NET Identity, Duende) + Java (spring-security, jjwt, keycloak) | +15 |
+| **error_handling** | consola, OpenTelemetry, Grafana agent | +3 |
+| **i18n** | svelte-i18n, typesafe-i18n, Lingui, Paraglide, rosetta, rust-i18n, go-i18n, ICU MessageFormat | +8 |
+| **state_management** | NgRx Signals, Legend State, nanostores, TanStack Store + tRPC, Relay, ofetch, ky | +8 |
+| **env_config** | 6 feature flag platforms: Statsig, Split.io, DevCycle, Flipt, OpenFeature, ConfigCat | +6 |
+| **git_workflow** | CODEOWNERS, CHANGELOG.md, semantic-release, changesets, release-please, goreleaser, git-cliff, Mergify, gitmoji | +9 |
+| **conventions** | 8 linter configs (oxlint, golangci-lint, clippy, detekt, ktlint, phpstan, phpcs, pmd) + 3 formatters (dprint, rustfmt, clang-format) | +11 |
+| **security** | 5 validation libs (valibot, typebox, hibernate-validator, go-validator, dry-validation) + 7 rate limiters + 7 secrets mgmt (AWS/Azure/GCP/Doppler/Infisical/1Password/Sealed Secrets) + 6 vuln scanners (Trivy, gosec, Brakeman, bundler-audit, Socket, CodeQL) | +25 |
+| **testing** | ava, Bun test + 7 mocking libs + 2 coverage tools + 2 E2E frameworks | +12 |
+| **cicd** | 6 CI platforms (Drone, Woodpecker, Buildkite, TeamCity, Dagger, AppVeyor) + 9 deployment targets (Railway, SST, Pulumi, Terraform, CDK, SAM, Ansible, Helm, Kustomize) | +15 |
+| **design** | 12 component libs (Ark UI, React Aria, Flowbite, HeroUI, Skeleton, Element Plus, Naive UI, Angular Material, PrimeNG, Kobalte, Corvu) + 8 CSS approaches (Vanilla Extract, Panda CSS, StyleX, UnoCSS, Linaria, PostCSS, Lightning CSS, goober) | +20 |
+| **accessibility** | 10 a11y tools (axe-playwright, cypress-axe, storybook-a11y, vitest-axe, eslint-vuejs-a11y, angular-eslint-a11y, react-aria, radix-ui, ark-ui, focus-trap) | +10 |
+| **performance** | 4 monitoring (Vercel Analytics, web-vitals, Lighthouse CI, Datadog RUM) + 2 caching + 1 image | +7 |
+| **frontend_patterns** | 1 form lib + 4 animation libs + 1 routing lib | +6 |
+| **structure** | 2 monorepo markers (Moon, Bazel) + 4 directory purposes (FSD: entities, features, shared, widgets) | +6 |
+| **api** | tRPC detection + litestar/sanic/quart/hono hints | +5 |
+| **dependencies** | 10+ category additions (tRPC, hono, elysia, panda-css, valibot, playwright, etc.) | +10 |
 
-16. **Return composite database stacks** (PostgreSQL + Redis + MongoDB)
-17. **Add cookie security flags** detection to auth
-18. **Parse OpenAPI specs** for API endpoint details
-19. **Add web vitals/performance budget** detection
-20. **Add Storybook/component documentation** detection
-21. **Detect dynamic route parameters** ([id], :id) in user flows
-22. **Add error recovery pattern** detection (retry, circuit breaker)
-23. **Parse Dockerfile** for base image, multi-stage builds
-24. **Add form accessibility** detection (label-input associations)
+**Total: ~210 new detection items across 18 analyzers**
 
-### Tier 4: Future Enhancements
+---
 
-25. **Transitive dependency analysis** from lock files
-26. **Translation completeness metrics** per locale
-27. **Route protection coverage** estimate (% of routes protected)
-28. **Error hierarchy extraction** (class X extends Y via AST)
-29. **Build matrix detection** from CI/CD workflows
-30. **Color palette extraction** from design tokens
+### Phase B: New Templates, Model Fields, Wire Unused Fields (3-4 days)
+
+#### B1. Create missing templates
+- **`dependencies.mdc.j2`** — surface dependency counts, key libraries by category, manifest/lock files
+- **`cicd.mdc.j2`** — surface CI platform, build steps, deployment targets
+
+#### B2. Wire 10+ unused fields into existing templates
+| Template | Unused Fields to Wire |
+|----------|-----------------------|
+| `database.mdc.j2` | `orm_version` |
+| `git-workflow.mdc.j2` | `release_tagging` |
+| `design-system.mdc.j2` | `theme_provider` |
+| `accessibility.mdc.j2` | `semantic_html_score`, `keyboard_navigation`, `color_contrast_config` |
+| `performance.mdc.j2` | `bundle_size_config` |
+| Remove from models: `auth.token_handling`, `auth.session_management` (never populated)
+
+#### B3. Add ~25 new model fields
+| Model | New Fields |
+|-------|------------|
+| `AuthResult` | `auth_strategies: list[str]`, `mfa_methods: list[str]`, `oauth_providers: list[str]`, `rate_limiting: str`, `security_headers: list[str]` |
+| `DatabaseResult` | `database_types: list[str]`, `connection_pooling: str`, `schema_patterns: list[str]` |
+| `ErrorHandlingResult` | `logging_frameworks: list[str]`, `structured_logging: bool`, `error_recovery_patterns: list[str]` |
+| `StateManagementResult` | `state_libraries: list[str]`, `data_fetching_libraries: list[str]`, `form_library: str`, `realtime_library: str` |
+| `EnvConfigResult` | `config_approaches: list[str]`, `secrets_management: str`, `kubernetes_detected: bool` |
+| `GitWorkflowResult` | `codeowners_path: str`, `changelog_path: str`, `release_tool: str` |
+| `DesignUIResult` | `icon_library: str`, `component_doc_tool: str`, `font_strategy: str` |
+| `AccessibilityResult` | `aria_patterns: list[str]`, `form_accessibility: list[str]`, `focus_management: list[str]` |
+| `PerformanceResult` | `web_vitals_monitoring: str`, `service_worker: bool`, `cdn_detected: str` |
+| `TestingResult` | `api_testing_tools: list[str]`, `visual_regression: str`, `contract_testing: str`, `test_organization: str`, `snapshot_testing: bool` |
+| `CICDResult` | `caching_detected: bool`, `matrix_builds: bool`, `deployment_patterns: list[str]`, `release_tool: str` |
+| `I18nResult` | `message_format: str`, `rtl_languages: list[str]`, `translation_management: str` |
+| `UserFlowsResult` | `dynamic_routes: list[str]`, `lazy_routes: bool` |
+
+#### B4. Tighten `_should_generate()` guards
+- `auth-patterns.mdc.j2`: require `auth_strategy` or `auth_strategies` non-empty
+- `accessibility.mdc.j2`: require at least one a11y tool OR wcag_level
+- `api-patterns.mdc.j2`: require `api_style` non-empty
+
+---
+
+### Phase C: Logic Enhancements (5-7 days)
+
+28 logic changes, ordered by impact:
+
+| # | Change | Analyzer | Effort |
+|---|--------|----------|--------|
+| C1 | **Return arrays instead of singles** (auth, database, error_handling, state_mgmt, env_config) | 5 analyzers | MEDIUM |
+| C2 | Extract ORM version from package.json | database | LOW |
+| C3 | Parse pyproject.toml `[project]` dependencies | dependencies | MEDIUM |
+| C4 | Add Gemfile, Cargo.toml, go.mod parsing | dependencies | MEDIUM |
+| C5 | Normalize version strings to semver | tech_stack, deps | LOW |
+| C6 | Weight language percentages (exclude tests/config) | tech_stack | MEDIUM |
+| C7 | Add OAuth provider detection (env vars + deps) | auth | MEDIUM |
+| C8 | Add MFA/2FA detection (otplib, speakeasy, pyotp) | auth | LOW |
+| C9 | Cookie security flags detection (HttpOnly, Secure, SameSite) | auth/security | MEDIUM |
+| C10 | Parse actual linter/formatter config rules | conventions | MEDIUM |
+| C11 | Detect test organization strategy (collocated vs separated) | testing | MEDIUM |
+| C12 | Add icon library detection (Lucide, Heroicons, Phosphor, etc.) | design | LOW |
+| C13 | Add Storybook/Histoire/Ladle detection | design | LOW |
+| C14 | Detect dynamic route parameters ([id], :id) | user_flows | LOW |
+| C15 | Add web vitals / performance monitoring | performance | LOW |
+| C16 | Add connection pooling detection | database | LOW |
+| C17 | Add schema pattern detection (UUID, soft delete, audit fields) | database | MEDIUM |
+| C18 | Add structured logging detection | error_handling | LOW |
+| C19 | Add form accessibility detection (label, aria-invalid, fieldset) | accessibility | MEDIUM |
+| C20 | Add focus management detection (skip links, focus trap) | accessibility | MEDIUM |
+| C21 | Expand ARIA to specific patterns (landmarks, live regions, etc.) | accessibility | MEDIUM |
+| C22 | Add real-time library detection (Socket.IO, Pusher, Ably) | state_mgmt | LOW |
+| C23 | Add translation management detection (Crowdin, Lokalise, etc.) | i18n | LOW |
+| C24 | Add RTL language detection | i18n | LOW |
+| C25 | Parse Dockerfile for base image + multi-stage | env_config | MEDIUM |
+| C26 | Add Kubernetes/orchestration detection | env_config | LOW |
+| C27 | Add error recovery patterns (retry, circuit breaker) | error_handling | MEDIUM |
+| C28 | Add font strategy detection (next/font, fontsource) | design | LOW |
+
+---
+
+### Phase D: Anti-Pattern Detection — New Capability (4-5 days)
+
+New cross-cutting feature: each analyzer gains an `anti_patterns: list[str]` field.
+
+| Domain | Anti-Patterns to Flag | Severity |
+|--------|----------------------|----------|
+| **Security** | Hardcoded secrets, wildcard CORS, no HTTPS/HSTS, no rate limiting, no CSRF, debug mode, deprecated libs, no vuln scanning | CRITICAL-HIGH |
+| **Database** | Raw SQL concatenation, missing migrations, no seed data, hardcoded connection strings, unbounded queries | CRITICAL-HIGH |
+| **Testing** | No tests, no CI test step, no coverage, inverted pyramid, no E2E | CRITICAL-MEDIUM |
+| **CI/CD** | No CI, no caching, no dependency automation, no security scanning | HIGH-MEDIUM |
+| **Frontend** | No code splitting, missing error boundaries, no loading states | MEDIUM |
+| **State** | Mixing server/client state, multiple conflicting state libs | MEDIUM |
+| **Accessibility** | No a11y tools, tabIndex > 0, onClick without keyboard handler, images without alt | MEDIUM |
+
+---
+
+### Implementation Sequencing
+
+```
+Phase A (data) ──────────────────────────► 2-3 days
+  ↓
+Phase B1+B2 (templates + wire fields) ──► 1-2 days
+  ↓
+Phase C1 (arrays) ──────────────────────► 1-2 days
+  ↓
+Phase B3 (model fields as C needs them) ► 1 day
+  ↓
+Phase C2-C28 (incremental enhancements) ► 3-5 days
+  ↓
+Phase B4 (tighten guards) ─────────────► 0.5 days
+  ↓
+Phase D (anti-patterns) ───────────────► 4-5 days
+```
+
+**Total estimated: 12-18 days of implementation work**
+
+---
+
+### Research Sources
+
+Full best-practices research is available in companion documents:
+- [Auth & Security Research](2026-03-26-auth-security-research.md)
+- [Database & State Management Research](2026-03-26-database-state-mgmt-research.md)
+- [Testing & CI/CD Research](2026-03-26-testing-cicd-research.md)
+- [Frontend, Design & Accessibility Research](2026-03-26-frontend-design-a11y-research.md)
+- [DevOps, Code Quality & Infrastructure Research](2026-03-26-devops-quality-research.md)
+- [Research Index](2026-03-26-analyzer-research-index.md)
