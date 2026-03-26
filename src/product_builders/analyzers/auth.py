@@ -88,6 +88,8 @@ class AuthAnalyzer(BaseAnalyzer):
             repo_path, dep_names
         )
         auth_dirs = self._detect_auth_directories(repo_path)
+        oauth_providers = self._detect_oauth_providers(repo_path)
+        mfa_methods = self._detect_mfa_methods(dep_names)
 
         result = AuthResult(
             status=AnalysisStatus.SUCCESS,
@@ -96,6 +98,8 @@ class AuthAnalyzer(BaseAnalyzer):
             permission_model=permission_model,
             protected_route_patterns=protected_patterns,
             auth_directories=auth_dirs,
+            oauth_providers=oauth_providers,
+            mfa_methods=mfa_methods,
         )
 
         # AST-enriched path: precise decorator-based auth detection
@@ -123,6 +127,60 @@ class AuthAnalyzer(BaseAnalyzer):
                         result.auth_middleware.append(imp)
 
         return result
+
+    def _detect_oauth_providers(self, repo_path: Path) -> list[str]:
+        """Detect configured OAuth providers from env files and dependencies."""
+        providers: list[str] = []
+        provider_env_vars: dict[str, list[str]] = {
+            "google": ["GOOGLE_CLIENT_ID", "GOOGLE_ID"],
+            "github": ["GITHUB_CLIENT_ID", "GITHUB_ID"],
+            "microsoft": ["AZURE_AD_CLIENT_ID", "MICROSOFT_CLIENT_ID"],
+            "apple": ["APPLE_CLIENT_ID", "APPLE_ID"],
+            "facebook": ["FACEBOOK_APP_ID", "FACEBOOK_CLIENT_ID"],
+            "discord": ["DISCORD_CLIENT_ID"],
+            "twitter": ["TWITTER_CLIENT_ID"],
+        }
+        for env_file in (".env.example", ".env.local.example", ".env"):
+            path = repo_path / env_file
+            content = self.read_file(path)
+            if content:
+                for provider, env_vars in provider_env_vars.items():
+                    if any(v in content for v in env_vars):
+                        if provider not in providers:
+                            providers.append(provider)
+        # Also check deps for provider-specific passport strategies
+        dep_names = self._collect_dep_names(repo_path)
+        dep_providers: dict[str, str] = {
+            "passport-google-oauth20": "google",
+            "passport-github2": "github",
+            "passport-github": "github",
+            "passport-facebook": "facebook",
+            "passport-twitter": "twitter",
+            "passport-discord": "discord",
+            "passport-apple": "apple",
+        }
+        for dep, provider in dep_providers.items():
+            if dep in dep_names and provider not in providers:
+                providers.append(provider)
+        return providers
+
+    def _detect_mfa_methods(self, dep_names: set[str]) -> list[str]:
+        """Detect MFA/2FA methods from dependencies."""
+        methods: list[str] = []
+        totp_libs = ["otplib", "speakeasy", "pyotp", "java-totp", "pquerna/otp"]
+        webauthn_libs = [
+            "@simplewebauthn/server", "@simplewebauthn/browser",
+            "py_webauthn", "go-webauthn",
+        ]
+        sms_libs = ["twilio", "@vonage/server-sdk", "nexmo"]
+
+        if any(lib in dep_names for lib in totp_libs):
+            methods.append("totp")
+        if any(lib in dep_names for lib in webauthn_libs):
+            methods.append("webauthn")
+        if any(lib in dep_names for lib in sms_libs):
+            methods.append("sms")
+        return methods
 
     def _detect_strategy(self, dep_names: set[str]) -> str | None:
         for strategy, indicators in AUTH_STRATEGY_INDICATORS.items():

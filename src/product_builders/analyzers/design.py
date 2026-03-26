@@ -100,6 +100,55 @@ class DesignUIAnalyzer(BaseAnalyzer):
                 if found:
                     break
 
+        # Collect deps once for C12/C13/C28 detections
+        deps = self._collect_dep_names(repo_path)
+
+        # C12: Icon library detection
+        icon_libs = {
+            "lucide-react": "lucide", "@lucide/react": "lucide",
+            "@heroicons/react": "heroicons", "heroicons": "heroicons",
+            "@phosphor-icons/react": "phosphor",
+            "@tabler/icons-react": "tabler",
+            "react-icons": "react-icons",
+            "@iconify/react": "iconify",
+            "@fortawesome/fontawesome-free": "fontawesome",
+            "@mui/icons-material": "material-icons",
+            "feather-icons": "feather",
+        }
+        icon_library = None
+        for dep, name in icon_libs.items():
+            if dep in deps:
+                icon_library = name
+                break
+
+        # C13: Storybook / component documentation detection
+        component_doc_tool = None
+        if (repo_path / ".storybook").is_dir():
+            component_doc_tool = "storybook"
+        else:
+            doc_deps = {"histoire": "histoire", "@ladle/react": "ladle"}
+            for dep, name in doc_deps.items():
+                if dep in deps:
+                    component_doc_tool = name
+                    break
+
+        # C28: Font strategy detection
+        font_strategy = None
+        font_deps = {
+            "@next/font": "next-font",
+            "@fontsource/inter": "fontsource", "@fontsource/roboto": "fontsource",
+        }
+        for dep, name in font_deps.items():
+            if dep in deps:
+                font_strategy = name
+                break
+        if not font_strategy:
+            for html_file in self.find_files(repo_path, "**/*.html", "src/**/index.html")[:5]:
+                content = self.read_file(html_file)
+                if content and "fonts.googleapis.com" in content:
+                    font_strategy = "google-fonts-cdn"
+                    break
+
         return DesignUIResult(
             status=AnalysisStatus.SUCCESS,
             css_methodology=css_method,
@@ -112,6 +161,9 @@ class DesignUIAnalyzer(BaseAnalyzer):
             styling_directories=styling_dirs,
             uses_shared_design_system=uses_shared_ds,
             shared_design_system_name=ds_name,
+            icon_library=icon_library,
+            component_doc_tool=component_doc_tool,
+            font_strategy=font_strategy,
         )
 
     def _detect_component_library(self, repo_path: Path) -> tuple[str | None, str | None]:

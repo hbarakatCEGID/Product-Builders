@@ -63,6 +63,12 @@ class ErrorHandlingAnalyzer(BaseAnalyzer):
             repo_path
         )
 
+        # Detect structured logging
+        structured_logging = False
+        structured_indicators = ["structlog", "pino", "@opentelemetry/api", "opentelemetry-sdk"]
+        if any(ind in dep_names for ind in structured_indicators):
+            structured_logging = True
+
         # AST-enriched path: find custom error/exception classes from AST
         if index is not None:
             all_classes = index.get_definitions(kind="class")
@@ -79,6 +85,7 @@ class ErrorHandlingAnalyzer(BaseAnalyzer):
             monitoring_integration=monitoring,
             error_response_format=error_format,
             custom_error_classes=custom_errors,
+            structured_logging=structured_logging,
         )
 
     def _detect_logging_framework(self, dep_names: set[str], repo_path: Path) -> str | None:

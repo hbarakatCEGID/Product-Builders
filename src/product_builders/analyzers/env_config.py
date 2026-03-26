@@ -29,6 +29,46 @@ class EnvConfigAnalyzer(BaseAnalyzer):
         feature_flags = self._detect_feature_flags(repo_path)
         config_dirs = self._detect_config_dirs(repo_path)
 
+        deps = self._collect_dep_names(repo_path)
+
+        # C26: Kubernetes / orchestration detection
+        kubernetes_detected = False
+        k8s_indicators = ["k8s", "kubernetes", "Chart.yaml", "kustomization.yaml", "skaffold.yaml"]
+        for indicator in k8s_indicators:
+            if (repo_path / indicator).exists():
+                kubernetes_detected = True
+                break
+        if not kubernetes_detected:
+            for d in ("k8s", "kubernetes", "deploy", "infra"):
+                if (repo_path / d).is_dir():
+                    yamls = list((repo_path / d).glob("*.yaml")) + list((repo_path / d).glob("*.yml"))
+                    if yamls:
+                        kubernetes_detected = True
+                        break
+
+        # C26: Secrets management detection
+        secrets_mgmt = None
+        secrets_indicators = {
+            "@aws-sdk/client-secrets-manager": "aws-secrets-manager",
+            "@azure/keyvault-secrets": "azure-key-vault",
+            "@google-cloud/secret-manager": "gcp-secret-manager",
+            "infisical-sdk": "infisical",
+            "@infisical/sdk": "infisical",
+        }
+        for dep, name in secrets_indicators.items():
+            if dep in deps:
+                secrets_mgmt = name
+                break
+        if not secrets_mgmt:
+            file_indicators = {
+                "doppler.yaml": "doppler",
+                ".infisical.json": "infisical",
+            }
+            for f, name in file_indicators.items():
+                if (repo_path / f).exists():
+                    secrets_mgmt = name
+                    break
+
         return EnvConfigResult(
             status=AnalysisStatus.SUCCESS,
             config_approach=config_approach,
@@ -38,6 +78,8 @@ class EnvConfigAnalyzer(BaseAnalyzer):
             docker_compose_path=compose,
             feature_flags_system=feature_flags,
             config_directories=config_dirs,
+            kubernetes_detected=kubernetes_detected,
+            secrets_management=secrets_mgmt,
         )
 
     def _detect_config_approach(self, repo_path: Path) -> str | None:

@@ -232,6 +232,9 @@ class DatabaseAnalyzer(BaseAnalyzer):
             elif (repo_path / migration_dir).is_dir():
                 actual_migration_dir = migration_dir
 
+        connection_pooling = self._detect_connection_pooling(repo_path, dep_names)
+        schema_patterns = self._detect_schema_patterns(repo_path)
+
         return DatabaseResult(
             status=AnalysisStatus.SUCCESS,
             database_type=db_type,
@@ -243,7 +246,61 @@ class DatabaseAnalyzer(BaseAnalyzer):
             relationship_patterns=relationship_patterns,
             has_seeds=has_seeds,
             seed_directory=seed_dir,
+            connection_pooling=connection_pooling,
+            schema_patterns=schema_patterns,
         )
+
+    def _detect_connection_pooling(self, repo_path: Path, dep_names: set[str]) -> str | None:
+        """Detect connection pooling tools."""
+        if self.file_exists(repo_path, "pgbouncer.ini"):
+            return "pgbouncer"
+        pool_deps: dict[str, str] = {
+            "pg-pool": "pg-pool",
+            "@neondatabase/serverless": "neon-serverless",
+        }
+        for dep, name in pool_deps.items():
+            if dep in dep_names:
+                return name
+        # Check for HikariCP in Spring config
+        for cfg in (
+            "src/main/resources/application.properties",
+            "src/main/resources/application.yml",
+        ):
+            content = self.read_file(repo_path / cfg)
+            if content and "hikari" in content.lower():
+                return "hikaricp"
+        return None
+
+    def _detect_schema_patterns(self, repo_path: Path) -> list[str]:
+        """Detect common schema patterns from model/migration files."""
+        patterns: list[str] = []
+        # Scan Prisma schema
+        schema = self.read_file(repo_path / "prisma" / "schema.prisma")
+        if schema:
+            if "uuid()" in schema or "cuid()" in schema:
+                patterns.append("uuid-primary-keys")
+            if "deletedAt" in schema or "deleted_at" in schema or "isDeleted" in schema:
+                patterns.append("soft-deletes")
+            if "createdAt" in schema or "updatedAt" in schema or "@updatedAt" in schema:
+                patterns.append("audit-timestamps")
+            if "tenantId" in schema or "tenant_id" in schema or "organizationId" in schema:
+                patterns.append("multi-tenancy")
+        # Scan Django/SQLAlchemy models
+        for pattern in ("**/models.py", "**/models/*.py"):
+            for f in self.find_files(repo_path, pattern)[:10]:
+                content = self.read_file(f)
+                if not content:
+                    continue
+                if "UUIDField" in content or ("uuid" in content.lower() and "primary_key" in content):
+                    if "uuid-primary-keys" not in patterns:
+                        patterns.append("uuid-primary-keys")
+                if "deleted_at" in content or "is_deleted" in content or "soft_delete" in content:
+                    if "soft-deletes" not in patterns:
+                        patterns.append("soft-deletes")
+                if "auto_now_add" in content or "auto_now" in content or "created_at" in content:
+                    if "audit-timestamps" not in patterns:
+                        patterns.append("audit-timestamps")
+        return patterns
 
     def _detect_orm(
         self, repo_path: Path, dep_names: set[str]

@@ -30,6 +30,25 @@ class UserFlowsAnalyzer(BaseAnalyzer):
         has_404 = self._detect_404(repo_path, page_dirs)
         has_error = self._detect_error_page(repo_path, page_dirs)
 
+        # C14: Detect dynamic route parameters
+        dynamic_routes: list[str] = []
+        dynamic_patterns = ["[", "]", "$"]  # [id], [...slug], $param
+        for page_dir in page_dirs:
+            dir_path = repo_path / page_dir
+            if dir_path.is_dir():
+                for f in dir_path.rglob("*"):
+                    if f.is_file() and any(p in f.name for p in dynamic_patterns):
+                        rel = str(f.relative_to(repo_path))
+                        dynamic_routes.append(rel)
+
+        # C14: Detect lazy routes
+        lazy_routes = False
+        for route_file in route_files[:20]:
+            content = self.read_file(repo_path / route_file)
+            if content and ("React.lazy" in content or "dynamic(" in content or "lazy(" in content):
+                lazy_routes = True
+                break
+
         return UserFlowsResult(
             status=AnalysisStatus.SUCCESS,
             route_count=route_count,
@@ -39,6 +58,8 @@ class UserFlowsAnalyzer(BaseAnalyzer):
             has_404_page=has_404,
             has_error_page=has_error,
             page_directories=page_dirs,
+            dynamic_routes=dynamic_routes,
+            lazy_routes=lazy_routes,
         )
 
     def _detect_page_dirs(self, repo_path: Path) -> list[str]:

@@ -49,6 +49,42 @@ class AccessibilityAnalyzer(BaseAnalyzer):
         keyboard = self._detect_keyboard_nav(repo_path)
         contrast = self._detect_color_contrast(repo_path)
 
+        # C19: Form accessibility detection
+        form_a11y: list[str] = []
+        for f in self.find_files(repo_path, "src/**/*.tsx", "src/**/*.jsx", "**/*.html")[:20]:
+            content = self.read_file(f)
+            if not content:
+                continue
+            if 'htmlFor=' in content or ' for=' in content:
+                if "label-association" not in form_a11y:
+                    form_a11y.append("label-association")
+            if 'aria-required' in content:
+                if "aria-required" not in form_a11y:
+                    form_a11y.append("aria-required")
+            if 'aria-invalid' in content:
+                if "aria-invalid" not in form_a11y:
+                    form_a11y.append("aria-invalid")
+            if '<fieldset' in content:
+                if "fieldset-legend" not in form_a11y:
+                    form_a11y.append("fieldset-legend")
+
+        # C20: Focus management detection
+        focus_patterns: list[str] = []
+        dep_names = self._collect_dep_names(repo_path)
+        if "focus-trap-react" in dep_names or "focus-trap" in dep_names:
+            focus_patterns.append("focus-trap")
+
+        for f in self.find_files(repo_path, "src/**/*.tsx", "src/**/*.jsx", "**/*.html")[:15]:
+            content = self.read_file(f)
+            if not content:
+                continue
+            if "skip" in content.lower() and ("main" in content.lower() or "content" in content.lower()) and ("href" in content or "id=" in content):
+                if "skip-link" not in focus_patterns:
+                    focus_patterns.append("skip-link")
+            if "focus-visible" in content or ":focus-visible" in content:
+                if "focus-visible" not in focus_patterns:
+                    focus_patterns.append("focus-visible")
+
         return AccessibilityResult(
             status=AnalysisStatus.SUCCESS,
             wcag_level=wcag,
@@ -57,6 +93,8 @@ class AccessibilityAnalyzer(BaseAnalyzer):
             semantic_html_score=semantic,
             keyboard_navigation=keyboard,
             color_contrast_config=contrast,
+            form_accessibility=form_a11y,
+            focus_management_patterns=focus_patterns,
         )
 
     def _detect_wcag_level(self, repo_path: Path) -> str | None:

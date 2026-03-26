@@ -113,6 +113,55 @@ class TestingAnalyzer(BaseAnalyzer):
                 elif "mocha" in test_script:
                     framework = "mocha"
 
+        dep_names = self.collect_dependency_names(repo_path)
+
+        # C11: Detect test organization strategy
+        test_organization = None
+        collocated = 0
+        separated = 0
+        for f in self.find_files(repo_path, "src/**/*.test.*", "src/**/*.spec.*")[:20]:
+            collocated += 1
+        for f in self.find_files(repo_path, "tests/**/*", "test/**/*", "__tests__/**/*")[:20]:
+            separated += 1
+
+        if collocated > separated and collocated > 3:
+            test_organization = "collocated"
+        elif separated > collocated and separated > 3:
+            test_organization = "separated"
+
+        # Check for BDD
+        bdd_files = self.find_files(repo_path, "**/*.feature", "features/**/*")
+        if bdd_files:
+            test_organization = "bdd"
+
+        # C11: Detect snapshot testing
+        snapshot_testing = bool(self.find_files(repo_path, "**/__snapshots__/**", "**/*.snap"))
+
+        # C11: Detect API testing tools
+        api_test_deps = {
+            "supertest": "supertest",
+            "httpx": "httpx",
+            "rest-assured": "rest-assured",
+            "newman": "newman",
+        }
+        api_testing_tools: list[str] = []
+        for dep, name in api_test_deps.items():
+            if dep in dep_names:
+                api_testing_tools.append(name)
+
+        # C11: Detect visual regression
+        visual_deps = {
+            "chromatic": "chromatic",
+            "@percy/cli": "percy",
+            "@applitools/eyes-cypress": "applitools",
+            "backstopjs": "backstopjs",
+        }
+        visual_regression_tool = None
+        for dep, name in visual_deps.items():
+            if dep in dep_names:
+                visual_regression_tool = name
+                break
+
         return TestingResult(
             status=AnalysisStatus.SUCCESS,
             test_framework=framework,
@@ -124,6 +173,10 @@ class TestingAnalyzer(BaseAnalyzer):
             coverage_config_path=coverage_config,
             fixture_patterns=fixtures,
             e2e_framework=e2e,
+            test_organization=test_organization,
+            snapshot_testing=snapshot_testing,
+            api_testing_tools=api_testing_tools,
+            visual_regression_tool=visual_regression_tool,
         )
 
     def _detect_framework(self, repo_path: Path) -> tuple[str | None, str | None]:

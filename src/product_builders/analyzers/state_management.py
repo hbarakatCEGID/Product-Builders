@@ -66,6 +66,7 @@ class StateManagementAnalyzer(BaseAnalyzer):
         data_fetching = self._detect_data_fetching(repo_path)
         store_structure = self._detect_store_structure(repo_path)
         patterns = self._detect_patterns(repo_path)
+        realtime, form_lib = self._detect_realtime_and_form(repo_path)
 
         # AST-enriched path: verify state library usage from actual imports
         if index is not None:
@@ -95,7 +96,49 @@ class StateManagementAnalyzer(BaseAnalyzer):
             data_fetching_library=data_fetching,
             store_structure=store_structure,
             state_patterns=patterns,
+            realtime_library=realtime,
+            form_library=form_lib,
         )
+
+    def _detect_realtime_and_form(self, repo_path: Path) -> tuple[str | None, str | None]:
+        """Detect real-time and form libraries from dependencies."""
+        pkg = self.read_json(repo_path / "package.json")
+        if not pkg:
+            return None, None
+        deps = {**pkg.get("dependencies", {}), **pkg.get("devDependencies", {})}
+
+        realtime_libs: dict[str, str] = {
+            "socket.io": "socket.io",
+            "socket.io-client": "socket.io",
+            "pusher": "pusher",
+            "pusher-js": "pusher",
+            "ably": "ably",
+            "@liveblocks/client": "liveblocks",
+            "partykit": "partykit",
+            "partysocket": "partykit",
+            "@rails/actioncable": "actioncable",
+        }
+        realtime: str | None = None
+        for dep, name in realtime_libs.items():
+            if dep in deps:
+                realtime = name
+                break
+
+        form_libs: dict[str, str] = {
+            "react-hook-form": "react-hook-form",
+            "formik": "formik",
+            "@tanstack/react-form": "tanstack-form",
+            "vee-validate": "vee-validate",
+            "@angular/forms": "angular-forms",
+            "sveltekit-superforms": "superforms",
+        }
+        form_lib: str | None = None
+        for dep, name in form_libs.items():
+            if dep in deps:
+                form_lib = name
+                break
+
+        return realtime, form_lib
 
     def _detect_state_lib(self, repo_path: Path) -> str | None:
         pkg = self.read_json(repo_path / "package.json")

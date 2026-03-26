@@ -31,6 +31,36 @@ class PerformanceAnalyzer(BaseAnalyzer):
         n_plus_one = self._detect_n_plus_one(repo_path)
         monitoring = self._detect_monitoring(repo_path)
 
+        deps = self.collect_dependency_names(repo_path)
+
+        # C15: Web vitals / performance monitoring
+        web_vitals = None
+        vitals_deps = {
+            "web-vitals": "web-vitals",
+            "@vercel/analytics": "vercel-analytics",
+            "@lhci/cli": "lighthouse-ci",
+        }
+        for dep, name in vitals_deps.items():
+            if dep in deps:
+                web_vitals = name
+                break
+        if not web_vitals:
+            for rc in (".lighthouserc.js", ".lighthouserc.json", ".lighthouserc.yml"):
+                if (repo_path / rc).exists():
+                    web_vitals = "lighthouse-ci"
+                    break
+
+        # C15: Service worker detection
+        sw_detected = False
+        for sw_file in ("sw.js", "service-worker.js", "sw.ts", "service-worker.ts"):
+            if (repo_path / "public" / sw_file).exists() or (repo_path / sw_file).exists():
+                sw_detected = True
+                break
+        if not sw_detected:
+            sw_deps = ["next-pwa", "workbox-webpack-plugin", "@vite-pwa/vite-plugin"]
+            if any(d in deps for d in sw_deps):
+                sw_detected = True
+
         return PerformanceResult(
             status=AnalysisStatus.SUCCESS,
             caching_strategy=caching,
@@ -40,6 +70,8 @@ class PerformanceAnalyzer(BaseAnalyzer):
             image_optimization=image_opt,
             n_plus_one_prevention=n_plus_one,
             performance_monitoring=monitoring,
+            web_vitals_monitoring=web_vitals,
+            service_worker_detected=sw_detected,
         )
 
     def _detect_caching(self, repo_path: Path) -> str | None:

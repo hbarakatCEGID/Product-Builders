@@ -51,6 +51,11 @@ class I18nAnalyzer(BaseAnalyzer):
         file_format, directories = self._detect_translation_files(repo_path)
         default_locale, locales = self._detect_locales(repo_path, directories)
         pattern = self._detect_externalization_pattern(repo_path)
+        translation_management = self._detect_translation_management(repo_path)
+
+        # Detect RTL languages from supported locales
+        rtl_locale_prefixes = {"ar", "he", "fa", "ur", "ps", "ku", "sd", "ug", "yi"}
+        rtl_languages = [loc for loc in locales if loc[:2] in rtl_locale_prefixes]
 
         return I18nResult(
             status=AnalysisStatus.SUCCESS,
@@ -60,7 +65,24 @@ class I18nAnalyzer(BaseAnalyzer):
             default_locale=default_locale,
             supported_locales=locales,
             string_externalization_pattern=pattern,
+            translation_management=translation_management,
+            rtl_languages=rtl_languages,
         )
+
+    def _detect_translation_management(self, repo_path: Path) -> str | None:
+        """Detect translation management system from config files."""
+        tms_configs: dict[str, str] = {
+            ".crowdin.yml": "crowdin",
+            "crowdin.yml": "crowdin",
+            "lokalise.yml": "lokalise",
+            ".phrase.yml": "phrase",
+            "phrase.yml": "phrase",
+            ".tx/config": "transifex",
+        }
+        for cfg, name in tms_configs.items():
+            if (repo_path / cfg).exists():
+                return name
+        return None
 
     def _detect_framework(self, repo_path: Path) -> str | None:
         pkg = self.read_json(repo_path / "package.json")

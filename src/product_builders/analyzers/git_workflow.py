@@ -81,6 +81,24 @@ class GitWorkflowAnalyzer(BaseAnalyzer):
         commit_format = self._detect_commit_format(repo_path)
         branch_strategy = self._detect_branch_strategy(repo_path)
 
+        codeowners_path = None
+        for p in CODEOWNERS_PATHS:
+            if (repo_path / p).exists():
+                codeowners_path = p
+                break
+
+        changelog_path = None
+        for p in CHANGELOG_PATHS:
+            if (repo_path / p).exists():
+                changelog_path = p
+                break
+
+        release_tool = None
+        for path, tool in RELEASE_TOOL_PATHS:
+            if (repo_path / path).exists():
+                release_tool = tool
+                break
+
         return GitWorkflowResult(
             status=AnalysisStatus.SUCCESS,
             git_platform=platform,
@@ -88,6 +106,9 @@ class GitWorkflowAnalyzer(BaseAnalyzer):
             commit_message_format=commit_format,
             pr_template_path=pr_template,
             ci_config_path=ci_config,
+            codeowners_path=codeowners_path,
+            changelog_path=changelog_path,
+            release_tool=release_tool,
         )
 
     def _detect_platform(self, repo_path: Path) -> str | None:
