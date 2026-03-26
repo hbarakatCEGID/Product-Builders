@@ -231,22 +231,24 @@ product-builders bulk-analyze --monorepo /path/to/monorepo
 
 ## CLI reference
 
-Global options: **`--version`**, **`-v` / `--verbose`** (debug logging).
+Global options: **`--version`**, **`-v` / `--verbose`** (debug logging), **`--help`**.
 
-| Command | Description |
-|---------|-------------|
-| **`analyze`** | Run heuristic analyzers on `repo_path`; write `analysis.json` and related outputs. Options: **`--name`** (required), **`--heuristic-only`**, **`--sub-project`** (path inside monorepo). |
-| **`generate`** | Regenerate rules, hooks, permissions, onboarding, checklist from cached profile. Options: **`--name`**, **`--profile`** (role alias), **`--validate`**. |
-| **`setup`** | Write governance for a role into **current directory** (`.cursor/`, etc.). Options: **`--name`**, **`--profile`** (required). |
-| **`export`** | Copy generated artifacts from profile dir to a **target** repo. Options: **`--name`**, **`--target`**, **`--profile`**. |
-| **`list`** | List analyzed products (from `analysis.json` under profiles dir). |
-| **`bulk-analyze`** | Analyze many products via **`--manifest`** YAML or **`--monorepo`** discovery. |
-| **`check-drift`** | Compare cached profile to repo (**git HEAD** and/or **`--full`** heuristic fingerprint). |
-| **`metrics`** | Show recent **`metrics.jsonl`** events for a product. |
-| **`feedback`** | Append an entry to **`feedback.yaml`** for a product (rule accuracy notes). |
-| **`wizard`** | Interactive **quick start by phase** (install path through lifecycle); optional **`-y`**, **`--phase`**, **`--repo`**, **`--name`**. |
+| Command | Description | Key options |
+|---------|-------------|-------------|
+| **`analyze`** | Analyze a product codebase and generate a product profile. Runs heuristic analyzers (fully offline); optionally generates a bootstrap meta-rule for Cursor deep analysis. | **`-n, --name`** (required), **`--heuristic-only`**, **`--sub-project`** |
+| **`generate`** | Regenerate Cursor rules and governance from a cached profile. Applies `overrides.yaml` if present. | **`-n, --name`** (required), **`-p, --profile`** (role alias), **`--validate`** |
+| **`setup`** | Configure local governance for a contributor role in the **current directory** (`.cursor/rules/`, `hooks.json`, `cli.json`, `contributor-profile.json`). | **`-n, --name`** (required), **`-p, --profile`** (required) |
+| **`export`** | Export generated rules, hooks, and scopes to a target product repo. | **`-n, --name`** (required), **`-t, --target`** (required), **`-p, --profile`** |
+| **`list`** | List all analyzed products (from `analysis.json` under profiles dir). | — |
+| **`bulk-analyze`** | Analyze multiple products from a YAML manifest or auto-discover sub-projects in a monorepo. | **`--manifest`**, **`--monorepo`** |
+| **`check-drift`** | Check if a cached profile is stale vs. the current codebase (git HEAD and/or heuristic fingerprints). | **`-n, --name`** (required), **`-r, --repo`** (required), **`--full`** |
+| **`metrics`** | Show recent metrics events (JSON Lines) for a product profile. | **`-n, --name`** (required), **`--limit`** |
+| **`feedback`** | Record feedback on a rule's accuracy for the next regeneration cycle. | **`-n, --name`** (required), **`-r, --rule`** (required), **`-i, --issue`** (required) |
+| **`wizard`** | Interactive walkthrough of all phases (foundation, analysis, generation, extended dimensions, lifecycle). Use **`-y`** for scripting. | **`--phase`** (1–5), **`--repo`**, **`-n, --name`**, **`-p, --profile`**, **`--validate / --no-validate`**, **`--heuristic-only`**, **`-y, --yes`** |
 
-Role aliases for **`--profile`** (see **`resolve_role`** in code): **`engineer`**, **`eng`**, **`pm`**, **`product_manager`**, **`designer`**, **`qa`**, **`qa_tester`**, **`tester`**, **`technical-pm`**, **`technical_pm`**, **`tech_pm`**, and more. Run **`product-builders <command> --help`** for flags; invalid roles list valid aliases in the error message.
+Role aliases for **`--profile`** (see **`resolve_role`** in code): **`engineer`**, **`eng`**, **`pm`**, **`product_manager`**, **`designer`**, **`qa`**, **`qa_tester`**, **`tester`**, **`technical-pm`**, **`technical_pm`**, **`tech_pm`**. Invalid roles list valid aliases in the error message.
+
+Run **`product-builders <command> --help`** for full usage details on any command.
 
 ### Validation & drift
 
@@ -298,7 +300,7 @@ YAML files under **`PB_STANDARDS_DIR`** are loaded and merged into rule generati
 
 ## Web application
 
-FastAPI + Jinja2: landing pages, shipped docs as markdown, product catalog, and OpenAPI.
+FastAPI + Jinja2 + HTMX: landing pages, documentation, product catalog, operations dashboard, and a full REST/WebSocket API.
 
 ```bash
 pip install -e ".[webapp]"
@@ -309,17 +311,36 @@ python -m product_builders.webapp --reload
 
 Open [http://127.0.0.1:8000](http://127.0.0.1:8000). **`GET /health`** for health checks.
 
+### Pages
+
 | Path | Purpose |
 |------|---------|
-| **`/`** | Landing |
+| **`/`** | Landing page |
+| **`/download`** | CLI installation instructions |
 | **`/docs`** | Documentation index |
 | **`/docs/{slug}`** | Rendered markdown page |
-| **`/products`** | Catalog of profiles under **`PB_PROFILES_DIR`** with **`analysis.json`** |
+| **`/products`** | Catalog of profiles under **`PB_PROFILES_DIR`** |
 | **`/products/{name}`** | Product detail + onboarding links |
-| **`/products/{name}/onboarding/{role}`** | Rendered onboarding for a role |
-| **`/api/products`** | JSON list for integrations |
-| **`/download`** | CLI install instructions |
-| **`/api/docs`** | OpenAPI (Swagger) |
+| **`/products/{name}/onboarding/{role}`** | Rendered onboarding guide for a role |
+| **`/operations`** | Operations dashboard (run analyze, generate, export, etc. from the browser) |
+| **`/partials/form/{command}`** | HTMX partial forms for operations tab switching |
+
+### API
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| GET | **`/health`** | Health check |
+| GET | **`/api/products`** | JSON list of all products with metadata |
+| GET | **`/api/recent-paths`** | Recently used repository paths |
+| GET | **`/api/metrics/{product_name}`** | Recent metrics events for a product |
+| POST | **`/api/analyze`** | Start an analysis job |
+| POST | **`/api/generate`** | Start a generation job |
+| POST | **`/api/export`** | Start an export job |
+| POST | **`/api/setup`** | Start a setup job |
+| POST | **`/api/check-drift`** | Start a drift-check job |
+| POST | **`/api/feedback`** | Submit rule feedback |
+| WebSocket | **`/api/ws/execute?job_id={id}`** | Stream job output in real time |
+| GET | **`/api/docs`** | OpenAPI (Swagger UI) |
 
 ---
 
