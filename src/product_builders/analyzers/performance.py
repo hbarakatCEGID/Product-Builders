@@ -61,7 +61,7 @@ class PerformanceAnalyzer(BaseAnalyzer):
             if any(d in deps for d in sw_deps):
                 sw_detected = True
 
-        return PerformanceResult(
+        result = PerformanceResult(
             status=AnalysisStatus.SUCCESS,
             caching_strategy=caching,
             lazy_loading=lazy_loading,
@@ -73,6 +73,22 @@ class PerformanceAnalyzer(BaseAnalyzer):
             web_vitals_monitoring=web_vitals,
             service_worker_detected=sw_detected,
         )
+
+        # Anti-pattern detection
+        anti_patterns = []
+
+        if not result.web_vitals_monitoring:
+            anti_patterns.append("MEDIUM: no web performance monitoring detected (web-vitals, Lighthouse CI, etc.)")
+
+        if not result.lazy_loading and not result.code_splitting:
+            anti_patterns.append("MEDIUM: no lazy loading or code splitting detected")
+
+        if not result.image_optimization:
+            anti_patterns.append("LOW: no image optimization library detected")
+
+        result.anti_patterns = anti_patterns
+
+        return result
 
     def _detect_caching(self, repo_path: Path) -> str | None:
         deps = self.collect_dependency_names(repo_path)

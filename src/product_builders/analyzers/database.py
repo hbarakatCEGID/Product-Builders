@@ -235,7 +235,7 @@ class DatabaseAnalyzer(BaseAnalyzer):
         connection_pooling = self._detect_connection_pooling(repo_path, dep_names)
         schema_patterns = self._detect_schema_patterns(repo_path)
 
-        return DatabaseResult(
+        result = DatabaseResult(
             status=AnalysisStatus.SUCCESS,
             database_type=db_type,
             orm=orm,
@@ -249,6 +249,26 @@ class DatabaseAnalyzer(BaseAnalyzer):
             connection_pooling=connection_pooling,
             schema_patterns=schema_patterns,
         )
+
+        # Anti-pattern detection
+        anti_patterns = []
+
+        # ORM detected but no migrations
+        if result.orm and not result.migration_directory:
+            # Check if migration dir actually exists
+            if result.migration_tool:
+                anti_patterns.append("HIGH: ORM detected but no migration directory found")
+
+        # No seed data
+        if result.orm and not result.has_seeds:
+            anti_patterns.append("LOW: no seed data detected — consider adding seeds for development")
+
+        # No connection pooling for production DBs
+        if result.database_type in ("postgresql", "mysql", "mssql") and not result.connection_pooling:
+            anti_patterns.append("MEDIUM: no connection pooling detected for " + (result.database_type or "database"))
+
+        result.anti_patterns = anti_patterns
+        return result
 
     def _detect_connection_pooling(self, repo_path: Path, dep_names: set[str]) -> str | None:
         """Detect connection pooling tools."""

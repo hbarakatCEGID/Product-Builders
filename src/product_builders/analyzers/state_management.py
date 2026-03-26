@@ -90,7 +90,7 @@ class StateManagementAnalyzer(BaseAnalyzer):
                     data_fetching = data_fetching or lib_name
                     break
 
-        return StateManagementResult(
+        result = StateManagementResult(
             status=AnalysisStatus.SUCCESS,
             state_library=state_lib,
             data_fetching_library=data_fetching,
@@ -99,6 +99,23 @@ class StateManagementAnalyzer(BaseAnalyzer):
             realtime_library=realtime,
             form_library=form_lib,
         )
+
+        # Anti-pattern detection
+        anti_patterns = []
+
+        # Check for multiple conflicting state libraries
+        deps = self.collect_dependency_names(repo_path)
+        detected_state_libs = []
+        for dep, name in _STATE_LIBS.items():
+            if dep in deps:
+                if name not in detected_state_libs:
+                    detected_state_libs.append(name)
+        if len(detected_state_libs) > 2:
+            anti_patterns.append("MEDIUM: multiple state management libraries detected ({}) — consider consolidating".format(", ".join(detected_state_libs)))
+
+        result.anti_patterns = anti_patterns
+
+        return result
 
     def _detect_realtime_and_form(self, repo_path: Path) -> tuple[str | None, str | None]:
         """Detect real-time and form libraries from dependencies."""

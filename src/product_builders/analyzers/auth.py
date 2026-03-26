@@ -126,6 +126,20 @@ class AuthAnalyzer(BaseAnalyzer):
                     if imp not in result.auth_middleware:
                         result.auth_middleware.append(imp)
 
+        # Anti-pattern detection
+        anti_patterns = []
+
+        if result.auth_strategy is None:
+            anti_patterns.append("HIGH: no authentication strategy detected")
+
+        if not result.mfa_methods:
+            if result.auth_strategy:
+                anti_patterns.append("MEDIUM: no MFA/2FA detected — consider adding TOTP or WebAuthn")
+
+        if not result.rate_limiting:
+            anti_patterns.append("MEDIUM: no rate limiting detected on auth endpoints")
+
+        result.anti_patterns = anti_patterns
         return result
 
     def _detect_oauth_providers(self, repo_path: Path) -> list[str]:

@@ -35,7 +35,7 @@ class SecurityAnalyzer(BaseAnalyzer):
         middleware = self._detect_middleware(repo_path)
         vuln_scanner = self._detect_vuln_scanner(repo_path)
 
-        return SecurityResult(
+        result = SecurityResult(
             status=AnalysisStatus.SUCCESS,
             input_validation=input_validation,
             cors_config=cors,
@@ -44,6 +44,36 @@ class SecurityAnalyzer(BaseAnalyzer):
             security_middleware=middleware,
             vulnerability_scanning=vuln_scanner,
         )
+
+        # Anti-pattern detection
+        anti_patterns = []
+
+        # Check if .env is in .gitignore
+        gitignore = self.read_file(repo_path / ".gitignore")
+        if gitignore and ".env" not in gitignore:
+            if (repo_path / ".env").exists():
+                anti_patterns.append("CRITICAL: .env file may not be gitignored — secrets at risk")
+
+        # No vulnerability scanning
+        if result.vulnerability_scanning is None:
+            anti_patterns.append("MEDIUM: no dependency vulnerability scanning detected (Snyk, Dependabot, Renovate, etc.)")
+
+        # No input validation
+        if result.input_validation is None:
+            anti_patterns.append("HIGH: no input validation library detected")
+
+        # No security headers (CSP)
+        if not result.csp_headers:
+            anti_patterns.append("MEDIUM: no Content-Security-Policy (CSP) headers detected")
+
+        # No secrets management beyond .env
+        if result.secrets_management is None:
+            env_files = [f for f in (repo_path / ".env").parent.iterdir() if f.name.startswith(".env")] if (repo_path / ".env").parent.exists() else []
+            if len(env_files) > 2:
+                anti_patterns.append("MEDIUM: multiple .env files but no secrets management tool (Vault, AWS SM, etc.)")
+
+        result.anti_patterns = anti_patterns
+        return result
 
     def _detect_validation(self, repo_path: Path) -> str | None:
         deps = self.collect_dependency_names(

@@ -162,7 +162,7 @@ class TestingAnalyzer(BaseAnalyzer):
                 visual_regression_tool = name
                 break
 
-        return TestingResult(
+        result = TestingResult(
             status=AnalysisStatus.SUCCESS,
             test_framework=framework,
             test_runner=runner,
@@ -178,6 +178,32 @@ class TestingAnalyzer(BaseAnalyzer):
             api_testing_tools=api_testing_tools,
             visual_regression_tool=visual_regression_tool,
         )
+
+        # Anti-pattern detection
+        anti_patterns = []
+
+        if result.test_framework is None:
+            # Check if any test files exist at all
+            test_files = self.find_files(repo_path, "**/*.test.*", "**/*.spec.*", "**/test_*.py", "**/*_test.go")
+            if not test_files:
+                anti_patterns.append("CRITICAL: no tests detected — no test framework, no test files")
+            else:
+                anti_patterns.append("HIGH: test files found but no test framework configured")
+
+        if result.test_framework and result.coverage_tool is None:
+            anti_patterns.append("MEDIUM: tests exist but no coverage tool detected")
+
+        if result.test_framework and result.e2e_framework is None:
+            anti_patterns.append("MEDIUM: unit tests exist but no E2E testing framework detected")
+
+        if result.snapshot_testing:
+            # Check snapshot file count
+            snap_files = self.find_files(repo_path, "**/__snapshots__/**/*.snap")
+            if len(snap_files) > 20:
+                anti_patterns.append("LOW: large number of snapshot files ({}) — consider if all are needed".format(len(snap_files)))
+
+        result.anti_patterns = anti_patterns
+        return result
 
     def _detect_framework(self, repo_path: Path) -> tuple[str | None, str | None]:
         for filename, fw in _TEST_FRAMEWORK_FILES.items():

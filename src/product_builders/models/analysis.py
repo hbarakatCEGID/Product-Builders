@@ -26,6 +26,7 @@ class AnalysisResult(BaseModel):
     status: AnalysisStatus = AnalysisStatus.SUCCESS
     error_message: str | None = None
     raw_data: dict[str, Any] = Field(default_factory=dict)
+    anti_patterns: list[str] = Field(default_factory=list)
 
 
 # ---------------------------------------------------------------------------

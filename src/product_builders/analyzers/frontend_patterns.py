@@ -100,7 +100,7 @@ class FrontendPatternsAnalyzer(BaseAnalyzer):
                     if lib_name not in forms:
                         forms.append(lib_name)
 
-        return FrontendPatternsResult(
+        result = FrontendPatternsResult(
             status=AnalysisStatus.SUCCESS,
             layout_patterns=layout,
             form_libraries=forms,
@@ -111,6 +111,19 @@ class FrontendPatternsAnalyzer(BaseAnalyzer):
             routing_library=routing,
             animation_library=animation,
         )
+
+        # Anti-pattern detection
+        anti_patterns = []
+
+        if not error_boundary:
+            anti_patterns.append("MEDIUM: no error boundary detected — unhandled errors may crash the UI")
+
+        if not loading:
+            anti_patterns.append("LOW: no loading/skeleton patterns detected")
+
+        result.anti_patterns = anti_patterns
+
+        return result
 
     def _detect_layout_patterns(self, repo_path: Path, deps: set[str]) -> list[str]:
         patterns: list[str] = []

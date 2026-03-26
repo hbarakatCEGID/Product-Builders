@@ -85,7 +85,7 @@ class AccessibilityAnalyzer(BaseAnalyzer):
                 if "focus-visible" not in focus_patterns:
                     focus_patterns.append("focus-visible")
 
-        return AccessibilityResult(
+        result = AccessibilityResult(
             status=AnalysisStatus.SUCCESS,
             wcag_level=wcag,
             a11y_testing_tools=tools,
@@ -96,6 +96,28 @@ class AccessibilityAnalyzer(BaseAnalyzer):
             form_accessibility=form_a11y,
             focus_management_patterns=focus_patterns,
         )
+
+        # Anti-pattern detection
+        anti_patterns = []
+
+        if not result.a11y_testing_tools:
+            anti_patterns.append("MEDIUM: no accessibility testing tools detected (axe-core, jest-axe, pa11y, etc.)")
+
+        if not result.aria_usage_detected:
+            anti_patterns.append("MEDIUM: no ARIA attributes detected — interactive elements may not be accessible")
+
+        if result.semantic_html_score == "low":
+            anti_patterns.append("HIGH: low semantic HTML usage — excessive use of div/span instead of semantic elements")
+
+        if not result.form_accessibility:
+            anti_patterns.append("MEDIUM: no form accessibility patterns detected (label associations, aria-required, etc.)")
+
+        if not result.focus_management_patterns:
+            anti_patterns.append("LOW: no focus management patterns detected (skip links, focus trapping, etc.)")
+
+        result.anti_patterns = anti_patterns
+
+        return result
 
     def _detect_wcag_level(self, repo_path: Path) -> str | None:
         for config_name in ("axe.config.js", "axe.config.json", ".pa11yci", "pa11y.json"):

@@ -46,14 +46,47 @@ class CICDAnalyzer(BaseAnalyzer):
         deployment_targets = self._detect_deployment_targets(repo_path)
         required_checks = self._detect_required_checks(repo_path, platform, config_path)
 
-        return CICDResult(
+        # Detect caching and matrix builds from workflow files
+        caching_detected = False
+        matrix_builds = False
+        if config_path:
+            content = self.read_file(repo_path / config_path)
+            if content:
+                if "cache" in content.lower():
+                    caching_detected = True
+                if "matrix" in content.lower() or "strategy:" in content:
+                    matrix_builds = True
+
+        result = CICDResult(
             status=AnalysisStatus.SUCCESS,
             platform=platform,
             config_path=config_path,
             build_steps=build_steps,
             deployment_targets=deployment_targets,
             required_checks=required_checks,
+            caching_detected=caching_detected,
+            matrix_builds=matrix_builds,
         )
+
+        # Anti-pattern detection
+        anti_patterns = []
+
+        if result.platform is None:
+            anti_patterns.append("HIGH: no CI/CD pipeline detected")
+
+        if result.platform and not result.caching_detected:
+            # Check if the workflow file mentions cache
+            if result.config_path:
+                content = self.read_file(repo_path / result.config_path)
+                if content and "cache" not in content.lower():
+                    anti_patterns.append("MEDIUM: CI pipeline detected but no caching configured")
+
+        if result.platform and not result.deployment_targets:
+            anti_patterns.append("MEDIUM: CI pipeline exists but no deployment targets detected")
+
+        result.anti_patterns = anti_patterns
+
+        return result
 
     def _detect_platform(self, repo_path: Path) -> tuple[str | None, str | None]:
         for path_check, platform, config in _CI_PLATFORMS:
