@@ -234,11 +234,15 @@ class TestingAnalyzer(BaseAnalyzer):
         src_dir = repo_path / "src"
         if src_dir.is_dir():
             try:
+                nested_count = 0
                 for d in src_dir.rglob("__tests__"):
+                    if nested_count >= 20:
+                        break
                     if d.is_dir() and not any(s in d.parts for s in SKIP_DIRS):
                         rel = str(d.relative_to(repo_path))
                         if rel not in found:
                             found.append(rel)
+                            nested_count += 1
             except (PermissionError, ValueError):
                 pass
 

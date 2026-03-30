@@ -70,6 +70,24 @@ AUTH_FILE_PATTERNS = [
     "**/*passport*", "**/*strategy*",
 ]
 
+_JS_GUARD_PATTERNS: list[str] = [
+    r"@UseGuards\((\w+)\)",
+    r"isAuthenticated",
+    r"ensureAuthenticated",
+    r"protect\(",
+    r"requireAuth",
+    r"withAuth",
+]
+_PY_GUARD_PATTERNS: list[str] = [
+    r"@login_required",
+    r"@permission_required",
+    r"@requires_auth",
+]
+_JAVA_GUARD_PATTERNS: list[str] = [
+    r"@PreAuthorize",
+    r"@Secured",
+]
+
 
 class AuthAnalyzer(BaseAnalyzer):
     @property
@@ -89,7 +107,7 @@ class AuthAnalyzer(BaseAnalyzer):
             repo_path, dep_names, primary_language=primary_language
         )
         auth_dirs = self._detect_auth_directories(repo_path)
-        oauth_providers = self._detect_oauth_providers(repo_path)
+        oauth_providers = self._detect_oauth_providers(repo_path, dep_names)
         mfa_methods = self._detect_mfa_methods(dep_names)
 
         result = AuthResult(
@@ -143,7 +161,7 @@ class AuthAnalyzer(BaseAnalyzer):
         result.anti_patterns = anti_patterns
         return result
 
-    def _detect_oauth_providers(self, repo_path: Path) -> list[str]:
+    def _detect_oauth_providers(self, repo_path: Path, dep_names: set[str]) -> list[str]:
         """Detect configured OAuth providers from env files and dependencies."""
         providers: list[str] = []
         provider_env_vars: dict[str, list[str]] = {
@@ -163,8 +181,6 @@ class AuthAnalyzer(BaseAnalyzer):
                     if any(v in content for v in env_vars):
                         if provider not in providers:
                             providers.append(provider)
-        # Also check deps for provider-specific passport strategies
-        dep_names = self._collect_dep_names(repo_path)
         dep_providers: dict[str, str] = {
             "passport-google-oauth20": "google",
             "passport-github2": "github",
@@ -287,34 +303,14 @@ class AuthAnalyzer(BaseAnalyzer):
         perm_ext = frozenset({".ts", ".tsx", ".js", ".jsx", ".py", ".java", ".cs", ".rb"})
         prot_ext = frozenset({".ts", ".tsx", ".js", ".jsx", ".py", ".java"})
 
-        # Language-filtered guard patterns to avoid false positives
-        js_guard_patterns = [
-            r"@UseGuards\((\w+)\)",
-            r"isAuthenticated",
-            r"ensureAuthenticated",
-            r"protect\(",
-            r"requireAuth",
-            r"withAuth",
-        ]
-        py_guard_patterns = [
-            r"@login_required",
-            r"@permission_required",
-            r"@requires_auth",
-        ]
-        java_guard_patterns = [
-            r"@PreAuthorize",
-            r"@Secured",
-        ]
-        # Select patterns based on primary language
         if primary_language == "python":
-            guard_patterns = py_guard_patterns
+            guard_patterns = _PY_GUARD_PATTERNS
         elif primary_language == "java":
-            guard_patterns = py_guard_patterns + java_guard_patterns
+            guard_patterns = _JAVA_GUARD_PATTERNS
         elif primary_language in ("javascript", "typescript"):
-            guard_patterns = js_guard_patterns
+            guard_patterns = _JS_GUARD_PATTERNS
         else:
-            # Unknown language — use all patterns
-            guard_patterns = js_guard_patterns + py_guard_patterns + java_guard_patterns
+            guard_patterns = _JS_GUARD_PATTERNS + _PY_GUARD_PATTERNS + _JAVA_GUARD_PATTERNS
 
         scan_dir = self._get_scan_root(repo_path)
         perm_files = 0
