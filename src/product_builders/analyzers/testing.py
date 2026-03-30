@@ -228,7 +228,21 @@ class TestingAnalyzer(BaseAnalyzer):
 
     def _detect_test_dirs(self, repo_path: Path) -> list[str]:
         candidates = ["tests", "test", "spec", "specs", "__tests__", "src/__tests__", "src/test"]
-        return [d for d in candidates if (repo_path / d).is_dir()]
+        found = [d for d in candidates if (repo_path / d).is_dir()]
+
+        # Recursively search for nested __tests__ dirs under src/
+        src_dir = repo_path / "src"
+        if src_dir.is_dir():
+            try:
+                for d in src_dir.rglob("__tests__"):
+                    if d.is_dir() and not any(s in d.parts for s in SKIP_DIRS):
+                        rel = str(d.relative_to(repo_path))
+                        if rel not in found:
+                            found.append(rel)
+            except (PermissionError, ValueError):
+                pass
+
+        return found
 
     def _detect_file_pattern(self, repo_path: Path) -> str | None:
         test_dirs = self._detect_test_dirs(repo_path)

@@ -131,6 +131,15 @@ class ErrorHandlingAnalyzer(BaseAnalyzer):
                 if content and "import logging" in content:
                     found.append("python-logging")
                     break
+        # Fallback: detect console-based logging in TypeScript/JavaScript projects
+        if not found:
+            for ts_file in self.find_files(
+                repo_path, "src/**/*.ts", "src/**/*.tsx", "src/**/*.js", "src/**/*.jsx"
+            )[:10]:
+                content = self.read_file(ts_file)
+                if content and ("console.log(" in content or "console.error(" in content):
+                    found.append("console")
+                    break
         return found
 
     def _detect_logging_config(self, repo_path: Path) -> str | None:

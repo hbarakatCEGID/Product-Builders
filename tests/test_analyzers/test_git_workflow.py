@@ -77,6 +77,30 @@ def test_detects_semantic_release(tmp_path: Path) -> None:
     assert result.release_tool == "semantic-release"
 
 
+def test_detects_github_from_git_config(tmp_path: Path) -> None:
+    """Repo with .git/config containing github.com should detect github platform."""
+    git_dir = tmp_path / ".git"
+    git_dir.mkdir()
+    (git_dir / "config").write_text(
+        '[remote "origin"]\n\turl = https://github.com/user/repo.git\n\tfetch = +refs/heads/*:refs/remotes/origin/*'
+    )
+    analyzer = GitWorkflowAnalyzer()
+    result = analyzer.analyze(tmp_path)
+    assert result.git_platform == "github"
+
+
+def test_detects_gitlab_from_git_config(tmp_path: Path) -> None:
+    """Repo with .git/config containing gitlab.com should detect gitlab platform."""
+    git_dir = tmp_path / ".git"
+    git_dir.mkdir()
+    (git_dir / "config").write_text(
+        '[remote "origin"]\n\turl = git@gitlab.com:user/repo.git\n'
+    )
+    analyzer = GitWorkflowAnalyzer()
+    result = analyzer.analyze(tmp_path)
+    assert result.git_platform == "gitlab"
+
+
 def test_empty_repo(tmp_path: Path) -> None:
     """Empty repo should have no git platform detected."""
     analyzer = GitWorkflowAnalyzer()

@@ -126,6 +126,23 @@ class GitWorkflowAnalyzer(BaseAnalyzer):
         for marker, platform in PLATFORM_MARKERS:
             if (repo_path / marker).exists():
                 return platform
+
+        # Fallback: parse .git/config remote URL to detect platform
+        git_config = repo_path / ".git" / "config"
+        if git_config.exists():
+            content = self.read_file(git_config)
+            if content:
+                remote_patterns: list[tuple[str, str]] = [
+                    ("github.com", "github"),
+                    ("gitlab.com", "gitlab"),
+                    ("dev.azure.com", "azure-devops"),
+                    ("visualstudio.com", "azure-devops"),
+                    ("bitbucket.org", "bitbucket"),
+                ]
+                for host, platform in remote_patterns:
+                    if host in content:
+                        return platform
+
         return None
 
     def _detect_ci_config(self, repo_path: Path) -> str | None:

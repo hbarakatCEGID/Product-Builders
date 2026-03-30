@@ -96,3 +96,17 @@ def test_anti_pattern_no_coverage(tmp_path: Path) -> None:
     analyzer = TestingAnalyzer()
     result = analyzer.analyze(tmp_path)
     assert any("coverage" in ap.lower() for ap in result.anti_patterns)
+
+
+def test_detects_nested_tests_dirs(tmp_path: Path) -> None:
+    """__tests__ dirs nested under src/ should be discovered recursively."""
+    nested = tmp_path / "src" / "components" / "__tests__"
+    nested.mkdir(parents=True)
+    (nested / "Button.test.tsx").write_text("test('renders', () => {});")
+
+    analyzer = TestingAnalyzer()
+    result = analyzer.analyze(tmp_path)
+
+    # Should find the nested __tests__ directory
+    found_nested = any("__tests__" in d for d in result.test_directories)
+    assert found_nested, f"Expected nested __tests__ in {result.test_directories}"

@@ -123,3 +123,36 @@ def test_detects_mfa_totp(tmp_path: Path) -> None:
     result = analyzer.analyze(tmp_path)
 
     assert "totp" in result.mfa_methods
+
+
+def test_detects_supabase_auth_middleware(tmp_path: Path) -> None:
+    """package.json with @supabase/supabase-js should detect supabase-auth middleware."""
+    pkg = {"dependencies": {"@supabase/supabase-js": "^2.0.0"}}
+    (tmp_path / "package.json").write_text(json.dumps(pkg))
+
+    analyzer = AuthAnalyzer()
+    result = analyzer.analyze(tmp_path)
+
+    assert any("supabase" in m for m in result.auth_middleware)
+
+
+def test_no_js_patterns_in_python_project(tmp_path: Path) -> None:
+    """Python project should not match JS-specific guard patterns like @UseGuards."""
+    (tmp_path / "pyproject.toml").write_text('[project]\nname = "myapp"\n')
+    src = tmp_path / "src"
+    src.mkdir()
+    # File content mentions "withAuth" and "requireAuth" but this is a Python project
+    (src / "views.py").write_text(
+        "# Comments referencing JS patterns: withAuth, requireAuth, @UseGuards\n"
+        "def my_view(request):\n"
+        "    pass\n"
+    )
+
+    analyzer = AuthAnalyzer()
+    result = analyzer.analyze(tmp_path)
+
+    # Should NOT detect JS patterns like withAuth or UseGuards
+    for pat in result.protected_route_patterns:
+        assert "UseGuards" not in pat
+        assert "withAuth" not in pat
+        assert "requireAuth" not in pat

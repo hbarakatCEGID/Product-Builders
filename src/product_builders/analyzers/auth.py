@@ -84,8 +84,9 @@ class AuthAnalyzer(BaseAnalyzer):
         dep_names = self._collect_dep_names(repo_path)
         strategy = self._detect_strategy(dep_names)
         middleware = self._detect_middleware(repo_path, dep_names)
+        primary_language = self._detect_primary_language(repo_path)
         permission_model, protected_patterns = self._detect_permission_and_protected(
-            repo_path, dep_names
+            repo_path, dep_names, primary_language=primary_language
         )
         auth_dirs = self._detect_auth_directories(repo_path)
         oauth_providers = self._detect_oauth_providers(repo_path)
@@ -221,6 +222,14 @@ class AuthAnalyzer(BaseAnalyzer):
             "csurf": "csurf",
             "django.contrib.auth": "django-auth",
             "flask-login": "flask-login",
+            # BaaS auth middleware
+            "@supabase/ssr": "supabase-ssr",
+            "@supabase/auth-helpers-nextjs": "supabase-auth-helpers",
+            "@supabase/supabase-js": "supabase-auth",
+            "firebase-admin": "firebase-admin-auth",
+            "@firebase/auth": "firebase-auth",
+            "@clerk/nextjs": "clerk",
+            "@auth0/nextjs-auth0": "auth0",
             # Go auth libs
             "golang-jwt/jwt": "golang-jwt",
             "goth": "goth",
@@ -253,8 +262,21 @@ class AuthAnalyzer(BaseAnalyzer):
 
         return middleware
 
+    def _detect_primary_language(self, repo_path: Path) -> str | None:
+        """Quick heuristic to determine primary language for filtering."""
+        if (repo_path / "package.json").exists():
+            return "javascript"
+        if (repo_path / "pyproject.toml").exists() or (repo_path / "setup.py").exists():
+            return "python"
+        if (repo_path / "pom.xml").exists():
+            return "java"
+        if any((repo_path / f).exists() for f in ("Gemfile", "Rakefile")):
+            return "ruby"
+        return None
+
     def _detect_permission_and_protected(
-        self, repo_path: Path, dep_names: set[str]
+        self, repo_path: Path, dep_names: set[str],
+        *, primary_language: str | None = None,
     ) -> tuple[str | None, list[str]]:
         """Single tree pass for permission heuristics and protected-route patterns."""
         permission_model: str | None = None
@@ -264,17 +286,35 @@ class AuthAnalyzer(BaseAnalyzer):
         patterns: list[str] = []
         perm_ext = frozenset({".ts", ".tsx", ".js", ".jsx", ".py", ".java", ".cs", ".rb"})
         prot_ext = frozenset({".ts", ".tsx", ".js", ".jsx", ".py", ".java"})
-        guard_patterns = [
+
+        # Language-filtered guard patterns to avoid false positives
+        js_guard_patterns = [
             r"@UseGuards\((\w+)\)",
-            r"@login_required",
-            r"@permission_required",
-            r"@requires_auth",
             r"isAuthenticated",
             r"ensureAuthenticated",
             r"protect\(",
             r"requireAuth",
             r"withAuth",
         ]
+        py_guard_patterns = [
+            r"@login_required",
+            r"@permission_required",
+            r"@requires_auth",
+        ]
+        java_guard_patterns = [
+            r"@PreAuthorize",
+            r"@Secured",
+        ]
+        # Select patterns based on primary language
+        if primary_language == "python":
+            guard_patterns = py_guard_patterns
+        elif primary_language == "java":
+            guard_patterns = py_guard_patterns + java_guard_patterns
+        elif primary_language in ("javascript", "typescript"):
+            guard_patterns = js_guard_patterns
+        else:
+            # Unknown language — use all patterns
+            guard_patterns = js_guard_patterns + py_guard_patterns + java_guard_patterns
 
         scan_dir = self._get_scan_root(repo_path)
         perm_files = 0

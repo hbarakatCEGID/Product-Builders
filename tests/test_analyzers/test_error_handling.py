@@ -146,3 +146,20 @@ def test_anti_pattern_no_monitoring(tmp_path: Path) -> None:
     result = analyzer.analyze(tmp_path)
 
     assert any("no error monitoring" in ap for ap in result.anti_patterns)
+
+
+def test_detects_console_logging_in_typescript(tmp_path: Path) -> None:
+    """TypeScript project using console.log should detect 'console' as logging framework."""
+    src = tmp_path / "src"
+    src.mkdir()
+    (src / "app.ts").write_text(
+        "const app = express();\n"
+        "console.log('Server starting...');\n"
+        "console.error('Something failed');\n"
+    )
+
+    analyzer = ErrorHandlingAnalyzer()
+    result = analyzer.analyze(tmp_path)
+
+    assert result.logging_framework == "console"
+    assert "console" in result.logging_frameworks
