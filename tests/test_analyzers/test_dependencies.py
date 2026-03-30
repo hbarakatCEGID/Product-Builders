@@ -8,7 +8,6 @@ from product_builders.analyzers.dependencies import DependencyAnalyzer
 
 
 def test_detects_npm_dependencies(tmp_path: Path) -> None:
-    """package.json with deps and devDeps should detect correct counts."""
     pkg = {
         "dependencies": {
             "react": "^18.2.0",
@@ -32,7 +31,6 @@ def test_detects_npm_dependencies(tmp_path: Path) -> None:
 
 
 def test_detects_python_requirements(tmp_path: Path) -> None:
-    """requirements.txt with packages should detect deps."""
     (tmp_path / "requirements.txt").write_text(
         "flask>=2.0.0\nrequests==2.28.0\n# comment\npydantic\n"
     )
@@ -47,7 +45,6 @@ def test_detects_python_requirements(tmp_path: Path) -> None:
 
 
 def test_detects_lock_file_npm(tmp_path: Path) -> None:
-    """package-lock.json should set lock_file."""
     (tmp_path / "package.json").write_text(json.dumps({"dependencies": {}}))
     (tmp_path / "package-lock.json").write_text("{}")
 
@@ -58,7 +55,6 @@ def test_detects_lock_file_npm(tmp_path: Path) -> None:
 
 
 def test_detects_lock_file_yarn(tmp_path: Path) -> None:
-    """yarn.lock should set lock_file."""
     (tmp_path / "package.json").write_text(json.dumps({"dependencies": {}}))
     (tmp_path / "yarn.lock").write_text("# yarn lockfile v1")
 
@@ -69,7 +65,6 @@ def test_detects_lock_file_yarn(tmp_path: Path) -> None:
 
 
 def test_categorizes_known_packages(tmp_path: Path) -> None:
-    """Known packages like react, jest, eslint should have correct categories."""
     pkg = {
         "dependencies": {"react": "^18.0.0"},
         "devDependencies": {"jest": "^29.0.0", "eslint": "^8.0.0"},
@@ -86,7 +81,6 @@ def test_categorizes_known_packages(tmp_path: Path) -> None:
 
 
 def test_detects_pyproject_toml_deps(tmp_path: Path) -> None:
-    """pyproject.toml with [project.dependencies] should detect deps."""
     (tmp_path / "pyproject.toml").write_text(
         "[project]\nname = \"myapp\"\n\n"
         "[project.dependencies]\n"
@@ -103,7 +97,6 @@ def test_detects_pyproject_toml_deps(tmp_path: Path) -> None:
 
 
 def test_detects_go_mod_deps(tmp_path: Path) -> None:
-    """go.mod with a require block should detect deps."""
     (tmp_path / "go.mod").write_text(
         "module example.com/mymod\n\n"
         "go 1.21\n\n"
@@ -123,7 +116,6 @@ def test_detects_go_mod_deps(tmp_path: Path) -> None:
 
 
 def test_detects_cargo_toml_deps(tmp_path: Path) -> None:
-    """Cargo.toml with [dependencies] should detect deps."""
     (tmp_path / "Cargo.toml").write_text(
         "[package]\nname = \"myapp\"\nversion = \"0.1.0\"\n\n"
         "[dependencies]\n"
@@ -147,7 +139,6 @@ def test_detects_cargo_toml_deps(tmp_path: Path) -> None:
 
 
 def test_empty_repo_no_deps(tmp_path: Path) -> None:
-    """Empty repo should have no dependencies."""
     analyzer = DependencyAnalyzer()
     result = analyzer.analyze(tmp_path)
 
@@ -156,7 +147,6 @@ def test_empty_repo_no_deps(tmp_path: Path) -> None:
 
 
 def test_anti_pattern_no_lock_file(tmp_path: Path) -> None:
-    """package.json but no lock file should trigger anti-pattern."""
     pkg = {"dependencies": {"express": "^4.18.0"}}
     (tmp_path / "package.json").write_text(json.dumps(pkg))
 
@@ -167,7 +157,6 @@ def test_anti_pattern_no_lock_file(tmp_path: Path) -> None:
 
 
 def test_anti_pattern_no_manifest(tmp_path: Path) -> None:
-    """No dependency manifest at all should trigger anti-pattern."""
     analyzer = DependencyAnalyzer()
     result = analyzer.analyze(tmp_path)
 

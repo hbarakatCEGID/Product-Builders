@@ -8,7 +8,6 @@ from product_builders.analyzers.frontend_patterns import FrontendPatternsAnalyze
 
 
 def test_detects_react_hook_form(tmp_path: Path) -> None:
-    """package.json with react-hook-form, assert 'react-hook-form' in form_libraries."""
     pkg = {"dependencies": {"react-hook-form": "^7.0.0"}}
     (tmp_path / "package.json").write_text(json.dumps(pkg))
     analyzer = FrontendPatternsAnalyzer()
@@ -17,7 +16,6 @@ def test_detects_react_hook_form(tmp_path: Path) -> None:
 
 
 def test_detects_react_router(tmp_path: Path) -> None:
-    """package.json with react-router-dom, assert routing_library == 'react-router'."""
     pkg = {"dependencies": {"react-router-dom": "^6.0.0"}}
     (tmp_path / "package.json").write_text(json.dumps(pkg))
     analyzer = FrontendPatternsAnalyzer()
@@ -26,7 +24,6 @@ def test_detects_react_router(tmp_path: Path) -> None:
 
 
 def test_detects_framer_motion(tmp_path: Path) -> None:
-    """package.json with framer-motion, assert animation_library == 'framer-motion'."""
     pkg = {"dependencies": {"framer-motion": "^10.0.0"}}
     (tmp_path / "package.json").write_text(json.dumps(pkg))
     analyzer = FrontendPatternsAnalyzer()
@@ -35,7 +32,6 @@ def test_detects_framer_motion(tmp_path: Path) -> None:
 
 
 def test_detects_error_boundary(tmp_path: Path) -> None:
-    """Create component with 'ErrorBoundary' text, assert error_boundary is True."""
     src = tmp_path / "src"
     src.mkdir()
     (src / "ErrorBoundary.tsx").write_text(
@@ -52,7 +48,6 @@ def test_detects_error_boundary(tmp_path: Path) -> None:
 
 
 def test_detects_loading_patterns(tmp_path: Path) -> None:
-    """Create component with 'Skeleton' text, assert loading_patterns is non-empty."""
     src = tmp_path / "src"
     src.mkdir()
     (src / "Loading.tsx").write_text(
@@ -65,7 +60,6 @@ def test_detects_loading_patterns(tmp_path: Path) -> None:
 
 
 def test_detects_react_virtualized(tmp_path: Path) -> None:
-    """package.json with react-window, assert list_virtualization == 'react-window'."""
     pkg = {"dependencies": {"react-window": "^1.8.0"}}
     (tmp_path / "package.json").write_text(json.dumps(pkg))
     analyzer = FrontendPatternsAnalyzer()
@@ -74,14 +68,12 @@ def test_detects_react_virtualized(tmp_path: Path) -> None:
 
 
 def test_empty_repo(tmp_path: Path) -> None:
-    """Empty repo, assert form_libraries is empty."""
     analyzer = FrontendPatternsAnalyzer()
     result = analyzer.analyze(tmp_path)
     assert result.form_libraries == []
 
 
 def test_anti_pattern_no_error_boundary(tmp_path: Path) -> None:
-    """Source files but no error boundary, should trigger anti-pattern."""
     src = tmp_path / "src"
     src.mkdir()
     (src / "App.tsx").write_text(

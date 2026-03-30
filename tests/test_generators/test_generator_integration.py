@@ -228,7 +228,6 @@ class TestCursorRulesGenerator:
     def test_rules_generator_produces_mdc_files(
         self, minimal_profile: ProductProfile, tmp_path: Path
     ) -> None:
-        """Generate with a minimal profile; at least some .mdc files should appear."""
         gen = CursorRulesGenerator()
         paths = gen.generate(minimal_profile, tmp_path)
 
@@ -240,7 +239,6 @@ class TestCursorRulesGenerator:
     def test_rules_generator_skips_database_when_no_orm(
         self, minimal_profile: ProductProfile, tmp_path: Path
     ) -> None:
-        """When database data is empty, database.mdc should NOT be generated."""
         gen = CursorRulesGenerator()
         gen.generate(minimal_profile, tmp_path)
 
@@ -250,7 +248,6 @@ class TestCursorRulesGenerator:
     def test_rules_generator_includes_database_when_orm_present(
         self, profile_with_database: ProductProfile, tmp_path: Path
     ) -> None:
-        """When database.orm is set, database.mdc should be generated."""
         gen = CursorRulesGenerator()
         gen.generate(profile_with_database, tmp_path)
 
@@ -260,7 +257,6 @@ class TestCursorRulesGenerator:
     def test_rules_generator_with_role(
         self, minimal_profile: ProductProfile, tmp_path: Path
     ) -> None:
-        """Generate with an explicit role; contributor-guide.mdc should exist."""
         gen = CursorRulesGenerator()
         gen.generate(minimal_profile, tmp_path, role=ContributorRole.ENGINEER)
 
@@ -270,7 +266,6 @@ class TestCursorRulesGenerator:
     def test_rules_generator_all_files_have_frontmatter(
         self, minimal_profile: ProductProfile, tmp_path: Path
     ) -> None:
-        """Every generated .mdc file should start with YAML frontmatter ('---')."""
         gen = CursorRulesGenerator()
         gen.generate(minimal_profile, tmp_path)
 
@@ -287,7 +282,6 @@ class TestCursorRulesGenerator:
     def test_rules_generator_with_company_standards(
         self, minimal_profile: ProductProfile, tmp_path: Path
     ) -> None:
-        """Setting company standards should not crash the generator."""
         gen = CursorRulesGenerator()
         gen.set_company_standards({
             "coding": {"max_line_length": 120},
@@ -300,7 +294,6 @@ class TestCursorRulesGenerator:
     def test_rules_generator_returns_file_paths(
         self, minimal_profile: ProductProfile, tmp_path: Path
     ) -> None:
-        """Returned list should contain Path objects that exist on disk."""
         gen = CursorRulesGenerator()
         paths = gen.generate(minimal_profile, tmp_path)
 
@@ -321,7 +314,6 @@ class TestCursorHooksGenerator:
     def test_hooks_generator_produces_json(
         self, profile_with_scopes: ProductProfile, tmp_path: Path
     ) -> None:
-        """Profile with scopes should produce hooks.json for a restricted role."""
         gen = CursorHooksGenerator()
         paths = gen.generate(
             profile_with_scopes, tmp_path, role=ContributorRole.DESIGNER
@@ -334,7 +326,6 @@ class TestCursorHooksGenerator:
     def test_hooks_generator_valid_json_structure(
         self, profile_with_scopes: ProductProfile, tmp_path: Path
     ) -> None:
-        """Hooks output should be valid JSON with a 'hooks' key containing a list."""
         gen = CursorHooksGenerator()
         gen.generate(profile_with_scopes, tmp_path, role=ContributorRole.DESIGNER)
 
@@ -407,7 +398,6 @@ class TestCursorPermissionsGenerator:
     def test_permissions_generator_produces_json(
         self, profile_with_scopes: ProductProfile, tmp_path: Path
     ) -> None:
-        """DESIGNER has forbidden zones -- cli.json should be generated."""
         gen = CursorPermissionsGenerator()
         paths = gen.generate(
             profile_with_scopes, tmp_path, role=ContributorRole.DESIGNER
@@ -420,7 +410,6 @@ class TestCursorPermissionsGenerator:
     def test_permissions_generator_valid_structure(
         self, profile_with_scopes: ProductProfile, tmp_path: Path
     ) -> None:
-        """Permissions output should have permissions > deny > write keys."""
         gen = CursorPermissionsGenerator()
         gen.generate(profile_with_scopes, tmp_path, role=ContributorRole.DESIGNER)
 
@@ -435,7 +424,6 @@ class TestCursorPermissionsGenerator:
     def test_permissions_generator_includes_forbidden_paths(
         self, profile_with_scopes: ProductProfile, tmp_path: Path
     ) -> None:
-        """Forbidden zone paths should appear in deny.write."""
         gen = CursorPermissionsGenerator()
         gen.generate(profile_with_scopes, tmp_path, role=ContributorRole.DESIGNER)
 
@@ -472,7 +460,6 @@ class TestOnboardingGenerator:
     def test_onboarding_generator_produces_two_files(
         self, minimal_profile: ProductProfile, tmp_path: Path
     ) -> None:
-        """OnboardingGenerator should return exactly 2 paths."""
         gen = OnboardingGenerator()
         paths = gen.generate(minimal_profile, tmp_path, role=ContributorRole.ENGINEER)
 
@@ -481,7 +468,6 @@ class TestOnboardingGenerator:
     def test_onboarding_generates_role_guide(
         self, minimal_profile: ProductProfile, tmp_path: Path
     ) -> None:
-        """Should generate docs/onboarding-engineer.md."""
         gen = OnboardingGenerator()
         gen.generate(minimal_profile, tmp_path, role=ContributorRole.ENGINEER)
 
@@ -491,7 +477,6 @@ class TestOnboardingGenerator:
     def test_onboarding_generates_bootstrap_rule(
         self, minimal_profile: ProductProfile, tmp_path: Path
     ) -> None:
-        """Should generate .cursor/rules/bootstrap-meta-rule.mdc."""
         gen = OnboardingGenerator()
         gen.generate(minimal_profile, tmp_path)
 
@@ -501,7 +486,6 @@ class TestOnboardingGenerator:
     def test_onboarding_guide_contains_role_name(
         self, minimal_profile: ProductProfile, tmp_path: Path
     ) -> None:
-        """The guide for ENGINEER should mention 'Engineer' in its content."""
         gen = OnboardingGenerator()
         gen.generate(minimal_profile, tmp_path, role=ContributorRole.ENGINEER)
 
@@ -521,7 +505,6 @@ class TestReviewChecklistGenerator:
     def test_checklist_generator_produces_file(
         self, minimal_profile: ProductProfile, tmp_path: Path
     ) -> None:
-        """Should generate review-checklist.md."""
         gen = ReviewChecklistGenerator()
         gen.generate(minimal_profile, tmp_path)
 
@@ -531,7 +514,6 @@ class TestReviewChecklistGenerator:
     def test_checklist_content_is_markdown(
         self, minimal_profile: ProductProfile, tmp_path: Path
     ) -> None:
-        """Checklist content should contain markdown checklist items."""
         gen = ReviewChecklistGenerator()
         gen.generate(minimal_profile, tmp_path)
 
@@ -545,7 +527,6 @@ class TestReviewChecklistGenerator:
     def test_checklist_generator_returns_single_path(
         self, minimal_profile: ProductProfile, tmp_path: Path
     ) -> None:
-        """Should return a list with exactly 1 Path."""
         gen = ReviewChecklistGenerator()
         paths = gen.generate(minimal_profile, tmp_path)
 
@@ -563,7 +544,6 @@ class TestRegistry:
     """Tests for the generator registry."""
 
     def test_all_generators_registered(self) -> None:
-        """Registry should contain exactly 5 generators."""
         generators = get_all_generators()
         assert len(generators) == 5, (
             f"Expected 5 generators, got {len(generators)}: "
@@ -571,7 +551,6 @@ class TestRegistry:
         )
 
     def test_generator_names_unique(self) -> None:
-        """All registered generators should have distinct names."""
         generators = get_all_generators()
         names = [g.name for g in generators]
         assert len(names) == len(set(names)), (
@@ -579,7 +558,6 @@ class TestRegistry:
         )
 
     def test_generators_have_name_property(self) -> None:
-        """All generators should have a non-empty name property."""
         generators = get_all_generators()
         for gen in generators:
             assert hasattr(gen, "name")
@@ -598,7 +576,6 @@ class TestCrossGenerator:
     def test_all_generators_run_with_minimal_profile(
         self, minimal_profile: ProductProfile, tmp_path: Path
     ) -> None:
-        """All 5 generators should run without exception on a minimal profile."""
         generators = get_all_generators()
         assert len(generators) == 5
 
@@ -614,7 +591,6 @@ class TestCrossGenerator:
     def test_all_generators_run_with_complete_profile(
         self, rich_profile: ProductProfile, tmp_path: Path
     ) -> None:
-        """All generators should run without exception on a feature-rich profile."""
         generators = get_all_generators()
         assert len(generators) == 5
 

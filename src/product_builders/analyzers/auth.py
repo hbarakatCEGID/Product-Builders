@@ -16,6 +16,12 @@ from product_builders.analyzers.base import (
     SKIP_DIRS,
     BaseAnalyzer,
 )
+from product_builders.analyzers.deps import (
+    BAAS_AUTH_MIDDLEWARE,
+    LANG_JAVA,
+    LANG_JAVASCRIPT,
+    LANG_TYPESCRIPT,
+)
 from product_builders.analyzers.registry import register
 from product_builders.models.analysis import AnalysisStatus, AuthResult
 
@@ -238,14 +244,7 @@ class AuthAnalyzer(BaseAnalyzer):
             "csurf": "csurf",
             "django.contrib.auth": "django-auth",
             "flask-login": "flask-login",
-            # BaaS auth middleware
-            "@supabase/ssr": "supabase-ssr",
-            "@supabase/auth-helpers-nextjs": "supabase-auth-helpers",
-            "@supabase/supabase-js": "supabase-auth",
-            "firebase-admin": "firebase-admin-auth",
-            "@firebase/auth": "firebase-auth",
-            "@clerk/nextjs": "clerk",
-            "@auth0/nextjs-auth0": "auth0",
+            **BAAS_AUTH_MIDDLEWARE,
             # Go auth libs
             "golang-jwt/jwt": "golang-jwt",
             "goth": "goth",
@@ -278,18 +277,6 @@ class AuthAnalyzer(BaseAnalyzer):
 
         return middleware
 
-    def _detect_primary_language(self, repo_path: Path) -> str | None:
-        """Quick heuristic to determine primary language for filtering."""
-        if (repo_path / "package.json").exists():
-            return "javascript"
-        if (repo_path / "pyproject.toml").exists() or (repo_path / "setup.py").exists():
-            return "python"
-        if (repo_path / "pom.xml").exists():
-            return "java"
-        if any((repo_path / f).exists() for f in ("Gemfile", "Rakefile")):
-            return "ruby"
-        return None
-
     def _detect_permission_and_protected(
         self, repo_path: Path, dep_names: set[str],
         *, primary_language: str | None = None,
@@ -303,12 +290,13 @@ class AuthAnalyzer(BaseAnalyzer):
         perm_ext = frozenset({".ts", ".tsx", ".js", ".jsx", ".py", ".java", ".cs", ".rb"})
         prot_ext = frozenset({".ts", ".tsx", ".js", ".jsx", ".py", ".java"})
 
-        if primary_language == "python":
-            guard_patterns = _PY_GUARD_PATTERNS
-        elif primary_language == "java":
+        if primary_language == LANG_JAVA:
             guard_patterns = _JAVA_GUARD_PATTERNS
-        elif primary_language in ("javascript", "typescript"):
+        elif primary_language in (LANG_JAVASCRIPT, LANG_TYPESCRIPT):
             guard_patterns = _JS_GUARD_PATTERNS
+        elif primary_language is not None:
+            # Python, Ruby, Go, etc. — use Python-style decorator patterns
+            guard_patterns = _PY_GUARD_PATTERNS
         else:
             guard_patterns = _JS_GUARD_PATTERNS + _PY_GUARD_PATTERNS + _JAVA_GUARD_PATTERNS
 

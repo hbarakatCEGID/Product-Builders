@@ -11,6 +11,7 @@ import re
 from pathlib import Path
 
 from product_builders.analyzers.base import BaseAnalyzer
+from product_builders.analyzers.deps import GIT_REMOTE_HOST_TO_PLATFORM
 from product_builders.analyzers.registry import register
 from product_builders.models.analysis import AnalysisStatus, GitWorkflowResult
 
@@ -132,14 +133,7 @@ class GitWorkflowAnalyzer(BaseAnalyzer):
         if git_config.exists():
             content = self.read_file(git_config)
             if content:
-                remote_patterns: list[tuple[str, str]] = [
-                    ("github.com", "github"),
-                    ("gitlab.com", "gitlab"),
-                    ("dev.azure.com", "azure-devops"),
-                    ("visualstudio.com", "azure-devops"),
-                    ("bitbucket.org", "bitbucket"),
-                ]
-                for host, platform in remote_patterns:
+                for host, platform in GIT_REMOTE_HOST_TO_PLATFORM.items():
                     if host in content:
                         return platform
 

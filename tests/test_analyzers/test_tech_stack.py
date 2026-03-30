@@ -27,7 +27,6 @@ def test_detects_languages_from_files(tmp_path: Path) -> None:
 
 
 def test_detects_frameworks_from_package_json(tmp_path: Path) -> None:
-    """package.json with next and react deps should detect both frameworks."""
     pkg = {
         "dependencies": {
             "next": "14.0.0",
@@ -45,7 +44,6 @@ def test_detects_frameworks_from_package_json(tmp_path: Path) -> None:
 
 
 def test_detects_build_tools(tmp_path: Path) -> None:
-    """Creating vite.config.ts should detect vite as a build tool."""
     (tmp_path / "vite.config.ts").write_text("export default {}")
 
     analyzer = TechStackAnalyzer()
@@ -55,7 +53,6 @@ def test_detects_build_tools(tmp_path: Path) -> None:
 
 
 def test_detects_package_managers_from_lockfile(tmp_path: Path) -> None:
-    """pnpm-lock.yaml should detect pnpm as the package manager."""
     (tmp_path / "pnpm-lock.yaml").write_text("lockfileVersion: 5.4")
 
     analyzer = TechStackAnalyzer()
@@ -65,7 +62,6 @@ def test_detects_package_managers_from_lockfile(tmp_path: Path) -> None:
 
 
 def test_detects_runtime_versions(tmp_path: Path) -> None:
-    """.nvmrc with a version string should populate runtime_versions['node']."""
     (tmp_path / ".nvmrc").write_text("20.11.0\n")
 
     analyzer = TechStackAnalyzer()
@@ -75,7 +71,6 @@ def test_detects_runtime_versions(tmp_path: Path) -> None:
 
 
 def test_empty_repo_returns_success(tmp_path: Path) -> None:
-    """An empty repo should still return success with empty languages."""
     analyzer = TechStackAnalyzer()
     result = analyzer.analyze(tmp_path)
 
@@ -102,7 +97,6 @@ def test_normalizes_framework_versions(tmp_path: Path) -> None:
 
 
 def test_excludes_test_dirs_from_language_percentage(tmp_path: Path) -> None:
-    """Files in tests/ should not inflate language percentages."""
     src = tmp_path / "src"
     src.mkdir()
     (src / "app.ts").write_text("const a = 1;")
@@ -122,7 +116,6 @@ def test_excludes_test_dirs_from_language_percentage(tmp_path: Path) -> None:
 
 
 def test_anti_pattern_no_source_files(tmp_path: Path) -> None:
-    """An empty repo should trigger the 'no source code files' anti-pattern."""
     analyzer = TechStackAnalyzer()
     result = analyzer.analyze(tmp_path)
 
@@ -130,7 +123,6 @@ def test_anti_pattern_no_source_files(tmp_path: Path) -> None:
 
 
 def test_anti_pattern_no_framework(tmp_path: Path) -> None:
-    """Repo with .py files but no framework should trigger 'no framework detected'."""
     src = tmp_path / "src"
     src.mkdir()
     (src / "main.py").write_text("print('hello')")

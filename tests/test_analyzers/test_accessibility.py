@@ -8,7 +8,6 @@ from product_builders.analyzers.accessibility import AccessibilityAnalyzer
 
 
 def test_detects_axe_core_tool(tmp_path: Path) -> None:
-    """package.json with axe-core, assert 'axe-core' in a11y_testing_tools."""
     pkg = {"devDependencies": {"axe-core": "^4.7.0"}}
     (tmp_path / "package.json").write_text(json.dumps(pkg))
     analyzer = AccessibilityAnalyzer()
@@ -17,7 +16,6 @@ def test_detects_axe_core_tool(tmp_path: Path) -> None:
 
 
 def test_detects_jest_axe_tool(tmp_path: Path) -> None:
-    """package.json with jest-axe, assert 'jest-axe' in a11y_testing_tools."""
     pkg = {"devDependencies": {"jest-axe": "^8.0.0"}}
     (tmp_path / "package.json").write_text(json.dumps(pkg))
     analyzer = AccessibilityAnalyzer()
@@ -26,7 +24,6 @@ def test_detects_jest_axe_tool(tmp_path: Path) -> None:
 
 
 def test_detects_aria_usage(tmp_path: Path) -> None:
-    """Create src/Button.tsx with aria-label, assert aria_usage_detected is True."""
     src = tmp_path / "src"
     src.mkdir()
     (src / "Button.tsx").write_text(
@@ -59,7 +56,6 @@ def test_detects_high_semantic_html(tmp_path: Path) -> None:
 
 
 def test_detects_keyboard_navigation(tmp_path: Path) -> None:
-    """Create file with onKeyDown handler, assert keyboard_navigation is True."""
     src = tmp_path / "src"
     src.mkdir()
     (src / "Search.tsx").write_text(
@@ -71,14 +67,12 @@ def test_detects_keyboard_navigation(tmp_path: Path) -> None:
 
 
 def test_empty_repo(tmp_path: Path) -> None:
-    """Empty repo, assert a11y_testing_tools is empty."""
     analyzer = AccessibilityAnalyzer()
     result = analyzer.analyze(tmp_path)
     assert result.a11y_testing_tools == []
 
 
 def test_anti_pattern_no_a11y_tools(tmp_path: Path) -> None:
-    """No a11y tools, should trigger anti-pattern."""
     (tmp_path / "package.json").write_text(json.dumps({"dependencies": {"react": "^18.0.0"}}))
     analyzer = AccessibilityAnalyzer()
     result = analyzer.analyze(tmp_path)
@@ -86,7 +80,6 @@ def test_anti_pattern_no_a11y_tools(tmp_path: Path) -> None:
 
 
 def test_anti_pattern_no_aria(tmp_path: Path) -> None:
-    """Source files but no ARIA attributes, should trigger anti-pattern."""
     src = tmp_path / "src"
     src.mkdir()
     (src / "App.tsx").write_text(

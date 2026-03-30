@@ -21,6 +21,15 @@ from typing import TYPE_CHECKING, TypeVar
 if TYPE_CHECKING:
     from product_builders.ast.index import CodebaseIndex
 
+from product_builders.analyzers.deps import (
+    LANG_CSHARP,
+    LANG_GO,
+    LANG_JAVA,
+    LANG_JAVASCRIPT,
+    LANG_PYTHON,
+    LANG_RUBY,
+    LANG_RUST,
+)
 from product_builders.models.analysis import AnalysisResult, AnalysisStatus
 
 logger = logging.getLogger(__name__)
@@ -167,6 +176,24 @@ class BaseAnalyzer(ABC):
                 continue
             count += 1
             yield path, content
+
+    def _detect_primary_language(self, repo_path: Path) -> str | None:
+        """Infer the primary language from manifest files present in the repo."""
+        if (repo_path / "package.json").exists():
+            return LANG_JAVASCRIPT
+        if (repo_path / "pyproject.toml").exists() or (repo_path / "setup.py").exists():
+            return LANG_PYTHON
+        if (repo_path / "pom.xml").exists() or (repo_path / "build.gradle").exists():
+            return LANG_JAVA
+        if any((repo_path / f).exists() for f in ("Gemfile", "Rakefile")):
+            return LANG_RUBY
+        if (repo_path / "go.mod").exists():
+            return LANG_GO
+        if (repo_path / "Cargo.toml").exists():
+            return LANG_RUST
+        if any(self.find_files(repo_path, "*.csproj")):
+            return LANG_CSHARP
+        return None
 
     def _collect_dep_names(
         self, repo_path: Path, *, include_requirements_txt: bool = True

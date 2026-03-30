@@ -10,7 +10,6 @@ from product_builders.analyzers.cicd import CICDAnalyzer
 
 
 def test_detects_github_actions(tmp_path: Path) -> None:
-    """Create .github/workflows/ci.yml with simple workflow, assert platform == 'github-actions'."""
     wf_dir = tmp_path / ".github" / "workflows"
     wf_dir.mkdir(parents=True)
     workflow = {
@@ -33,7 +32,6 @@ def test_detects_github_actions(tmp_path: Path) -> None:
 
 
 def test_detects_gitlab_ci(tmp_path: Path) -> None:
-    """Create .gitlab-ci.yml, assert platform == 'gitlab-ci'."""
     (tmp_path / ".gitlab-ci.yml").write_text("stages:\n  - test\n")
     analyzer = CICDAnalyzer()
     result = analyzer.analyze(tmp_path)
@@ -41,7 +39,6 @@ def test_detects_gitlab_ci(tmp_path: Path) -> None:
 
 
 def test_detects_jenkins(tmp_path: Path) -> None:
-    """Create Jenkinsfile, assert platform == 'jenkins'."""
     (tmp_path / "Jenkinsfile").write_text("pipeline {\n  agent any\n  stages {}\n}\n")
     analyzer = CICDAnalyzer()
     result = analyzer.analyze(tmp_path)
@@ -49,7 +46,6 @@ def test_detects_jenkins(tmp_path: Path) -> None:
 
 
 def test_detects_build_steps(tmp_path: Path) -> None:
-    """Create workflow with 'npm test' run step, assert 'npm test' in build_steps."""
     wf_dir = tmp_path / ".github" / "workflows"
     wf_dir.mkdir(parents=True)
     workflow = {
@@ -72,7 +68,6 @@ def test_detects_build_steps(tmp_path: Path) -> None:
 
 
 def test_detects_docker_deployment(tmp_path: Path) -> None:
-    """Create Dockerfile, assert 'docker' in deployment_targets."""
     (tmp_path / "Dockerfile").write_text("FROM node:18\nCOPY . .\nRUN npm install\n")
     analyzer = CICDAnalyzer()
     result = analyzer.analyze(tmp_path)
@@ -80,7 +75,6 @@ def test_detects_docker_deployment(tmp_path: Path) -> None:
 
 
 def test_detects_vercel_deployment(tmp_path: Path) -> None:
-    """Create vercel.json, assert 'vercel' in deployment_targets."""
     (tmp_path / "vercel.json").write_text(json.dumps({"version": 2}))
     analyzer = CICDAnalyzer()
     result = analyzer.analyze(tmp_path)
@@ -88,7 +82,6 @@ def test_detects_vercel_deployment(tmp_path: Path) -> None:
 
 
 def test_empty_repo_no_cicd(tmp_path: Path) -> None:
-    """Empty repo, should trigger 'no CI/CD pipeline' anti-pattern."""
     analyzer = CICDAnalyzer()
     result = analyzer.analyze(tmp_path)
     assert result.platform is None
