@@ -1,4 +1,4 @@
-"""Smoke tests for the FastAPI webapp (requires optional [webapp] + dev httpx)."""
+"""Smoke tests for the FastAPI webapp (uses httpx from default dev deps)."""
 
 from __future__ import annotations
 

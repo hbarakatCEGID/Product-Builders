@@ -26,7 +26,7 @@ Blocked commands are **filtered by the project's actual tech stack**: tool-speci
 Governance accuracy depends on the quality of analysis. Product Builders supports three layers of analysis intelligence:
 
 1. **Heuristic analysis** (always) — file existence, dependency manifests, regex patterns, config parsing
-2. **AST pre-pass** (optional, `pip install product-builders[ast]`) — tree-sitter parses TypeScript, JavaScript, and Python for imports, exports, definitions, decorators, and components
+2. **AST pre-pass** (default install; degrades gracefully if tree-sitter is unavailable) — tree-sitter parses TypeScript, JavaScript, and Python for imports, exports, definitions, decorators, and components
 3. **Cursor-assisted deep analysis** (optional) — adaptive bootstrap prompts guide Cursor through architecture, domain model, and convention analysis; results are merged via `ingest-deep`
 
 Each layer enriches the `ProductProfile`, which drives all generated governance artifacts.

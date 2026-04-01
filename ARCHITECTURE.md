@@ -157,7 +157,7 @@ flowchart TB
 
 ### AST Pre-Pass (Optional)
 
-When tree-sitter is installed (`pip install product-builders[ast]`), the `analyze` command runs an AST pre-pass before the heuristic analyzers:
+When tree-sitter is available (included in the default package install), the `analyze` command runs an AST pre-pass before the heuristic analyzers:
 
 1. **TechStack analyzer runs first** to detect which languages are present
 2. **`build_codebase_index()`** parses up to 500 source files using tree-sitter

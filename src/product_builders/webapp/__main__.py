@@ -12,7 +12,7 @@ def main() -> None:
     except ImportError as e:
         print(
             "uvicorn is required to run the webapp. Install with:\n"
-            "  pip install 'product-builders[webapp]'\n"
+            "  pip install -e .\n"
             "or: pip install uvicorn[standard]",
             file=sys.stderr,
         )

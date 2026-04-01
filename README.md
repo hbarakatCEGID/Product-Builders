@@ -20,15 +20,17 @@ That's it. Template rules work immediately after Step 1. Step 2 adds project-spe
 
 ## What you get
 
-| Output | Purpose |
-|--------|---------|
-| **Heuristic profile** (`analysis.json`) | Structured snapshot of stack, DB, auth, errors, security, tests, CI/CD, BaaS, component libraries, and 20 dimensions |
-| **Cursor rules** (`.cursor/rules/*.mdc`) | Product-specific guidance for the AI (18+ rules covering all dimensions) |
-| **Enrichment meta-rule** (`enrich-all.mdc`) | Self-pacing instructions for Cursor to rewrite rules with project-specific depth |
-| **Hooks** (`.cursor/hooks.json`) | Layer 2: contextual blocking with messages (e.g. read-only zones) |
-| **Permissions** (`.cursor/cli.json`) | Layer 3: hard deny for paths/commands per role |
-| **`scopes.yaml`** | Single source of truth for zones -- drives all three governance layers |
-| **Onboarding & checklist** | Role-specific docs and CI-friendly review checklist |
+
+| Output                                      | Purpose                                                                                                              |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **Heuristic profile** (`analysis.json`)     | Structured snapshot of stack, DB, auth, errors, security, tests, CI/CD, BaaS, component libraries, and 20 dimensions |
+| **Cursor rules** (`.cursor/rules/*.mdc`)    | Product-specific guidance for the AI (18+ rules covering all dimensions)                                             |
+| **Enrichment meta-rule** (`enrich-all.mdc`) | Self-pacing instructions for Cursor to rewrite rules with project-specific depth                                     |
+| **Hooks** (`.cursor/hooks.json`)            | Layer 2: contextual blocking with messages (e.g. read-only zones)                                                    |
+| **Permissions** (`.cursor/cli.json`)        | Layer 3: hard deny for paths/commands per role                                                                       |
+| `**scopes.yaml`**                           | Single source of truth for zones -- drives all three governance layers                                               |
+| **Onboarding & checklist**                  | Role-specific docs and CI-friendly review checklist                                                                  |
+
 
 ### How rules get project-specific
 
@@ -37,6 +39,7 @@ That's it. Template rules work immediately after Step 1. Step 2 adds project-spe
 3. **Cursor enrichment** (optional, ~15 min) -- A self-pacing meta-rule instructs Cursor to rewrite rules with real code examples, anti-patterns, and file-path citations from the actual codebase
 
 The enrichment meta-rule works in 4 phases to prevent context window decay:
+
 - **Phase 1: Critical** -- database, auth, security
 - **Phase 2: Architecture** -- architecture, conventions, error handling, API
 - **Phase 3: Frontend** -- design system, frontend patterns, routes, state
@@ -61,13 +64,7 @@ The enrichment meta-rule includes **gap-aware questions** -- instead of generic 
 pip install -e .
 ```
 
-### Optional extras
-
-```bash
-pip install -e ".[webapp]"    # Web UI + API
-pip install -e ".[ast]"       # AST-enhanced analysis (tree-sitter)
-pip install -e ".[dev]"       # Tests, ruff, mypy
-```
+This installs the CLI, web app stack (FastAPI, uvicorn), tree-sitter AST support, and dev tooling (pytest, ruff, mypy).
 
 ---
 
@@ -121,20 +118,22 @@ product-builders metrics --name myapp
 
 ## CLI reference
 
-| Command | Description | Key options |
-|---------|-------------|-------------|
-| **`setup-product`** | **Recommended.** Analyze + generate + export in one step. | `REPO_PATH` (arg), `-n, --name`, `-p, --profile`, `--heuristic-only`, `--regenerate` |
-| **`analyze`** | Run heuristic analyzers on a product repo. | `-n, --name`, `--heuristic-only`, `--sub-project` |
-| **`generate`** | Regenerate rules from a cached profile. | `-n, --name`, `-p, --profile`, `--validate` |
-| **`export`** | Copy rules/hooks/permissions to a product repo. | `-n, --name`, `-t, --target`, `-p, --profile` |
-| **`setup`** | Install role-specific governance in current directory. | `-n, --name`, `-p, --profile` (required) |
-| **`ingest-deep`** | Merge Cursor-produced deep analysis into profile. | `-n, --name`, `-r, --repo`, `--deep-file`, `--dry-run` |
-| **`list`** | List all analyzed products. | -- |
-| **`bulk-analyze`** | Analyze multiple repos from manifest or monorepo. | `--manifest`, `--monorepo` |
-| **`check-drift`** | Detect stale rules vs. current codebase. | `-n, --name`, `-r, --repo`, `--full` |
-| **`metrics`** | Show recent metrics events. | `-n, --name`, `--limit` |
-| **`feedback`** | Record rule accuracy feedback. | `-n, --name`, `-r, --rule`, `-i, --issue` |
-| **`wizard`** | Interactive walkthrough of all phases. | `--phase`, `-y`, `--repo`, `-n`, `-p`, `--validate` |
+
+| Command             | Description                                               | Key options                                                                          |
+| ------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `**setup-product**` | **Recommended.** Analyze + generate + export in one step. | `REPO_PATH` (arg), `-n, --name`, `-p, --profile`, `--heuristic-only`, `--regenerate` |
+| `**analyze`**       | Run heuristic analyzers on a product repo.                | `-n, --name`, `--heuristic-only`, `--sub-project`                                    |
+| `**generate`**      | Regenerate rules from a cached profile.                   | `-n, --name`, `-p, --profile`, `--validate`                                          |
+| `**export**`        | Copy rules/hooks/permissions to a product repo.           | `-n, --name`, `-t, --target`, `-p, --profile`                                        |
+| `**setup**`         | Install role-specific governance in current directory.    | `-n, --name`, `-p, --profile` (required)                                             |
+| `**ingest-deep**`   | Merge Cursor-produced deep analysis into profile.         | `-n, --name`, `-r, --repo`, `--deep-file`, `--dry-run`                               |
+| `**list**`          | List all analyzed products.                               | --                                                                                   |
+| `**bulk-analyze**`  | Analyze multiple repos from manifest or monorepo.         | `--manifest`, `--monorepo`                                                           |
+| `**check-drift**`   | Detect stale rules vs. current codebase.                  | `-n, --name`, `-r, --repo`, `--full`                                                 |
+| `**metrics**`       | Show recent metrics events.                               | `-n, --name`, `--limit`                                                              |
+| `**feedback**`      | Record rule accuracy feedback.                            | `-n, --name`, `-r, --rule`, `-i, --issue`                                            |
+| `**wizard**`        | Interactive walkthrough of all phases.                    | `--phase`, `-y`, `--repo`, `-n`, `-p`, `--validate`                                  |
+
 
 Role aliases: `engineer`, `eng`, `pm`, `product_manager`, `designer`, `qa`, `qa_tester`, `tester`, `technical-pm`, `technical_pm`, `tech_pm`.
 
@@ -146,61 +145,62 @@ Role aliases: `engineer`, `eng`, `pm`, `product_manager`, `designer`, `qa`, `qa_
 2. **Hooks (smart block)** -- `hooks.json` intercepts edits with helpful messages
 3. **Permissions (hard deny)** -- `cli.json` enforces filesystem boundaries
 
-**`scopes.yaml`** maps zones (e.g. `frontend_ui`, `database`) to glob patterns and defines what each role can access.
+`**scopes.yaml`** maps zones (e.g. `frontend_ui`, `database`) to glob patterns and defines what each role can access.
 
 ### Contributor roles
 
-| Role | Can edit | Read-only | Forbidden |
-|------|----------|-----------|-----------|
-| **Engineer** | Everything | -- | -- |
-| **Technical PM** | Frontend + API | Backend | DB, Infra |
-| **Product Manager** | Frontend UI | API, Backend | DB, Infra |
-| **Designer** | UI/CSS | Frontend logic | API, Backend, DB |
-| **QA/Tester** | Tests, Fixtures | Frontend, API, Backend | DB, Infra |
+
+| Role                | Can edit        | Read-only              | Forbidden        |
+| ------------------- | --------------- | ---------------------- | ---------------- |
+| **Engineer**        | Everything      | --                     | --               |
+| **Technical PM**    | Frontend + API  | Backend                | DB, Infra        |
+| **Product Manager** | Frontend UI     | API, Backend           | DB, Infra        |
+| **Designer**        | UI/CSS          | Frontend logic         | API, Backend, DB |
+| **QA/Tester**       | Tests, Fixtures | Frontend, API, Backend | DB, Infra        |
+
 
 ---
 
 ## Configuration
 
-| Variable | Purpose | Default |
-|----------|---------|---------|
-| `PB_HOME` | Root for default paths | Package parent directory |
-| `PB_PROFILES_DIR` | Profile directories | `{PB_HOME}/profiles` |
+
+| Variable           | Purpose                | Default                       |
+| ------------------ | ---------------------- | ----------------------------- |
+| `PB_HOME`          | Root for default paths | Package parent directory      |
+| `PB_PROFILES_DIR`  | Profile directories    | `{PB_HOME}/profiles`          |
 | `PB_STANDARDS_DIR` | Company standards YAML | `{PB_HOME}/company_standards` |
+
 
 ---
 
 ## Web application
 
 ```bash
-pip install -e ".[webapp]"
+pip install -e .
 product-builders-web --reload
 ```
 
 Open [http://127.0.0.1:8000](http://127.0.0.1:8000).
 
-| Page | Purpose |
-|------|---------|
-| `/` | Landing page |
-| `/download` | Installation instructions |
-| `/docs` | Documentation |
-| `/products` | Product catalog |
-| `/products/{name}` | Product detail + onboarding links |
-| `/products/{name}/onboarding/{role}` | Role-specific onboarding guide |
-| `/operations` | Operations dashboard (run commands from browser) |
+
+| Page                                 | Purpose                                          |
+| ------------------------------------ | ------------------------------------------------ |
+| `/`                                  | Landing page                                     |
+| `/download`                          | Installation instructions                        |
+| `/docs`                              | Documentation                                    |
+| `/products`                          | Product catalog                                  |
+| `/products/{name}`                   | Product detail + onboarding links                |
+| `/products/{name}/onboarding/{role}` | Role-specific onboarding guide                   |
+| `/operations`                        | Operations dashboard (run commands from browser) |
+
 
 ---
 
 ## Development
 
 ```bash
-pip install -e ".[dev]"
+pip install -e .
 pytest tests -q
 ruff check src tests
 ```
 
----
-
-## License
-
-MIT

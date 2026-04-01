@@ -10,23 +10,16 @@
 
 <section class="install-block">
   <h2>From this repository (development)</h2>
+  <p class="muted">One install includes the CLI, documentation server, tree-sitter AST analysis, and dev tools.</p>
   <pre class="code-block"><code>cd Product-Builders
 pip install -e .
 product-builders --help</code></pre>
 </section>
 
 <section class="install-block">
-  <h2>With webapp dependencies</h2>
-  <p class="muted">Needed only to run this documentation server locally.</p>
-  <pre class="code-block"><code>pip install -e ".[webapp]"
-python -m product_builders.webapp --reload</code></pre>
+  <h2>Run this documentation server locally</h2>
+  <pre class="code-block"><code>python -m product_builders.webapp --reload</code></pre>
   <p class="hint">Then open <a href="http://127.0.0.1:8000">http://127.0.0.1:8000</a> (default).</p>
-</section>
-
-<section class="install-block">
-  <h2>With AST-enhanced analysis</h2>
-  <p class="muted">Tree-sitter-based code pattern recognition for auth, errors, conventions, APIs, and more.</p>
-  <pre class="code-block"><code>pip install -e ".[ast]"</code></pre>
 </section>
 
 <section class="install-block">

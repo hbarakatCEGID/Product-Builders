@@ -105,12 +105,6 @@ The command validates the YAML structure, checks that evidence file citations ex
 
 ## AST-Enhanced Analysis
 
-Install the optional AST extra for deeper code pattern recognition:
-
-```bash
-pip install product-builders[ast]
-```
-
-When installed, `analyze` automatically runs a tree-sitter pre-pass that parses TypeScript, JavaScript, and Python files to extract structural data. This enriches auth, error handling, conventions, API, frontend patterns, and state management analyzers.
+The default package install includes tree-sitter. When available, `analyze` automatically runs a tree-sitter pre-pass that parses TypeScript, JavaScript, and Python files to extract structural data. This enriches auth, error handling, conventions, API, frontend patterns, and state management analyzers. If tree-sitter cannot be loaded, analyzers fall back to heuristics only.
 
 For full architecture, see the repository **ARCHITECTURE.md**.

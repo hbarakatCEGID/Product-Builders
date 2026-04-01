@@ -98,9 +98,7 @@ def _phase_1_foundation(console: Console, config: Config, *, assume_yes: bool) -
     console.print(f"  [bold]PB_STANDARDS_DIR[/bold]  = {standards}")
 
     t = Table(show_header=False, box=None)
-    t.add_row("  [dim]Install CLI[/dim]", "[cyan]pip install -e .[/cyan]")
-    t.add_row("  [dim]Web app extra[/dim]", "[cyan]pip install -e \".[webapp]\"[/cyan]")
-    t.add_row("  [dim]Dev extra[/dim]", "[cyan]pip install -e \".[dev]\"[/cyan]")
+    t.add_row("  [dim]Install (CLI + web + AST + dev)[/dim]", "[cyan]pip install -e .[/cyan]")
     console.print(t)
 
     if not profiles.is_dir():

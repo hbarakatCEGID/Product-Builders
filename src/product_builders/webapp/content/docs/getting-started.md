@@ -39,7 +39,6 @@ The enrichment meta-rule includes **gap-aware questions** that reference what he
 
 ```bash
 pip install -e .
-pip install -e ".[webapp]"   # optional: this documentation server
 ```
 
 ## Individual commands (power users)

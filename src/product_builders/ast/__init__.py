@@ -1,11 +1,10 @@
-"""Tree-sitter AST analysis — optional pre-pass for enriched heuristic analysis.
+"""Tree-sitter AST analysis — pre-pass for enriched heuristic analysis.
 
-When tree-sitter is installed (``pip install product-builders[ast]``),
-the analyze pipeline builds a CodebaseIndex before running analyzers.
-Each analyzer can query the index for imports, exports, definitions,
-components, and naming patterns.
+When tree-sitter loads successfully, the analyze pipeline builds a CodebaseIndex
+before running analyzers. Each analyzer can query the index for imports, exports,
+definitions, components, and naming patterns.
 
-When tree-sitter is NOT installed, analyzers work exactly as before.
+When tree-sitter is unavailable, analyzers work exactly as before.
 """
 
 try:
