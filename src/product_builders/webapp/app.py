@@ -194,7 +194,6 @@ def create_app() -> FastAPI:
         "export": "partials/form_export.html",
         "setup": "partials/form_setup.html",
         "check-drift": "partials/form_check_drift.html",
-        "feedback": "partials/form_feedback.html",
     }
 
     @app.get("/partials/form/{command}", response_class=HTMLResponse)
