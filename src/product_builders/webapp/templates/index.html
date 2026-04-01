@@ -2,50 +2,50 @@
 {% block title %}Home{% endblock %}
 {% block content %}
 <section class="hero">
-  <p class="eyebrow">CLI + agents</p>
+  <p class="eyebrow">CLI + Cursor</p>
   <h1 class="hero-title">Rules that match <em>your</em> product</h1>
   <p class="lede">
-    Analyze a codebase offline, enrich with deep context, then generate Cursor rules,
-    hooks, permissions, and onboarding — so every contributor works with the same guardrails.
+    One command analyzes your codebase and generates Cursor rules, hooks, permissions,
+    and onboarding. Then Cursor rewrites them with project-specific depth.
   </p>
   <div class="cta-row">
     <a class="btn btn-primary" href="/download">Install the CLI</a>
-    <a class="btn btn-ghost" href="/api/docs">Open API docs</a>
+    <a class="btn btn-ghost" href="/docs/getting-started">Get started</a>
   </div>
 </section>
 
 <section class="grid-3">
   <article class="card">
-    <h2>Heuristic analysis</h2>
-    <p>Stack, structure, security, testing, CI/CD, i18n, APIs, and more — no cloud required for the baseline pass.</p>
+    <h2>Two-step setup</h2>
+    <p>One CLI command (<code>setup-product</code>) does analyze + generate + export. Then Cursor enriches rules with project-specific depth. That's it.</p>
   </article>
   <article class="card">
     <h2>Three-layer governance</h2>
-    <p>Soft rules (<code>.mdc</code>), smart hooks, and hard CLI permissions — aligned with contributor scopes.</p>
+    <p>Soft rules (<code>.mdc</code>), smart hooks (contextual blocking), and hard CLI permissions &mdash; all aligned with contributor roles and zones.</p>
+  </article>
+  <article class="card">
+    <h2>Cursor-native enrichment</h2>
+    <p>A self-pacing meta-rule walks Cursor through 4 phases, rewriting template rules with real code examples, anti-patterns, and file-path citations.</p>
+  </article>
+  <article class="card">
+    <h2>Gap-aware analysis</h2>
+    <p>Enrichment questions reference what heuristics detected and target what's missing &mdash; not generic prompts, but specific gaps for your tech stack.</p>
+  </article>
+  <article class="card">
+    <h2>20 analysis dimensions</h2>
+    <p>Tech stack, database, auth, security, testing, CI/CD, frontend patterns, user flows, design system, performance, accessibility, and more.</p>
+  </article>
+  <article class="card">
+    <h2>5 contributor roles</h2>
+    <p>Engineer, Technical PM, Product Manager, Designer, QA &mdash; each gets tailored rules, zone restrictions, and onboarding guides.</p>
   </article>
   <article class="card">
     <h2>Company standards</h2>
-    <p>Merge org-wide YAML policies into generated rules so security and quality stay consistent.</p>
+    <p>Merge org-wide YAML policies into generated rules so security and quality standards stay consistent across 50+ products.</p>
   </article>
   <article class="card">
-    <h2>BaaS-aware detection</h2>
-    <p>Automatically maps Supabase, Firebase, DynamoDB, and PlanetScale to their database types, plus detects shadcn and App Router patterns.</p>
-  </article>
-  <article class="card">
-    <h2>Smart command filtering</h2>
-    <p>Blocked shell commands in hooks are filtered by the project's actual dependencies — no false positives for tools you don't use.</p>
-  </article>
-  <article class="card">
-    <h2>overrides.yaml</h2>
-    <p>Fine-tune analysis results before generation. Override any profile field without re-running the full analysis pass.</p>
-  </article>
-  <article class="card">
-    <h2>Cursor-assisted deep analysis</h2>
-    <p>Adaptive bootstrap prompts guide Cursor through architecture, domain model, and convention analysis. Merge results with <code>ingest-deep</code>.</p>
-  </article>
-  <article class="card">
-    <h2>AST-enhanced analyzers</h2>
-    <p>Optional tree-sitter integration parses TypeScript, JavaScript, and Python for deeper code pattern recognition.</p>
+    <h2>Drift detection</h2>
+    <p>Detect when rules are stale vs. the current codebase. Re-analyze and regenerate to keep governance fresh.</p>
   </article>
 </section>
 {% endblock %}

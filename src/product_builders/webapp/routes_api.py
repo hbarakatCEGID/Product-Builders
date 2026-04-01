@@ -61,6 +61,13 @@ class SetupRequest(_NamedRequest):
     profile: str
 
 
+class SetupProductRequest(_NamedRequest):
+    repo_path: str
+    profile: str | None = None
+    heuristic_only: bool = False
+    regenerate: bool = False
+
+
 class CheckDriftRequest(_NamedRequest):
     repo_path: str
     full: bool = False
@@ -103,6 +110,11 @@ def _start_job(command: str, args: dict[str, Any]) -> JobResponse | JSONResponse
 
 
 # -- POST endpoints --------------------------------------------------------
+
+@router.post("/setup-product", response_model=None)
+async def post_setup_product(body: SetupProductRequest) -> JobResponse | JSONResponse:
+    return _start_job("setup-product", body.model_dump())
+
 
 @router.post("/analyze", response_model=None)
 async def post_analyze(body: AnalyzeRequest) -> JobResponse | JSONResponse:

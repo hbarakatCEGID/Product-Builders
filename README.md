@@ -1,25 +1,20 @@
 # Product Builders
 
-**Product Builders** is a Python CLI and optional web app that **analyzes product repositories** (offline heuristics) and **generates tailored [Cursor](https://cursor.com) artifacts**: rules (`.mdc`), hooks (`hooks.json`), CLI permissions (`cli.json`), onboarding guides, review checklists, and `scopes.yaml` for contributor access zones. The goal is to let PMs, designers, QA, and engineers work with AI assistants **without bypassing** each product’s architecture, security boundaries, or conventions.
+**Product Builders** analyzes product repositories and generates tailored [Cursor](https://cursor.com) governance: rules (`.mdc`), hooks (`hooks.json`), CLI permissions (`cli.json`), onboarding guides, and scopes. The goal is to let PMs, designers, QA, and engineers work with AI assistants **without bypassing** each product's architecture, security boundaries, or conventions.
 
 ---
 
-## Table of contents
+## Two-step setup
 
-- [What you get](#what-you-get)
-- [Requirements](#requirements)
-- [Installation](#installation)
-- [Quick start by phase](#quick-start-by-phase)
-- [Configuration & directories](#configuration--directories)
-- [Typical workflow](#typical-workflow)
-- [CLI reference](#cli-reference)
-- [Product profile layout](#product-profile-layout)
-- [Governance layers & scopes](#governance-layers--scopes)
-- [Company standards](#company-standards)
-- [Web application](#web-application)
-- [Development](#development)
-- [Documentation](#documentation)
-- [License](#license)
+```bash
+# Step 1: Analyze, generate rules, and export to the product repo
+product-builders setup-product /path/to/repo --name myapp
+
+# Step 2 (optional): Open in Cursor, reference @enrich-all
+# Cursor rewrites template rules with project-specific depth (~15 min)
+```
+
+That's it. Template rules work immediately after Step 1. Step 2 adds project-specific DO/DON'T examples, anti-patterns, and file-path references by leveraging Cursor's codebase understanding.
 
 ---
 
@@ -27,333 +22,172 @@
 
 | Output | Purpose |
 |--------|---------|
-| **Heuristic profile** (`analysis.json`) | Structured snapshot of stack, DB, auth, errors, security, tests, CI/CD, BaaS (Supabase, Firebase, DynamoDB, PlanetScale, Neon), component libraries (shadcn, base-ui, nextui, park-ui, daisyui), and many more dimensions |
-| **Cursor rules** (`.cursor/rules/*.mdc`) | Product-specific guidance for the AI |
+| **Heuristic profile** (`analysis.json`) | Structured snapshot of stack, DB, auth, errors, security, tests, CI/CD, BaaS, component libraries, and 20 dimensions |
+| **Cursor rules** (`.cursor/rules/*.mdc`) | Product-specific guidance for the AI (18+ rules covering all dimensions) |
+| **Enrichment meta-rule** (`enrich-all.mdc`) | Self-pacing instructions for Cursor to rewrite rules with project-specific depth |
 | **Hooks** (`.cursor/hooks.json`) | Layer 2: contextual blocking with messages (e.g. read-only zones) |
 | **Permissions** (`.cursor/cli.json`) | Layer 3: hard deny for paths/commands per role |
-| **`scopes.yaml`** | Single source of truth for zones → drives all three governance layers |
-| **Onboarding & checklist** | Role docs and CI-friendly review checklist |
-| **Metrics** (`metrics.jsonl`) | Optional events from validate, drift checks, etc. |
+| **`scopes.yaml`** | Single source of truth for zones -- drives all three governance layers |
+| **Onboarding & checklist** | Role-specific docs and CI-friendly review checklist |
 
-Analysis is **fully offline** (no LLM calls in the core pipeline). Additional capabilities:
+### How rules get project-specific
 
-- **Adaptive deep analysis prompts** -- a bootstrap `.mdc` rule with tech-stack-specific questions that guide Cursor through 3-step deep analysis (architecture, domain model, conventions). Results are written to `deep-analysis.yaml` with file-path evidence.
-- **AST-enhanced analyzers** -- optional tree-sitter integration (`pip install product-builders[ast]`) that parses TypeScript, JavaScript, and Python source files to extract imports, exports, function definitions, decorators, and JSX components. Enriches auth, error handling, conventions, API, frontend patterns, and state management detection.
+1. **Heuristic analysis** (offline, ~2 min) -- 20 analyzers detect tech stack, database, auth, conventions, and more
+2. **Template generation** -- Jinja2 templates render rules using detected data as fallback
+3. **Cursor enrichment** (optional, ~15 min) -- A self-pacing meta-rule instructs Cursor to rewrite rules with real code examples, anti-patterns, and file-path citations from the actual codebase
 
-**Recent improvements:** BaaS-aware database detection (Supabase to postgresql, Firebase to firebase, DynamoDB, PlanetScale to mysql, Neon to postgresql), smart blocked-command filtering (dangerous commands like `prisma:migrate` or `alembic upgrade` are only blocked when that tool is actually in the project's dependencies), `overrides.yaml` support for post-analysis corrections, and improved zone detection with nested directory support.
+The enrichment meta-rule works in 4 phases to prevent context window decay:
+- **Phase 1: Critical** -- database, auth, security
+- **Phase 2: Architecture** -- architecture, conventions, error handling, API
+- **Phase 3: Frontend** -- design system, frontend patterns, routes, state
+- **Phase 4: Supporting** -- testing, performance, accessibility, i18n, CI/CD, git
+
+### Gap-aware analysis
+
+The enrichment meta-rule includes **gap-aware questions** -- instead of generic prompts like "What's your architecture pattern?", it references what heuristics detected and asks about what's missing: "We detected PostgreSQL via Supabase but no ORM. How does the project query the database?"
 
 ---
 
 ## Requirements
 
-- **Python 3.11** (supported range: `>=3.11,<4.0` per `pyproject.toml`)
-- **Git** (optional but recommended — used to record **HEAD** for drift detection)
+- **Python 3.11+** (`>=3.11,<4.0`)
+- **Git** (optional -- used for drift detection)
 
 ---
 
 ## Installation
 
-From the repository root:
-
 ```bash
 pip install -e .
 ```
-
-Entry points:
-
-- **`product-builders`** — main CLI
-- **`product-builders-web`** — dev server for the web app (after installing the `webapp` extra)
 
 ### Optional extras
 
 ```bash
-# Web UI + API (FastAPI, uvicorn, markdown rendering)
-pip install -e ".[webapp]"
-
-# AST-enhanced analysis (tree-sitter for deeper code pattern recognition)
-pip install -e ".[ast]"
-
-# Tests, coverage, Ruff, mypy
-pip install -e ".[dev]"
+pip install -e ".[webapp]"    # Web UI + API
+pip install -e ".[ast]"       # AST-enhanced analysis (tree-sitter)
+pip install -e ".[dev]"       # Tests, ruff, mypy
 ```
-
----
-
-## Quick start by phase
-
-Roadmap phases (see [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)) map to how you **install**, **analyze**, **generate**, and **operate** the tool. Use either the **interactive wizard** or the **copy-paste blocks** below.
-
-### Interactive wizard
-
-Runs prompts (and can invoke `analyze`, `generate`, `check-drift` for you):
-
-```bash
-product-builders wizard
-```
-
-| Flag | Use |
-|------|-----|
-| **`--phase N`** | Only run phase **1**–**5** (see table below). |
-| **`-y` / `--yes`** | Skip “continue?” prompts between phases (for scripting). |
-| **`--repo`**, **`--name`**, **`--profile`** | Pre-fill paths and product name; with **`-y --phase 2`** both **`--repo`** and **`--name`** are required. |
-| **`--heuristic-only`** | Phase 2: same as **`analyze --heuristic-only`**. |
-| **`--validate` / `--no-validate`** | Phase 3: control validation without a prompt. |
-
-Examples:
-
-```bash
-# Guided tour (all phases, interactive)
-product-builders wizard
-
-# Foundation only: Python check, paths, pip reminders, create profiles dir
-product-builders wizard --phase 1 -y
-
-# Scripted analyze + generate
-product-builders wizard -y --phase 2 --repo /path/to/repo --name my-app
-product-builders wizard -y --phase 3 --name my-app --validate
-
-# Phase 5 with automatic drift check (needs both repo and name)
-product-builders wizard -y --phase 5 --name my-app --repo /path/to/repo
-```
-
-### Phase 1: Foundation
-
-**Goal:** Tooling, Python **3.11+**, profile and standards directories.
-
-```bash
-pip install -e .
-pip install -e ".[webapp]"    # optional: catalog + docs site
-pip install -e ".[dev]"       # optional: tests, ruff, mypy
-product-builders --version
-```
-
-Set **`PB_PROFILES_DIR`** / **`PB_STANDARDS_DIR`** / **`PB_HOME`** if defaults are wrong for your layout (see [Configuration & directories](#configuration--directories)).
-
-### Phase 2: Core analysis
-
-**Goal:** Offline heuristics (tech stack, structure, deps, conventions, **database**, **auth**, **error handling**, **git**). Writes **`analysis.json`** under **`PB_PROFILES_DIR/<name>/`**.
-
-```bash
-product-builders analyze /path/to/repo --name my-product
-# Skip Cursor bootstrap meta-rule:
-product-builders analyze /path/to/repo --name my-product --heuristic-only
-```
-
-### Phase 3: Rules and governance
-
-**Goal:** Cursor **`.mdc`** rules, **hooks**, **cli.json**, **scopes.yaml**, onboarding, review checklist. The `generate` command automatically applies `profiles/<name>/overrides.yaml` if present, so you can correct analysis mistakes without re-scanning.
-
-```bash
-product-builders generate --name my-product
-product-builders generate --name my-product --profile engineer
-product-builders generate --name my-product --validate
-```
-
-Copy artifacts into a repo contributors use:
-
-```bash
-product-builders export --name my-product --target /path/to/repo
-# or from inside that repo:
-product-builders setup --name my-product --profile engineer
-```
-
-### Phase 4: Extended dimensions
-
-**Goal:** Security, testing, CI/CD, design, API, i18n, state, env, performance, etc.
-
-There is **no separate command**: a normal **`analyze`** already fills these dimensions. Re-run analyze when the codebase changes significantly.
-
-```bash
-product-builders analyze /path/to/repo --name my-product
-```
-
-### Phase 5: Lifecycle and quality
-
-**Goal:** Structural validation, drift vs git or full re-scan, metrics, feedback.
-
-```bash
-product-builders generate --name my-product --validate
-product-builders check-drift --name my-product --repo /path/to/repo
-product-builders check-drift --name my-product --repo /path/to/repo --full
-product-builders metrics --name my-product
-product-builders feedback --name my-product --rule database --issue "ORM hint wrong for module X"
-```
-
-Automated bulk analysis via Cursor Background Agent API is **deferred** (see implementation plan).
-
----
-
-## Configuration & directories
-
-Paths default to a layout relative to the package / checkout unless you override them.
-
-| Variable | Purpose | Default (if unset) |
-|----------|---------|---------------------|
-| **`PB_HOME`** | Root used to derive profiles and standards | Parent of the `src` tree in a dev checkout |
-| **`PB_PROFILES_DIR`** | Where each product’s profile directory lives | `{PB_HOME}/profiles` |
-| **`PB_STANDARDS_DIR`** | Company standards YAML files | `{PB_HOME}/company_standards` |
-
-**Product names** must match `[a-zA-Z0-9][a-zA-Z0-9._-]*` (no `..`). Each product gets a folder under `PB_PROFILES_DIR` with `analysis.json` and generated artifacts.
 
 ---
 
 ## Typical workflow
 
-1. **Analyze** a repository and cache a profile under your profiles directory.
-2. *(Optional)* **Override** analysis results by creating `profiles/<name>/overrides.yaml` to correct any detection mistakes.
-3. **Generate** rules, hooks, permissions, docs, and checklist into that profile directory (optionally for a **contributor role**). Overrides are applied automatically if present.
-4. **Export** (or **setup** in a clone) to copy governance into the **actual product repo** contributors use.
-5. Optionally run **validate** on generate, **check-drift** when the repo moves on, and **feedback** to record rule issues.
+### For platform teams (setting up products)
 
 ```bash
-# 1. Scan repo → profiles/<name>/analysis.json (+ analyzers output)
-product-builders analyze /path/to/repo --name my-product
+# One command: analyze + generate + export
+product-builders setup-product /path/to/repo --name myapp
 
-# 1b. (Optional) Deep analysis: open repo in Cursor, say "run deep analysis"
-#     Cursor follows the bootstrap rule and writes deep-analysis.yaml
-product-builders ingest-deep --name my-product --repo /path/to/repo
+# With role-specific governance:
+product-builders setup-product /path/to/repo --name myapp --profile pm
 
-# 2. Regenerate artifacts from profile (add --validate for structural checks)
-product-builders generate --name my-product
-
-# 3a. Copy into the product repo
-product-builders export --name my-product --target /path/to/repo
-
-# 3b. Or, from inside the product repo: install role-specific governance into cwd
-product-builders setup --name my-product --profile engineer
+# Regenerate without re-analyzing:
+product-builders setup-product /path/to/repo --name myapp --regenerate
 ```
 
-**Monorepo / many products:**
+Then optionally open the repo in Cursor and reference `@enrich-all` for deeper rules.
+
+### For contributors (using the product)
+
+```bash
+git clone <product-repo>
+cd product-repo
+
+# Install role-specific governance locally
+product-builders setup --name myapp --profile pm
+
+# Open Cursor and start working
+cursor .
+```
+
+### Bulk operations
 
 ```bash
 product-builders bulk-analyze --manifest products.yaml
-# products.yaml example:
-#   products:
-#     - name: app-frontend
-#       path: /path/to/monorepo/apps/web
+product-builders bulk-analyze --monorepo /path/to/monorepo
 ```
 
+### Lifecycle
+
 ```bash
-product-builders bulk-analyze --monorepo /path/to/monorepo
+product-builders check-drift --name myapp --repo /path/to/repo
+product-builders check-drift --name myapp --repo /path/to/repo --full
+product-builders feedback --name myapp --rule database --issue "ORM hint wrong"
+product-builders metrics --name myapp
 ```
 
 ---
 
 ## CLI reference
 
-Global options: **`--version`**, **`-v` / `--verbose`** (debug logging), **`--help`**.
-
 | Command | Description | Key options |
 |---------|-------------|-------------|
-| **`analyze`** | Analyze a product codebase and generate a product profile. Runs heuristic analyzers (fully offline); optionally generates a bootstrap meta-rule for Cursor deep analysis. | **`-n, --name`** (required), **`--heuristic-only`**, **`--sub-project`** |
-| **`generate`** | Regenerate Cursor rules and governance from a cached profile. Applies `overrides.yaml` if present. | **`-n, --name`** (required), **`-p, --profile`** (role alias), **`--validate`** |
-| **`ingest-deep`** | Ingest Cursor-produced deep analysis into a cached profile | **`-n, --name`** (required), **`-r, --repo`** (required), **`--deep-file`**, **`--dry-run`** |
-| **`setup`** | Configure local governance for a contributor role in the **current directory** (`.cursor/rules/`, `hooks.json`, `cli.json`, `contributor-profile.json`). | **`-n, --name`** (required), **`-p, --profile`** (required) |
-| **`export`** | Export generated rules, hooks, and scopes to a target product repo. | **`-n, --name`** (required), **`-t, --target`** (required), **`-p, --profile`** |
-| **`list`** | List all analyzed products (from `analysis.json` under profiles dir). | — |
-| **`bulk-analyze`** | Analyze multiple products from a YAML manifest or auto-discover sub-projects in a monorepo. | **`--manifest`**, **`--monorepo`** |
-| **`check-drift`** | Check if a cached profile is stale vs. the current codebase (git HEAD and/or heuristic fingerprints). | **`-n, --name`** (required), **`-r, --repo`** (required), **`--full`** |
-| **`metrics`** | Show recent metrics events (JSON Lines) for a product profile. | **`-n, --name`** (required), **`--limit`** |
-| **`feedback`** | Record feedback on a rule's accuracy for the next regeneration cycle. | **`-n, --name`** (required), **`-r, --rule`** (required), **`-i, --issue`** (required) |
-| **`wizard`** | Interactive walkthrough of all phases (foundation, analysis, generation, extended dimensions, lifecycle). Use **`-y`** for scripting. | **`--phase`** (1–5), **`--repo`**, **`-n, --name`**, **`-p, --profile`**, **`--validate / --no-validate`**, **`--heuristic-only`**, **`-y, --yes`** |
+| **`setup-product`** | **Recommended.** Analyze + generate + export in one step. | `REPO_PATH` (arg), `-n, --name`, `-p, --profile`, `--heuristic-only`, `--regenerate` |
+| **`analyze`** | Run heuristic analyzers on a product repo. | `-n, --name`, `--heuristic-only`, `--sub-project` |
+| **`generate`** | Regenerate rules from a cached profile. | `-n, --name`, `-p, --profile`, `--validate` |
+| **`export`** | Copy rules/hooks/permissions to a product repo. | `-n, --name`, `-t, --target`, `-p, --profile` |
+| **`setup`** | Install role-specific governance in current directory. | `-n, --name`, `-p, --profile` (required) |
+| **`ingest-deep`** | Merge Cursor-produced deep analysis into profile. | `-n, --name`, `-r, --repo`, `--deep-file`, `--dry-run` |
+| **`list`** | List all analyzed products. | -- |
+| **`bulk-analyze`** | Analyze multiple repos from manifest or monorepo. | `--manifest`, `--monorepo` |
+| **`check-drift`** | Detect stale rules vs. current codebase. | `-n, --name`, `-r, --repo`, `--full` |
+| **`metrics`** | Show recent metrics events. | `-n, --name`, `--limit` |
+| **`feedback`** | Record rule accuracy feedback. | `-n, --name`, `-r, --rule`, `-i, --issue` |
+| **`wizard`** | Interactive walkthrough of all phases. | `--phase`, `-y`, `--repo`, `-n`, `-p`, `--validate` |
 
-Role aliases for **`--profile`** (see **`resolve_role`** in code): **`engineer`**, **`eng`**, **`pm`**, **`product_manager`**, **`designer`**, **`qa`**, **`qa_tester`**, **`tester`**, **`technical-pm`**, **`technical_pm`**, **`tech_pm`**. Invalid roles list valid aliases in the error message.
-
-Run **`product-builders <command> --help`** for full usage details on any command.
-
-### Validation & drift
-
-```bash
-product-builders generate --name my-product --validate
-product-builders check-drift --name my-product --repo /path/to/repo
-product-builders check-drift --name my-product --repo /path/to/repo --full
-product-builders metrics --name my-product --limit 80
-```
-
-`analyze` stores **git HEAD** in the profile when available so **`check-drift`** can detect stale rules without a full re-scan. **`--full`** re-runs analyzers and compares fingerprints (slower, no git required).
+Role aliases: `engineer`, `eng`, `pm`, `product_manager`, `designer`, `qa`, `qa_tester`, `tester`, `technical-pm`, `technical_pm`, `tech_pm`.
 
 ---
 
-## Product profile layout
+## Governance layers
 
-Under **`PB_PROFILES_DIR/<product-name>/`** you will typically see:
+1. **Rules (soft)** -- `.mdc` files teach the AI what patterns to follow
+2. **Hooks (smart block)** -- `hooks.json` intercepts edits with helpful messages
+3. **Permissions (hard deny)** -- `cli.json` enforces filesystem boundaries
 
-| Path | Role |
-|------|------|
-| **`analysis.json`** | Full **`ProductProfile`** (metadata + analyzer dimensions) |
-| **`overrides.yaml`** | Optional user-editable overrides to correct analysis results without re-scanning |
-| **`scopes.yaml`** | Zone paths and per-role allow / read-only / forbid lists |
-| **`.cursor/rules/*.mdc`** | Generated Cursor rules |
-| **`.cursor/hooks.json`** | Hook definitions |
-| **`.cursor/cli.json`** | Filesystem / command restrictions |
-| **`docs/onboarding-*.md`** | Role onboarding markdown |
-| **`review-checklist.md`** | Checklist for human or CI review |
-| **`feedback.yaml`** | Optional feedback log from **`feedback`** command |
-| **`metrics.jsonl`** | Append-only metrics from validate / drift / etc. |
+**`scopes.yaml`** maps zones (e.g. `frontend_ui`, `database`) to glob patterns and defines what each role can access.
 
----
+### Contributor roles
 
-## Governance layers & scopes
-
-1. **Rules (soft)** — `.mdc` files teach the model what to respect.
-2. **Hooks (smart block)** — `hooks.json` blocks edits with an explanation (e.g. read-only zone).
-3. **Permissions (hard deny)** — `cli.json` enforces filesystem boundaries for the CLI/agent.
-
-**`scopes.yaml`** maps **zones** (e.g. `frontend_ui`, `database`) to **glob patterns** and lists which **contributor roles** may read, write, or must not touch each zone. Zone detection now supports `src/`-prefixed paths and nested directories (e.g., `src/app/api/`, `src/lib/__tests__/`, `supabase/migrations/`), not just root-level patterns. Generators consume the profile’s **`ScopeConfig`** (from YAML or auto-detection) to produce aligned rules, hooks, and permissions.
+| Role | Can edit | Read-only | Forbidden |
+|------|----------|-----------|-----------|
+| **Engineer** | Everything | -- | -- |
+| **Technical PM** | Frontend + API | Backend | DB, Infra |
+| **Product Manager** | Frontend UI | API, Backend | DB, Infra |
+| **Designer** | UI/CSS | Frontend logic | API, Backend, DB |
+| **QA/Tester** | Tests, Fixtures | Frontend, API, Backend | DB, Infra |
 
 ---
 
-## Company standards
+## Configuration
 
-YAML files under **`PB_STANDARDS_DIR`** are loaded and merged into rule generation (via **`CursorRulesGenerator`**) so org-wide policies can augment product-specific templates without forking every rule file.
+| Variable | Purpose | Default |
+|----------|---------|---------|
+| `PB_HOME` | Root for default paths | Package parent directory |
+| `PB_PROFILES_DIR` | Profile directories | `{PB_HOME}/profiles` |
+| `PB_STANDARDS_DIR` | Company standards YAML | `{PB_HOME}/company_standards` |
 
 ---
 
 ## Web application
 
-FastAPI + Jinja2 + HTMX: landing pages, documentation, product catalog, operations dashboard, and a full REST/WebSocket API.
-
 ```bash
 pip install -e ".[webapp]"
-python -m product_builders.webapp --reload
-# or: uvicorn product_builders.webapp.app:app --reload
-# or: product-builders-web --reload
+product-builders-web --reload
 ```
 
-Open [http://127.0.0.1:8000](http://127.0.0.1:8000). **`GET /health`** for health checks.
+Open [http://127.0.0.1:8000](http://127.0.0.1:8000).
 
-### Pages
-
-| Path | Purpose |
+| Page | Purpose |
 |------|---------|
-| **`/`** | Landing page |
-| **`/download`** | CLI installation instructions |
-| **`/docs`** | Documentation index |
-| **`/docs/{slug}`** | Rendered markdown page |
-| **`/products`** | Catalog of profiles under **`PB_PROFILES_DIR`** |
-| **`/products/{name}`** | Product detail + onboarding links |
-| **`/products/{name}/onboarding/{role}`** | Rendered onboarding guide for a role |
-| **`/operations`** | Operations dashboard (run analyze, generate, export, etc. from the browser) |
-| **`/partials/form/{command}`** | HTMX partial forms for operations tab switching |
-
-### API
-
-| Method | Path | Purpose |
-|--------|------|---------|
-| GET | **`/health`** | Health check |
-| GET | **`/api/products`** | JSON list of all products with metadata |
-| GET | **`/api/recent-paths`** | Recently used repository paths |
-| GET | **`/api/metrics/{product_name}`** | Recent metrics events for a product |
-| POST | **`/api/analyze`** | Start an analysis job |
-| POST | **`/api/generate`** | Start a generation job |
-| POST | **`/api/export`** | Start an export job |
-| POST | **`/api/setup`** | Start a setup job |
-| POST | **`/api/check-drift`** | Start a drift-check job |
-| POST | **`/api/feedback`** | Submit rule feedback |
-| WebSocket | **`/api/ws/execute?job_id={id}`** | Stream job output in real time |
-| GET | **`/api/docs`** | OpenAPI (Swagger UI) |
-
-**Note:** `ingest-deep` is a CLI-only command with no web API endpoint yet.
+| `/` | Landing page |
+| `/download` | Installation instructions |
+| `/docs` | Documentation |
+| `/products` | Product catalog |
+| `/products/{name}` | Product detail + onboarding links |
+| `/products/{name}/onboarding/{role}` | Role-specific onboarding guide |
+| `/operations` | Operations dashboard (run commands from browser) |
 
 ---
 
@@ -361,28 +195,12 @@ Open [http://127.0.0.1:8000](http://127.0.0.1:8000). **`GET /health`** for healt
 
 ```bash
 pip install -e ".[dev]"
-py -m pytest tests -q
+pytest tests -q
 ruff check src tests
-ruff format src tests
-mypy src/product_builders
 ```
-
-Package code lives under **`src/product_builders/`**. Analyzers and generators register via **`analyzers/registry.py`** and **`generators/registry.py`**.
-
----
-
-## Documentation
-
-| Document | Contents |
-|----------|----------|
-| [PROJECT_PROPOSAL.md](PROJECT_PROPOSAL.md) | Goals, decisions, scope |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | Architecture, diagrams, phases |
-| [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md) | Implementation status and todos |
-| [docs/HOOKS_RESEARCH.md](docs/HOOKS_RESEARCH.md) | Cursor hooks research (preToolUse, limits, practices) |
-| [docs/code-review-report.md](docs/code-review-report.md) | Python quality review notes |
 
 ---
 
 ## License
 
-MIT — see [pyproject.toml](pyproject.toml) metadata.
+MIT

@@ -1,0 +1,21 @@
+<form onsubmit="submitCommand(event, 'setup-product')">
+  <p class="form-hint">Recommended: analyze + generate + export in one step.</p>
+  <div class="form-grid">
+    <label for="repo_path">Repository path <span class="req">*</span></label>
+    <input type="text" id="repo_path" name="repo_path" required placeholder="/path/to/repo">
+
+    <label for="name">Product name <span class="req">*</span></label>
+    <input type="text" id="name" name="name" required placeholder="my-product">
+
+    <label for="role">Contributor role</label>
+    {% include "partials/role_select.html" %}
+
+    <label for="options">Options</label>
+    <div>
+      <label class="checkbox"><input type="checkbox" name="heuristic_only"> Heuristic only (skip enrichment meta-rule)</label>
+      <label class="checkbox"><input type="checkbox" name="regenerate"> Regenerate (skip analysis, use existing profile)</label>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary" id="submit-btn">Run Setup Product</button>
+  <p class="form-hint" style="margin-top: 0.75rem;">After running, open the repo in Cursor and reference <code>@enrich-all</code> for project-specific rules.</p>
+</form>

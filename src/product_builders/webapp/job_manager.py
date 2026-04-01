@@ -143,6 +143,16 @@ class JobManager:
         args = job.args
         command = job.command
 
+        if command == "setup-product":
+            parts = base + ["setup-product", args["repo_path"], "--name", args["name"]]
+            if args.get("profile"):
+                parts.extend(["--profile", args["profile"]])
+            if args.get("heuristic_only"):
+                parts.append("--heuristic-only")
+            if args.get("regenerate"):
+                parts.append("--regenerate")
+            return parts
+
         if command == "analyze":
             parts = base + ["analyze", args["repo_path"], "--name", args["name"]]
             if args.get("heuristic_only"):

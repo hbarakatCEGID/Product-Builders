@@ -7,7 +7,8 @@
 </section>
 
 <div class="ops-tabs" role="tablist">
-  <button class="tab active" hx-get="/partials/form/analyze" hx-target="#form-area" hx-swap="innerHTML" onclick="activateTab(this)">Analyze</button>
+  <button class="tab active" hx-get="/partials/form/setup-product" hx-target="#form-area" hx-swap="innerHTML" onclick="activateTab(this)">Setup Product</button>
+  <button class="tab" hx-get="/partials/form/analyze" hx-target="#form-area" hx-swap="innerHTML" onclick="activateTab(this)">Analyze</button>
   <button class="tab" hx-get="/partials/form/generate" hx-target="#form-area" hx-swap="innerHTML" onclick="activateTab(this)">Generate</button>
   <button class="tab" hx-get="/partials/form/export" hx-target="#form-area" hx-swap="innerHTML" onclick="activateTab(this)">Export</button>
   <button class="tab" hx-get="/partials/form/setup" hx-target="#form-area" hx-swap="innerHTML" onclick="activateTab(this)">Setup</button>
@@ -16,7 +17,7 @@
 </div>
 
 <div id="form-area" class="ops-form-area">
-  {% include "partials/form_analyze.html" %}
+  {% include "partials/form_setup_product.html" %}
 </div>
 
 <div id="terminal" class="ops-terminal" style="display:none;">

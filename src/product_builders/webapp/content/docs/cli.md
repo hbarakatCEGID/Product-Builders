@@ -1,8 +1,24 @@
 # CLI reference (overview)
 
+## Recommended command
+
 | Command | Purpose |
 |--------|---------|
-| `wizard` | Interactive quick start by phase (install through lifecycle); use `--phase`, `-y`, `--repo`, `--name` for scripting |
+| `setup-product` | **One-step setup**: analyze + generate + export. The recommended way to set up a product. |
+
+Options: `REPO_PATH` (positional), `--name/-n` (required), `--profile/-p` (role), `--heuristic-only`, `--regenerate`
+
+```bash
+product-builders setup-product /path/to/repo --name my-product
+product-builders setup-product /path/to/repo --name my-product --profile pm
+product-builders setup-product /path/to/repo --name my-product --regenerate
+```
+
+## All commands
+
+| Command | Purpose |
+|--------|---------|
+| `setup-product` | Analyze + generate + export in one step (recommended) |
 | `analyze` | Run heuristic analyzers; write `analysis.json` and scopes |
 | `generate` | Generate Cursor rules, hooks, permissions, onboarding from profile |
 | `setup` | Write role-specific `.cursor/` governance into the current directory |
@@ -13,6 +29,7 @@
 | `metrics` | Show recent `metrics.jsonl` events for a product |
 | `feedback` | Append rule accuracy notes to `feedback.yaml` |
 | `ingest-deep` | Ingest Cursor-produced deep analysis into a product profile |
+| `wizard` | Interactive quick start by phase (install through lifecycle) |
 
 ## Environment
 

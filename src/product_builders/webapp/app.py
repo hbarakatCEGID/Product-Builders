@@ -188,6 +188,7 @@ def create_app() -> FastAPI:
 
     # Partial form routes for htmx tab swapping
     _form_templates = {
+        "setup-product": "partials/form_setup_product.html",
         "analyze": "partials/form_analyze.html",
         "generate": "partials/form_generate.html",
         "export": "partials/form_export.html",
