@@ -447,6 +447,11 @@ body {
   color: var(--accent-dim);
 }
 
+.badge.err {
+  background: rgba(180, 40, 40, 0.18);
+  color: #b83232;
+}
+
 .meta-dl {
   display: grid;
   grid-template-columns: 10rem 1fr;

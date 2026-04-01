@@ -8,13 +8,16 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import os
+import subprocess
 import sys
+import threading
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
-from typing import Any
+from typing import IO, Any
 
 from product_builders.config import _DEFAULT_HOME
 
@@ -73,6 +76,26 @@ def load_recent_paths() -> list[str]:
     except (json.JSONDecodeError, OSError) as exc:
         logger.warning("Could not load recent_paths.json: %s", exc)
     return []
+
+
+def _append_job_output_line(job: Job, line: str, stream_name: str) -> None:
+    """Append one output line; safe to schedule via ``loop.call_soon_threadsafe`` from a thread."""
+    job.output_lines.append({"line": line, "stream": stream_name})
+
+
+def _pipe_line_reader(pipe: IO[bytes], stream_name: str, job: Job, loop: asyncio.AbstractEventLoop) -> None:
+    try:
+        while True:
+            raw = pipe.readline()
+            if not raw:
+                break
+            text = raw.decode("utf-8", errors="replace").rstrip("\n\r")
+            loop.call_soon_threadsafe(_append_job_output_line, job, text, stream_name)
+    finally:
+        try:
+            pipe.close()
+        except OSError:
+            pass
 
 
 def save_recent_path(new_path: str) -> None:
@@ -139,7 +162,8 @@ class JobManager:
 
     def build_cli_args(self, job: Job) -> list[str]:
         """Build the subprocess command list for a CLI invocation."""
-        base = [sys.executable, "-m", "product_builders.cli"]
+        # -u + PYTHONUNBUFFERED: stream lines to the webapp instead of block-buffering on pipes
+        base = [sys.executable, "-u", "-m", "product_builders.cli"]
         args = job.args
         command = job.command
 
@@ -196,6 +220,43 @@ class JobManager:
 
         raise ValueError(f"Unknown command: {command}")
 
+    async def _run_job_popen_threaded(
+        self,
+        job: Job,
+        cmd: list[str],
+        env: dict[str, str],
+    ) -> None:
+        """Run CLI via ``Popen`` + pipe reader threads (Windows ``SelectorEventLoop`` / uvicorn reload)."""
+        loop = asyncio.get_running_loop()
+        proc = subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            env=env,
+        )
+        if proc.stdout is None or proc.stderr is None:
+            raise RuntimeError("subprocess.Popen did not provide stdout/stderr pipes")
+
+        t_out = threading.Thread(
+            target=_pipe_line_reader,
+            args=(proc.stdout, "stdout", job, loop),
+            daemon=True,
+        )
+        t_err = threading.Thread(
+            target=_pipe_line_reader,
+            args=(proc.stderr, "stderr", job, loop),
+            daemon=True,
+        )
+        t_out.start()
+        t_err.start()
+
+        exit_code = await asyncio.to_thread(proc.wait)
+        t_out.join()
+        t_err.join()
+
+        job.exit_code = exit_code
+        job.status = JobStatus.COMPLETED if exit_code == 0 else JobStatus.FAILED
+
     async def run_job(self, job: Job) -> None:
         """Run the job as a subprocess, streaming stdout/stderr into *job.output_lines*."""
         job.status = JobStatus.RUNNING
@@ -204,31 +265,43 @@ class JobManager:
         cmd = self.build_cli_args(job)
         logger.info("Running job %s: %s", job.id, " ".join(cmd))
 
+        env = os.environ.copy()
+        env.setdefault("PYTHONUNBUFFERED", "1")
+
         try:
-            proc = await asyncio.create_subprocess_exec(
-                *cmd,
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE,
-            )
+            try:
+                proc = await asyncio.create_subprocess_exec(
+                    *cmd,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE,
+                    env=env,
+                )
+            except NotImplementedError:
+                logger.info(
+                    "Job %s: asyncio subprocess not available on this event loop; "
+                    "using threaded Popen fallback (e.g. Windows uvicorn --reload)",
+                    job.id,
+                )
+                await self._run_job_popen_threaded(job, cmd, env)
+            else:
+                async def _read_stream(
+                    stream: asyncio.StreamReader | None,
+                    stream_name: str,
+                ) -> None:
+                    if stream is None:
+                        return
+                    async for raw_line in stream:
+                        text = raw_line.decode("utf-8", errors="replace").rstrip("\n\r")
+                        job.output_lines.append({"line": text, "stream": stream_name})
 
-            async def _read_stream(
-                stream: asyncio.StreamReader | None,
-                stream_name: str,
-            ) -> None:
-                if stream is None:
-                    return
-                async for raw_line in stream:
-                    text = raw_line.decode("utf-8", errors="replace").rstrip("\n\r")
-                    job.output_lines.append({"line": text, "stream": stream_name})
+                await asyncio.gather(
+                    _read_stream(proc.stdout, "stdout"),
+                    _read_stream(proc.stderr, "stderr"),
+                )
 
-            await asyncio.gather(
-                _read_stream(proc.stdout, "stdout"),
-                _read_stream(proc.stderr, "stderr"),
-            )
-
-            await proc.wait()
-            job.exit_code = proc.returncode
-            job.status = JobStatus.COMPLETED if proc.returncode == 0 else JobStatus.FAILED
+                await proc.wait()
+                job.exit_code = proc.returncode
+                job.status = JobStatus.COMPLETED if proc.returncode == 0 else JobStatus.FAILED
 
         except Exception as exc:
             job.status = JobStatus.FAILED
@@ -237,6 +310,17 @@ class JobManager:
 
         finally:
             job.finished_at = datetime.now(tz=timezone.utc)
+
+        if job.status == JobStatus.FAILED:
+            tail = [e["line"] for e in job.output_lines[-8:] if e.get("stream") == "stderr"]
+            logger.warning(
+                "CLI job failed id=%s command=%s exit_code=%s exc=%s stderr_tail=%s",
+                job.id,
+                job.command,
+                job.exit_code,
+                job.error,
+                tail or "(none)",
+            )
 
         # Save any relevant paths to recent paths
         for key in ("repo_path", "target"):

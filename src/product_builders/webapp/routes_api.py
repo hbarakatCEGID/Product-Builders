@@ -194,15 +194,22 @@ async def ws_execute(websocket: WebSocket, job_id: str = "") -> None:
                         (job.finished_at - job.started_at).total_seconds(), 1
                     )
 
-                await websocket.send_json(
-                    {
-                        "type": "done",
-                        "status": job.status.value,
-                        "exit_code": job.exit_code,
-                        "duration_s": duration_s,
-                        "error": job.error,
-                    }
-                )
+                try:
+                    cli_argv = mgr.build_cli_args(job)
+                except Exception:
+                    cli_argv = []
+
+                done_payload: dict[str, Any] = {
+                    "type": "done",
+                    "status": job.status.value,
+                    "exit_code": job.exit_code,
+                    "duration_s": duration_s,
+                    "error": job.error,
+                    "command": job.command,
+                    "cli_argv": cli_argv,
+                }
+
+                await websocket.send_json(done_payload)
                 await websocket.close()
                 return
 
