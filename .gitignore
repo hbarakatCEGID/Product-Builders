@@ -14,3 +14,6 @@ env/
 *.swp
 .DS_Store
 Thumbs.db
+
+# Product Builders dev default PB_HOME (repo root): recent paths from web UI
+recent_paths.json

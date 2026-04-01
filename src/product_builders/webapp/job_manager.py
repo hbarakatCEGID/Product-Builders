@@ -83,7 +83,12 @@ def _append_job_output_line(job: Job, line: str, stream_name: str) -> None:
     job.output_lines.append({"line": line, "stream": stream_name})
 
 
-def _pipe_line_reader(pipe: IO[bytes], stream_name: str, job: Job, loop: asyncio.AbstractEventLoop) -> None:
+def _pipe_line_reader(
+    pipe: IO[bytes],
+    stream_name: str,
+    job: Job,
+    loop: asyncio.AbstractEventLoop,
+) -> None:
     try:
         while True:
             raw = pipe.readline()
@@ -226,7 +231,7 @@ class JobManager:
         cmd: list[str],
         env: dict[str, str],
     ) -> None:
-        """Run CLI via ``Popen`` + pipe reader threads (Windows ``SelectorEventLoop`` / uvicorn reload)."""
+        """Run CLI with ``Popen`` and reader threads (e.g. Windows uvicorn ``--reload``)."""
         loop = asyncio.get_running_loop()
         proc = subprocess.Popen(
             cmd,

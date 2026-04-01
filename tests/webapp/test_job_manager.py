@@ -5,7 +5,7 @@ import asyncio
 
 import pytest
 
-from product_builders.webapp.job_manager import Job, JobManager, JobStatus
+from product_builders.webapp.job_manager import JobManager, JobStatus
 
 
 def test_job_creation():
@@ -39,7 +39,10 @@ def test_reject_concurrent_job():
 
 def test_build_cli_args_analyze():
     mgr = JobManager()
-    job = mgr.create_job("analyze", {"repo_path": "/tmp/repo", "name": "test", "heuristic_only": True})
+    job = mgr.create_job(
+        "analyze",
+        {"repo_path": "/tmp/repo", "name": "test", "heuristic_only": True},
+    )
     args = mgr.build_cli_args(job)
     assert "analyze" in args
     assert "/tmp/repo" in args
@@ -73,3 +76,24 @@ def test_build_cli_args_feedback():
     assert "feedback" in args
     assert "--rule" in args
     assert "--issue" in args
+
+
+@pytest.mark.asyncio
+async def test_run_job_popen_fallback_when_asyncio_subprocess_unavailable(monkeypatch):
+    """Popen fallback when asyncio subprocess is unavailable (Windows uvicorn ``--reload``)."""
+
+    async def _no_subprocess(*_a, **_kw):
+        raise NotImplementedError
+
+    monkeypatch.setattr(asyncio, "create_subprocess_exec", _no_subprocess)
+
+    mgr = JobManager()
+    job = mgr.create_job(
+        "generate",
+        {"name": "__missing_product_for_fallback_test__"},
+    )
+    await mgr.run_job(job)
+
+    assert job.error is None
+    assert job.exit_code is not None
+    assert job.output_lines, "fallback path should stream at least one line from the CLI"
