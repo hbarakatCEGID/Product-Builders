@@ -202,13 +202,62 @@ Role aliases: `engineer`, `eng`, `pm`, `product_manager`, `designer`, `qa`, `qa_
 
 ## Web application
 
+The web UI is a **FastAPI** app: in-browser docs, a catalog of analyzed products (under your profiles directory), role onboarding pages, and an **Operations** dashboard that can run CLI jobs and stream logs.
+
+### Prerequisites
+
+Same as [Installation](#installation): Python 3.11+, package installed in editable mode so `uvicorn` and templates are available.
+
 ```bash
+cd /path/to/Product-Builders
 pip install -e .
+```
+
+### Start the server
+
+From the repository root (or any directory where the package is installed):
+
+```bash
+# Recommended for local development (auto-reload on code changes)
 product-builders-web --reload
 ```
 
-Open [http://127.0.0.1:8000](http://127.0.0.1:8000).
+Equivalent ways to start:
 
+```bash
+python -m product_builders.webapp --reload
+uvicorn product_builders.webapp.app:app --host 127.0.0.1 --port 8000 --reload
+```
+
+Then open **[http://127.0.0.1:8000](http://127.0.0.1:8000)** in your browser.
+
+| Option        | Default       | Description                          |
+| ------------- | ------------- | ------------------------------------ |
+| `--host`      | `127.0.0.1`   | Bind address                         |
+| `--port`      | `8000`        | TCP port                             |
+| `--reload`    | off           | Restart server when source files change (development) |
+
+Stop the server with **Ctrl+C** in the terminal.
+
+For a quick production-style run (no reload), omit `--reload`:
+
+```bash
+product-builders-web --host 0.0.0.0 --port 8000
+```
+
+### Using the UI
+
+- **Landing (`/`)** — Overview and entry points into the app.
+- **Download (`/download`)** — How to install the CLI for contributors.
+- **Documentation (`/docs`, `/docs/{slug}`)** — Packaged guides (getting started, CLI, governance, etc.).
+- **Products (`/products`)** — Lists products that have a folder under your configured profiles directory (see [Configuration](#configuration)). Run `product-builders setup-product` or `analyze` first so profiles exist; otherwise the catalog may be empty.
+- **Product detail (`/products/{name}`)** — Summary and links to onboarding per role.
+- **Onboarding (`/products/{name}/onboarding/{role}`)** — Rendered markdown onboarding for that role.
+- **Operations (`/operations`)** — Run selected CLI workflows from the browser with live log output.
+
+**OpenAPI / Swagger** for the HTTP API is at **[http://127.0.0.1:8000/api/docs](http://127.0.0.1:8000/api/docs)**.
+
+### Quick reference (routes)
 
 | Page                                 | Purpose                                          |
 | ------------------------------------ | ------------------------------------------------ |
@@ -219,6 +268,7 @@ Open [http://127.0.0.1:8000](http://127.0.0.1:8000).
 | `/products/{name}`                   | Product detail + onboarding links                |
 | `/products/{name}/onboarding/{role}` | Role-specific onboarding guide                   |
 | `/operations`                        | Operations dashboard (run commands from browser) |
+| `/api/docs`                          | Swagger UI (REST API)                            |
 
 
 ---
