@@ -1,5 +1,5 @@
 ---
-description: "Security rules and patterns for {{ profile.metadata.name }}"
+description: "Enforce security rules and prevent vulnerabilities when writing code in {{ profile.metadata.name }}"
 globs:
 alwaysApply: true
 priority: 50
@@ -54,10 +54,28 @@ Approach: **{{ profile.security.secrets_management }}**
 Do not remove or reorder security middleware.
 {% endif %}
 
+{% if profile.security.vulnerability_scanning %}
+## Vulnerability Scanning
+
+Tool: **{{ profile.security.vulnerability_scanning }}**
+
+Address vulnerability findings before merging.
+{% endif %}
+
 {% if profile.security.csp_headers %}
 ## Content Security Policy
 
 CSP headers are configured. Do not add `unsafe-inline` or `unsafe-eval` without security review.
+{% endif %}
+
+{% if profile.env_config.env_files %}
+## Environment Files
+
+{% for f in profile.env_config.env_files %}
+- `{{ f }}`
+{% endfor %}
+
+> Only `.env.example` should be committed. Actual `.env` files must be in `.gitignore`.
 {% endif %}
 
 {% if company_standards and company_standards.security %}
@@ -65,6 +83,14 @@ CSP headers are configured. Do not add `unsafe-inline` or `unsafe-eval` without 
 
 {% for rule in company_standards.security.rules %}
 - **{{ rule.id }}** ({{ rule.severity }}): {{ rule.description }}
+{% endfor %}
+{% endif %}
+
+{% if profile.security.anti_patterns %}
+## Security Anti-Patterns Detected
+
+{% for ap in profile.security.anti_patterns %}
+- {{ ap }}
 {% endfor %}
 {% endif %}
 

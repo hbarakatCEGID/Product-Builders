@@ -1,5 +1,5 @@
 ---
-description: "Coding conventions for seeker1"
+description: "Enforce coding conventions and naming patterns when writing TypeScript code in seeker1"
 globs:
   - "**/*.ts"
   - "**/*.tsx"
@@ -34,3 +34,7 @@ priority: 30
 1. Follow existing naming conventions — consistency over personal preference
 2. Match the file naming pattern used throughout the project
 3. Run the linter and formatter before committing
+
+
+
+

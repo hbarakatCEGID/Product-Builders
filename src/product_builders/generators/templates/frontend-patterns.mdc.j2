@@ -1,0 +1,118 @@
+---
+description: "Enforce frontend UI patterns when building components or pages in {{ profile.metadata.name }}"
+globs:
+  - "**/components/**"
+  - "**/pages/**"
+  - "**/*.tsx"
+  - "**/*.jsx"
+alwaysApply: false
+priority: 25
+---
+
+# Frontend Patterns
+
+{% if profile.frontend_patterns.routing_library %}
+**Routing**: {{ profile.frontend_patterns.routing_library }}
+{% endif %}
+
+{% if profile.frontend_patterns.layout_patterns %}
+## Layout Patterns
+
+This project uses the following layout approaches:
+
+{% for pattern in profile.frontend_patterns.layout_patterns %}
+- {{ pattern }}
+{% endfor %}
+
+> Follow the existing layout patterns. Do not introduce alternative layout systems.
+{% endif %}
+
+{% if profile.frontend_patterns.form_libraries %}
+## Form Handling
+
+{% for lib in profile.frontend_patterns.form_libraries %}
+- {{ lib }}
+{% endfor %}
+
+> Use the existing form library for all form implementations. Follow the established validation and submission patterns.
+{% elif profile.state_management.form_library %}
+## Form Handling
+
+- Library: **{{ profile.state_management.form_library }}**
+
+> Use the existing form library for all form implementations.
+{% endif %}
+
+{% if profile.frontend_patterns.modal_pattern %}
+## Modal Pattern
+
+Implementation: **{{ profile.frontend_patterns.modal_pattern }}**
+
+> Use the existing modal implementation. Do not introduce alternative modal libraries.
+{% endif %}
+
+{% if profile.frontend_patterns.loading_patterns %}
+## Loading Patterns
+
+This project uses the following loading state patterns:
+
+{% for pattern in profile.frontend_patterns.loading_patterns %}
+- **{{ pattern }}**
+{% endfor %}
+
+> Follow these patterns for loading states. Use skeleton screens for content placeholders and loading states for interactive elements.
+{% endif %}
+
+{% if profile.frontend_patterns.error_boundary %}
+## Error Boundaries
+
+Error boundaries are configured in this project. Wrap new feature areas with the existing error boundary component.
+{% else %}
+## Error Boundaries
+
+No error boundaries detected. Consider adding error boundaries for new feature areas to prevent full-page crashes.
+{% endif %}
+
+{% if profile.frontend_patterns.animation_library %}
+## Animations
+
+Library: **{{ profile.frontend_patterns.animation_library }}**
+
+> Use the existing animation library. Do not introduce alternative animation solutions.
+{% endif %}
+
+{% if profile.frontend_patterns.list_virtualization %}
+## List Virtualization
+
+Library: **{{ profile.frontend_patterns.list_virtualization }}**
+
+> Use list virtualization for rendering large lists or tables.
+{% endif %}
+
+{% if profile.frontend_patterns.routing_library %}
+## Routing
+
+Library: **{{ profile.frontend_patterns.routing_library }}**
+
+> Follow the existing routing patterns. New routes should follow the same structure as existing ones.
+{% endif %}
+
+## Rules
+
+1. Follow the existing component structure and patterns
+2. Use the project's established loading, error, and empty state patterns
+3. Keep components focused — split large components into smaller, reusable pieces
+{% if profile.frontend_patterns.form_libraries %}
+4. Use `{{ profile.frontend_patterns.form_libraries | first }}` for all form implementations
+{% endif %}
+{% if profile.frontend_patterns.modal_pattern %}
+5. Use the existing `{{ profile.frontend_patterns.modal_pattern }}` for all modals and dialogs
+{% endif %}
+
+{% if profile.frontend_patterns.anti_patterns %}
+## Frontend Anti-Patterns Detected
+
+{% for ap in profile.frontend_patterns.anti_patterns %}
+- {{ ap }}
+{% endfor %}
+{% endif %}

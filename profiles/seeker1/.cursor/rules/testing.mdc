@@ -1,6 +1,7 @@
 ---
-description: "Testing conventions and requirements for seeker1"
+description: "Enforce vitest conventions when writing or modifying tests in seeker1"
 globs:
+
 alwaysApply: false
 priority: 25
 ---
@@ -8,14 +9,18 @@ priority: 25
 # Testing
 
 **Framework**: vitest
-**Runner**: vitest
 
 ## Rules
 
 1. Every new feature and bug fix must include tests
-2. Use the existing test framework — do not introduce alternatives
+2. Use `vitest` — do not introduce alternatives
 3. Tests must be independent — no shared mutable state between tests
 4. Prefer descriptive test names that explain the expected behavior
+
+
+
+
+
 
 
 

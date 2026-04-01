@@ -1,5 +1,5 @@
 ---
-description: "Bootstrap meta-rule: adaptive deep analysis prompts for {{ profile.metadata.name }}"
+description: "Bootstrap meta-rule: gap-aware deep analysis prompts for {{ profile.metadata.name }}"
 globs:
 alwaysApply: false
 priority: 10
@@ -8,7 +8,7 @@ priority: 10
 # Deep Analysis — {{ profile.metadata.name }}
 
 This rule provides structured prompts for Cursor-assisted deep analysis.
-Run all 3 steps in sequence. **For each finding, cite the file path that proves it.**
+Run all steps in sequence. **For each finding, cite the file path that proves it.**
 
 Write ALL findings to a single file: **`deep-analysis.yaml`** in the repo root.
 
@@ -19,29 +19,82 @@ product-builders ingest-deep --name {{ profile.metadata.name }} --repo .
 
 ---
 
-## Heuristic Context (already detected)
+## What We Already Know (Heuristic Analysis Results)
 
 {% if profile.tech_stack.primary_language %}- **Primary language**: {{ profile.tech_stack.primary_language }}{% endif %}
 
 {% if profile.tech_stack.frameworks %}- **Frameworks**: {% for fw in profile.tech_stack.frameworks %}{{ fw.name }}{% if fw.version %} {{ fw.version }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}
 
-{% if profile.database.orm %}- **ORM**: {{ profile.database.orm }}{% if profile.database.database_type %} ({{ profile.database.database_type }}){% endif %}{% endif %}
+{% if profile.database.database_type %}- **Database**: {{ profile.database.database_type }}{% if profile.database.orm %} (ORM: {{ profile.database.orm }}){% else %} (no ORM detected){% endif %}{% endif %}
+
+{% if profile.database.migration_directory %}- **Migrations**: `{{ profile.database.migration_directory }}`{% endif %}
 
 {% if profile.auth.auth_strategy %}- **Auth**: {{ profile.auth.auth_strategy }}{% if profile.auth.permission_model %} / {{ profile.auth.permission_model }}{% endif %}{% endif %}
 
 {% if profile.api.api_style %}- **API style**: {{ profile.api.api_style }}{% endif %}
 
+{% if profile.api.api_directories %}- **API directories**: {{ profile.api.api_directories | join(', ') }}{% endif %}
+
 {% if profile.testing.test_framework %}- **Testing**: {{ profile.testing.test_framework }}{% endif %}
 
 {% if profile.structure.source_directories %}- **Source dirs**: {{ profile.structure.source_directories | join(', ') }}{% endif %}
 
+{% if profile.conventions.linter %}- **Linter**: {{ profile.conventions.linter }}{% if profile.conventions.linter_config_path %} (`{{ profile.conventions.linter_config_path }}`){% endif %}{% endif %}
+
+{% if profile.design_ui.component_library %}- **UI library**: {{ profile.design_ui.component_library }}{% endif %}
+
+{% if profile.design_ui.css_methodology %}- **CSS**: {{ profile.design_ui.css_methodology }}{% endif %}
+
+{% if profile.user_flows.route_count %}- **Routes detected**: {{ profile.user_flows.route_count }}{% endif %}
+
 {% if profile.structure.is_monorepo %}- **Monorepo**: yes{% if profile.structure.monorepo_tool %} ({{ profile.structure.monorepo_tool }}){% endif %}{% endif %}
+
+{% set has_gaps = gap_questions.architecture or gap_questions.database or gap_questions.auth or gap_questions.conventions %}
+{% if has_gaps %}
+---
+
+## What We Couldn't Determine (Gaps to Fill)
+
+The heuristic analysis left these gaps. Your deep analysis should **prioritize filling these specific gaps**:
+
+{% if gap_questions.architecture %}
+### Architecture Gaps
+{% for q in gap_questions.architecture %}
+- {{ q }}
+{% endfor %}
+{% endif %}
+
+{% if gap_questions.database %}
+### Database Gaps
+{% for q in gap_questions.database %}
+- {{ q }}
+{% endfor %}
+{% endif %}
+
+{% if gap_questions.auth %}
+### Auth Gaps
+{% for q in gap_questions.auth %}
+- {{ q }}
+{% endfor %}
+{% endif %}
+
+{% if gap_questions.conventions %}
+### Convention Gaps
+{% for q in gap_questions.conventions %}
+- {{ q }}
+{% endfor %}
+{% endif %}
+{% endif %}
 
 ---
 
 ## Step 1: Architecture Deep-Dive
 
+{% if has_gaps and gap_questions.architecture %}
+**Priority**: Fill the architecture gaps listed above. Then also address:
+{% else %}
 Analyze the codebase architecture. Focus on these questions:
+{% endif %}
 
 {% for q in adaptive_questions.architecture %}
 {{ loop.index }}. {{ q }}
@@ -59,7 +112,11 @@ Write findings to the `architecture_deep` section of `deep-analysis.yaml`.
 
 ## Step 2: Domain Model Analysis
 
+{% if has_gaps and gap_questions.database %}
+**Priority**: Fill the database gaps listed above. Then also address:
+{% else %}
 Analyze the domain model and business logic:
+{% endif %}
 
 {% for q in adaptive_questions.domain_model %}
 {{ loop.index }}. {{ q }}
@@ -67,6 +124,8 @@ Analyze the domain model and business logic:
 
 {% if profile.database.orm %}
 Start by examining {{ profile.database.orm }} models/entities.
+{% elif profile.database.database_type %}
+Start by examining database-related files — look for model definitions, schema files, or database client usage.
 {% endif %}
 
 **For each finding, cite the file path that proves it.**
@@ -77,7 +136,11 @@ Write findings to the `domain_model_deep` section of `deep-analysis.yaml`.
 
 ## Step 3: Implicit Conventions
 
+{% if has_gaps and gap_questions.conventions %}
+**Priority**: Fill the convention gaps listed above. Then also address:
+{% else %}
 Identify conventions not captured by linters or formatters:
+{% endif %}
 
 {% for q in adaptive_questions.conventions %}
 {{ loop.index }}. {{ q }}

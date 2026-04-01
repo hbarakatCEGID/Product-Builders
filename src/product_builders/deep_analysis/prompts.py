@@ -12,6 +12,10 @@ from product_builders.models.profile import ProductProfile
 
 _MAX_QUESTIONS_PER_STEP = 6
 
+_NEXTJS_NAMES = frozenset({"next", "next.js", "nextjs"})
+_REACT_NAMES = frozenset({"react", "react.js"})
+_SPRING_NAMES = frozenset({"spring", "spring-boot", "spring boot"})
+
 
 # ---------------------------------------------------------------------------
 # Internal helpers
@@ -91,11 +95,11 @@ def _build_architecture_questions(profile: ProductProfile) -> list[str]:
         questions.extend(_ARCHITECTURE_DJANGO)
     elif is_python and framework == "fastapi":
         questions.extend(_ARCHITECTURE_FASTAPI)
-    elif is_typescript and framework in ("next", "next.js", "nextjs"):
+    elif is_typescript and framework in _NEXTJS_NAMES:
         questions.extend(_ARCHITECTURE_NEXTJS)
-    elif is_typescript and framework in ("react", "react.js"):
+    elif is_typescript and framework in _REACT_NAMES:
         questions.extend(_ARCHITECTURE_REACT_GENERIC)
-    elif is_java and framework in ("spring", "spring-boot", "spring boot"):
+    elif is_java and framework in _SPRING_NAMES:
         questions.extend(_ARCHITECTURE_SPRING)
 
     if profile.structure.is_monorepo:
@@ -193,6 +197,165 @@ def _build_conventions_questions(profile: ProductProfile) -> list[str]:
 # ---------------------------------------------------------------------------
 # Public API: build_adaptive_questions
 # ---------------------------------------------------------------------------
+
+
+def build_gap_aware_questions(
+    profile: ProductProfile,
+) -> dict[str, list[str]]:
+    """Return questions that target what heuristic analysis COULDN'T determine.
+
+    Unlike adaptive questions (which vary by framework), gap-aware questions
+    reference what WAS detected and ask about what's MISSING — filling
+    specific holes in the profile rather than asking generic questions.
+    """
+    architecture: list[str] = []
+    database: list[str] = []
+    auth: list[str] = []
+    conventions: list[str] = []
+
+    framework = _detect_framework(profile)
+    lang = (profile.tech_stack.primary_language or "").lower()
+    src_dirs = ", ".join(profile.structure.source_directories) if profile.structure.source_directories else "the source directory"
+
+    # --- Architecture gaps ---
+    if not profile.architecture_deep.layering_pattern:
+        if framework:
+            architecture.append(
+                f"We detected {framework} but couldn't determine the architecture pattern. "
+                f"Is the project layered (route handlers → services → data access), "
+                f"feature-based, or something else? Check {src_dirs}."
+            )
+        else:
+            architecture.append(
+                "What architecture pattern does this project follow? "
+                "(layered, hexagonal, feature-based, flat?) "
+                f"Examine the directory structure under {src_dirs}."
+            )
+
+    if not profile.architecture_deep.bounded_contexts:
+        key_dirs = [d.path for d in profile.structure.key_directories[:5]]
+        if key_dirs:
+            architecture.append(
+                f"These directories were detected: {', '.join(key_dirs)}. "
+                "Are they bounded contexts / domain modules, or just structural grouping? "
+                "Which ones depend on each other?"
+            )
+
+    if not profile.architecture_deep.dependency_direction:
+        architecture.append(
+            "What is the dependency direction? Do outer layers depend on inner layers, "
+            "or is it ad-hoc? Check import statements across modules."
+        )
+
+    # --- Database gaps ---
+    if profile.database.database_type and not profile.database.orm:
+        db = profile.database.database_type
+        architecture_hint = ""
+        if profile.auth.auth_strategy and profile.auth.auth_strategy.lower() == "supabase":
+            architecture_hint = " (Supabase detected — check for Supabase client usage)"
+        database.append(
+            f"We detected {db} but no ORM. How does the project query the database? "
+            f"Direct client library? Query builder? Raw SQL?{architecture_hint}"
+        )
+
+    if profile.database.migration_directory:
+        if not profile.database.migration_tool:
+            database.append(
+                f"Migrations found at `{profile.database.migration_directory}` "
+                "but the migration tool couldn't be identified. "
+                "What tool generates and runs these migrations?"
+            )
+    elif profile.database.database_type and not profile.database.migration_directory:
+        database.append(
+            f"Database ({profile.database.database_type}) detected but no migration "
+            "directory found. Are migrations managed externally (e.g., Supabase dashboard, "
+            "hosted service) or is there an undiscovered migration directory?"
+        )
+
+    if not profile.database.schema_naming_convention and profile.database.database_type:
+        database.append(
+            "What naming convention is used for tables and columns? "
+            "(snake_case, camelCase, PascalCase?)"
+        )
+
+    if not profile.database.relationship_patterns and profile.database.database_type:
+        database.append(
+            "What entity relationships exist? Check schema definitions "
+            "or model files for foreign keys, join tables, and associations."
+        )
+
+    # --- Auth gaps ---
+    if profile.auth.auth_strategy and not profile.auth.auth_middleware:
+        api_dirs = ", ".join(profile.api.api_directories) if profile.api.api_directories else "the API directory"
+        auth.append(
+            f"Auth strategy detected as {profile.auth.auth_strategy}, but no auth "
+            f"middleware was found. How do API routes at {api_dirs} validate "
+            "authentication? Is it middleware, per-route checks, or RLS?"
+        )
+
+    if profile.auth.auth_strategy and not profile.auth.protected_route_patterns:
+        auth.append(
+            "No protected route patterns detected. Which routes require "
+            "authentication? What does the protection pattern look like?"
+        )
+
+    if profile.auth.auth_strategy and not profile.auth.auth_directories:
+        auth.append(
+            "Where does auth-related code live? (auth utils, guards, "
+            "middleware, session management)"
+        )
+
+    if profile.auth.auth_strategy and not profile.auth.oauth_providers and not profile.auth.mfa_methods:
+        auth.append(
+            f"Auth is {profile.auth.auth_strategy}. Are there OAuth providers "
+            "configured? Any MFA/2FA methods enabled?"
+        )
+
+    # --- Conventions gaps ---
+    if not profile.conventions.naming_convention and not profile.implicit_conventions_deep.naming_philosophy:
+        conventions.append(
+            "What naming convention is followed? "
+            "(camelCase, snake_case, PascalCase for variables/functions/classes?) "
+            "Check 5+ files for consistent patterns."
+        )
+
+    if not profile.conventions.import_ordering:
+        linter = profile.conventions.linter
+        if linter:
+            conventions.append(
+                f"Linter ({linter}) is configured but import ordering couldn't be "
+                "determined. Are imports grouped by type (stdlib → external → local)?"
+            )
+
+    if not profile.error_handling.logging_framework and not profile.error_handling.logging_frameworks:
+        conventions.append(
+            "No logging framework detected. How does this project log? "
+            "Console.log, a logger library, or a custom solution?"
+        )
+
+    if not profile.error_handling.error_response_format and profile.api.api_style:
+        conventions.append(
+            "What format do API error responses follow? "
+            "Is there a standard error envelope (e.g., {error: {code, message}})?"
+        )
+
+    if (
+        not profile.state_management.data_fetching_library
+        and not profile.state_management.data_fetching_libraries
+        and lang in ("typescript", "javascript")
+    ):
+        conventions.append(
+            "No data fetching library detected (React Query, SWR, etc.). "
+            "How does this project fetch data from API routes? "
+            "Custom hooks, fetch() calls, or another pattern?"
+        )
+
+    return {
+        "architecture": architecture[:_MAX_QUESTIONS_PER_STEP],
+        "database": database[:_MAX_QUESTIONS_PER_STEP],
+        "auth": auth[:_MAX_QUESTIONS_PER_STEP],
+        "conventions": conventions[:_MAX_QUESTIONS_PER_STEP],
+    }
 
 
 def build_adaptive_questions(
@@ -416,14 +579,7 @@ implicit_conventions_deep:
 
 
 def _select_yaml_example(profile: ProductProfile) -> str:
-    """Pick the most relevant YAML example based on tech stack.
-
-    Checks framework-specific matches first, then falls back to
-    language-family examples, then generic.
-    """
-    framework = _detect_framework(profile)
-
-    # Language → best-fit example (framework-specific or language fallback)
+    """Pick the most relevant YAML example based on primary language."""
     _LANG_EXAMPLES: dict[str, str] = {
         "python": _YAML_PYTHON_DJANGO,
         "typescript": _YAML_TYPESCRIPT_REACT,

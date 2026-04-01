@@ -1,0 +1,61 @@
+---
+description: "Document route structure and navigation patterns for seeker1"
+globs:
+- "src/app/**"
+alwaysApply: false
+priority: 20
+---
+
+# Routes & Navigation
+
+**Navigation**: next-app-router
+**Total routes**: 21
+
+## Route Map
+
+
+### Pages
+
+- `src/app/layout.tsx`
+- `src/app/page.tsx`
+- `src/app/batch/[id]/layout.tsx`
+- `src/app/batch/[id]/page.tsx`
+- `src/app/batch/[id]/chat/page.tsx`
+- `src/app/batch/[id]/history/page.tsx`
+- `src/app/batch/[id]/search/page.tsx`
+- `src/app/batch/[id]/upload/page.tsx`
+
+### API Routes
+
+- `src/app/api/batches/route.ts`
+- `src/app/api/chat/route.ts`
+- `src/app/api/conversations/route.ts`
+- `src/app/api/documents/route.ts`
+- `src/app/api/history/route.ts`
+- `src/app/api/process/route.ts`
+- `src/app/api/search/route.ts`
+- `src/app/api/upload/route.ts`
+- `src/app/api/documents/[id]/route.ts`
+- `src/app/api/documents/[id]/download/route.ts`
+- `src/app/api/conversations/[id]/route.ts`
+- `src/app/api/batches/[id]/route.ts`
+- `src/app/api/batches/__tests__/route.test.ts`
+
+> New routes should follow the same naming and directory structure as existing ones.
+
+
+
+## Error & Status Pages
+
+- 404 page: **Not detected** — consider adding a custom 404 page
+- Error page: **Not detected** — consider adding a custom error page
+
+
+## Rules
+
+1. Follow the existing route naming and directory structure
+2. Place new pages in `src/app/`
+3. API routes should follow RESTful conventions matching existing endpoints
+4. Add a custom 404 page for better user experience
+5. Add a custom error page for graceful error handling
+

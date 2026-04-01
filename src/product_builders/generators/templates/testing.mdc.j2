@@ -1,8 +1,10 @@
 ---
-description: "Testing conventions and requirements for {{ profile.metadata.name }}"
+description: "Enforce {{ profile.testing.test_framework or 'testing' }} conventions when writing or modifying tests in {{ profile.metadata.name }}"
 globs:
   {% for d in profile.testing.test_directories %}- "{{ d }}/**"
   {% endfor %}
+  {% if profile.testing.test_file_pattern %}- "{{ profile.testing.test_file_pattern }}"{% endif %}
+
 alwaysApply: false
 priority: 25
 ---
@@ -12,11 +14,14 @@ priority: 25
 {% if profile.testing.test_framework %}
 **Framework**: {{ profile.testing.test_framework }}
 {% endif %}
-{% if profile.testing.test_runner %}
+{% if profile.testing.test_runner and profile.testing.test_runner != profile.testing.test_framework %}
 **Runner**: {{ profile.testing.test_runner }}
 {% endif %}
 {% if profile.testing.e2e_framework %}
-**E2E**: {{ profile.testing.e2e_framework }}
+**E2E framework**: {{ profile.testing.e2e_framework }}
+{% endif %}
+{% if profile.testing.test_organization %}
+**Organization**: {{ profile.testing.test_organization }}
 {% endif %}
 
 ## Rules
@@ -24,7 +29,7 @@ priority: 25
 {% set ns = namespace(n=1) %}
 {{ ns.n }}. Every new feature and bug fix must include tests
 {% set ns.n = ns.n + 1 %}
-{{ ns.n }}. Use the existing test framework — do not introduce alternatives
+{{ ns.n }}. Use `{{ profile.testing.test_framework or 'the existing test framework' }}` — do not introduce alternatives
 {% set ns.n = ns.n + 1 %}
 {% if profile.testing.test_file_pattern %}
 {{ ns.n }}. Test file naming: `{{ profile.testing.test_file_pattern }}`
@@ -62,5 +67,41 @@ priority: 25
 
 {% for fp in profile.testing.fixture_patterns %}
 - `{{ fp }}`
+{% endfor %}
+
+> Use the existing fixture patterns. Do not create ad-hoc test data inline.
+{% endif %}
+
+{% if profile.testing.e2e_framework %}
+## End-to-End Testing
+
+- Framework: `{{ profile.testing.e2e_framework }}`
+- E2E tests cover critical user flows — update them when modifying user-facing features
+{% endif %}
+
+{% if profile.testing.api_testing_tools %}
+## API Testing
+
+Tools: {{ profile.testing.api_testing_tools | join(', ') }}
+{% endif %}
+
+{% if profile.testing.snapshot_testing %}
+## Snapshot Testing
+
+This project uses snapshot testing. Update snapshots intentionally — review snapshot diffs before committing.
+{% endif %}
+
+{% if profile.testing.visual_regression_tool %}
+## Visual Regression
+
+- Tool: `{{ profile.testing.visual_regression_tool }}`
+- Update visual baselines when UI changes are intentional
+{% endif %}
+
+{% if profile.testing.anti_patterns %}
+## Testing Anti-Patterns Detected
+
+{% for ap in profile.testing.anti_patterns %}
+- {{ ap }}
 {% endfor %}
 {% endif %}

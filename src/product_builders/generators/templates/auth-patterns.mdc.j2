@@ -1,7 +1,9 @@
 ---
-description: "Authentication & authorization patterns for {{ profile.metadata.name }}"
+description: "Enforce {{ profile.auth.auth_strategy or 'project' }} auth patterns when editing API routes or auth files in {{ profile.metadata.name }}"
 globs:
   {% for d in profile.auth.auth_directories %}- "{{ d }}/**"
+  {% endfor %}
+  {% for d in profile.api.api_directories %}- "{{ d }}/**"
   {% endfor %}
 alwaysApply: true
 priority: 50
@@ -14,6 +16,9 @@ priority: 50
 {% endif %}
 {% if profile.auth.permission_model %}
 **Permission model**: {{ profile.auth.permission_model | upper }}
+{% endif %}
+{% if profile.auth.rate_limiting %}
+**Rate limiting**: {{ profile.auth.rate_limiting }}
 {% endif %}
 
 {% if profile.auth.oauth_providers %}
@@ -70,4 +75,41 @@ Use these existing patterns for route protection:
 {% endfor %}
 
 > Auth-related changes require security review. If you need to modify auth logic, create a task for the engineering team.
+{% endif %}
+
+{% if not profile.auth.auth_middleware and not profile.auth.protected_route_patterns and profile.auth.auth_strategy %}
+## Auth Implementation Details
+
+{% if profile.auth.auth_strategy | lower == 'supabase' %}
+This project uses **Supabase Auth**. Key patterns:
+- Use the Supabase client wrapper from the project (check `src/lib/supabase/` or similar)
+- API routes should validate auth via `supabase.auth.getUser()` in route handlers
+- Row Level Security (RLS) policies may enforce authorization at the database level
+- Do NOT import `@supabase/supabase-js` directly — use the project's client wrapper
+{% elif profile.auth.auth_strategy | lower == 'jwt' %}
+This project uses **JWT authentication**. Key patterns:
+- Validate tokens in middleware before route handlers
+- Check token expiry and refresh flow
+- Never store JWTs in localStorage — use httpOnly cookies
+{% elif profile.auth.auth_strategy | lower == 'session' %}
+This project uses **session-based authentication**. Key patterns:
+- Sessions are managed server-side
+- Include CSRF protection on state-changing requests
+- Respect session expiry and renewal logic
+{% elif profile.auth.auth_strategy | lower == 'oauth' %}
+This project uses **OAuth authentication**. Key patterns:
+- OAuth flow is handled through configured providers
+- Protect callback routes and validate state parameters
+- Store tokens securely — never expose to client-side code
+{% endif %}
+{% endif %}
+
+{% if profile.auth.anti_patterns %}
+## Auth Anti-Patterns Detected
+
+The following issues were found — avoid repeating them:
+
+{% for ap in profile.auth.anti_patterns %}
+- {{ ap }}
+{% endfor %}
 {% endif %}

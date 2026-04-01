@@ -1,5 +1,5 @@
 ---
-description: "Performance guidelines for {{ profile.metadata.name }}"
+description: "Enforce performance patterns when optimizing or adding features in {{ profile.metadata.name }}"
 globs:
 alwaysApply: false
 priority: 20
@@ -72,6 +72,34 @@ All images must go through the optimization pipeline.
 Config: **{{ profile.performance.bundle_size_config }}**
 
 > Monitor bundle sizes. Keep critical path bundles small.
+{% endif %}
+
+{% if profile.performance.web_vitals_monitoring %}
+## Web Vitals
+
+Monitoring: **{{ profile.performance.web_vitals_monitoring }}**
+
+> Track Core Web Vitals (LCP, FID, CLS). Do not regress these metrics.
+{% endif %}
+
+{% if profile.performance.service_worker_detected %}
+## Service Worker
+
+A service worker is configured. Coordinate changes with the caching strategy.
+{% endif %}
+
+{% if profile.performance.cdn_detected %}
+## CDN
+
+CDN: **{{ profile.performance.cdn_detected }}**
+{% endif %}
+
+{% if profile.performance.anti_patterns %}
+## Performance Anti-Patterns Detected
+
+{% for ap in profile.performance.anti_patterns %}
+- {{ ap }}
+{% endfor %}
 {% endif %}
 
 {% if company_standards and company_standards.performance %}

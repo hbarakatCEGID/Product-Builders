@@ -1,5 +1,5 @@
 ---
-description: "Accessibility requirements for {{ profile.metadata.name }}"
+description: "Enforce accessibility requirements when editing UI components in {{ profile.metadata.name }}"
 globs:
   - "**/*.tsx"
   - "**/*.jsx"
@@ -74,6 +74,30 @@ Keyboard navigation patterns detected.
 ## Color Contrast
 
 Configuration: **{{ profile.accessibility.color_contrast_config }}**
+{% endif %}
+
+{% if profile.accessibility.form_accessibility %}
+## Form Accessibility Patterns
+
+{% for pattern in profile.accessibility.form_accessibility %}
+- {{ pattern }}
+{% endfor %}
+{% endif %}
+
+{% if profile.accessibility.focus_management_patterns %}
+## Focus Management
+
+{% for pattern in profile.accessibility.focus_management_patterns %}
+- {{ pattern }}
+{% endfor %}
+{% endif %}
+
+{% if profile.accessibility.anti_patterns %}
+## Accessibility Anti-Patterns Detected
+
+{% for ap in profile.accessibility.anti_patterns %}
+- {{ ap }}
+{% endfor %}
 {% endif %}
 
 ## Checklist

@@ -13,7 +13,7 @@ from typing import Any
 
 from product_builders.generators.base import BaseGenerator
 from product_builders.generators.registry import register
-from product_builders.generators.scopes import build_zone_map
+from product_builders.generators.scopes import build_role_zone_context
 from product_builders.models.profile import ProductProfile
 from product_builders.models.scopes import ContributorRole
 from product_builders.profiles.base import DEFAULT_PROFILES
@@ -39,6 +39,8 @@ RULE_TEMPLATES: list[tuple[str, str]] = [
     ("api-patterns.mdc.j2", "api-patterns.mdc"),
     ("i18n.mdc.j2", "i18n.mdc"),
     ("state-and-config.mdc.j2", "state-and-config.mdc"),
+    ("frontend-patterns.mdc.j2", "frontend-patterns.mdc"),
+    ("user-flows.mdc.j2", "user-flows.mdc"),
     ("performance.mdc.j2", "performance.mdc"),
     ("cicd.mdc.j2", "cicd.mdc"),
     ("contributor-guide.mdc.j2", "contributor-guide.mdc"),
@@ -75,6 +77,7 @@ def _should_generate(template_name: str, profile: ProductProfile) -> bool:
         "i18n.mdc.j2": profile.i18n.i18n_framework is not None,
         "state-and-config.mdc.j2": (
             profile.state_management.state_library is not None
+            or bool(profile.state_management.state_patterns)
             or profile.env_config.config_approach is not None
             or profile.env_config.has_docker
         ),
@@ -82,6 +85,17 @@ def _should_generate(template_name: str, profile: ProductProfile) -> bool:
             profile.error_handling.error_strategy is not None
             or profile.error_handling.logging_framework is not None
             or profile.implicit_conventions_deep.error_handling_philosophy is not None
+        ),
+        "frontend-patterns.mdc.j2": (
+            bool(profile.frontend_patterns.layout_patterns)
+            or bool(profile.frontend_patterns.form_libraries)
+            or bool(profile.frontend_patterns.loading_patterns)
+            or profile.frontend_patterns.modal_pattern is not None
+            or profile.frontend_patterns.routing_library is not None
+        ),
+        "user-flows.mdc.j2": (
+            profile.user_flows.route_count > 0
+            or bool(profile.user_flows.route_files)
         ),
         "performance.mdc.j2": (
             profile.performance.caching_strategy is not None
@@ -145,24 +159,13 @@ class CursorRulesGenerator(BaseGenerator):
     ) -> list[Path]:
         """Generate role-specific contributor guide."""
         prof_def = DEFAULT_PROFILES.get(role)
-        scope = profile.scopes.get_scope(role)
-
-        writable_zones: dict[str, list[str]] = {}
-        readonly_zones: dict[str, list[str]] = {}
-        forbidden_zones: dict[str, list[str]] = {}
-
-        if scope:
-            writable_zones = build_zone_map(profile, scope.allowed_zones)
-            readonly_zones = build_zone_map(profile, scope.read_only_zones)
-            forbidden_zones = build_zone_map(profile, scope.forbidden_zones)
+        zones = build_role_zone_context(profile, role)
 
         context = {
             "profile": profile,
             "role": role.value,
             "role_display_name": prof_def.display_name if prof_def else role.value,
-            "writable_zones": writable_zones,
-            "readonly_zones": readonly_zones,
-            "forbidden_zones": forbidden_zones,
+            **zones,
             "blocked_commands": prof_def.blocked_shell_commands if prof_def else [],
             "emphasized_rules": prof_def.emphasized_rules if prof_def else [],
         }

@@ -1,5 +1,5 @@
 ---
-description: "Authentication & authorization patterns for seeker1"
+description: "Enforce supabase auth patterns when editing API routes or auth files in seeker1"
 globs:
 alwaysApply: true
 priority: 50
@@ -10,6 +10,8 @@ priority: 50
 **Strategy**: SUPABASE
 **Permission model**: RBAC
 
+
+
 ## Critical Rules
 
 1. **NEVER** bypass authentication middleware or guards
@@ -19,4 +21,13 @@ priority: 50
 5. **ALWAYS** check authorization before performing data mutations
 
 
+
+
+## Auth Implementation Details
+
+This project uses **Supabase Auth**. Key patterns:
+- Use the Supabase client wrapper from the project (check `src/lib/supabase/` or similar)
+- API routes should validate auth via `supabase.auth.getUser()` in route handlers
+- Row Level Security (RLS) policies may enforce authorization at the database level
+- Do NOT import `@supabase/supabase-js` directly — use the project's client wrapper
 

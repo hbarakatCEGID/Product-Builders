@@ -30,6 +30,24 @@ def build_zone_map(profile: ProductProfile, zone_names: list[str]) -> dict[str, 
     return result
 
 
+def build_role_zone_context(
+    profile: ProductProfile, role: ContributorRole
+) -> dict[str, dict[str, list[str]]]:
+    """Build writable/readonly/forbidden zone maps for a contributor role.
+
+    Returns a dict with keys ``writable_zones``, ``readonly_zones``,
+    ``forbidden_zones``, each mapping zone names to path globs.
+    """
+    scope = profile.scopes.get_scope(role)
+    if not scope:
+        return {"writable_zones": {}, "readonly_zones": {}, "forbidden_zones": {}}
+    return {
+        "writable_zones": build_zone_map(profile, scope.allowed_zones),
+        "readonly_zones": build_zone_map(profile, scope.read_only_zones),
+        "forbidden_zones": build_zone_map(profile, scope.forbidden_zones),
+    }
+
+
 # Zone auto-detection: directory patterns → zone name
 ZONE_DETECTORS: list[tuple[str, list[str]]] = [
     ("frontend_ui", [

@@ -1,5 +1,5 @@
 ---
-description: "API conventions and patterns for seeker1"
+description: "Enforce rest conventions when editing API routes or endpoints in seeker1"
 globs:
 alwaysApply: false
 priority: 30
@@ -8,6 +8,7 @@ priority: 30
 # API Patterns
 
 **Style**: REST
+
 
 ## Rules
 
@@ -20,5 +21,8 @@ priority: 30
 ## Route Structure
 
 Pattern: `app-router (Next.js)`
+
+
+
 
 

@@ -1,0 +1,106 @@
+---
+description: "Enrich critical rules (database, auth, security) with project-specific patterns from the codebase"
+globs:
+alwaysApply: false
+priority: 5
+---
+
+# Enrich Critical Rules — seeker1
+
+Rewrite 3 critical Cursor rule files with project-specific depth.
+For each rule: READ the current version in `.cursor/rules/`, ANALYZE the codebase, then REWRITE with real patterns.
+
+## What We Already Know
+
+- **Language**: TypeScript
+- **Frameworks**: next ^15, react ^19
+- **Database**: postgresql (no ORM detected)
+
+- **Auth**: supabase / rbac
+- **API**: rest
+
+
+- **Source dirs**: src
+## Gaps to Fill (Priority)
+
+### Database
+- We detected postgresql but no ORM. How does the project query the database? Direct client library? Query builder? Raw SQL? (Supabase detected — check for Supabase client usage)
+- Database (postgresql) detected but no migration directory found. Are migrations managed externally (e.g., Supabase dashboard, hosted service) or is there an undiscovered migration directory?
+- What naming convention is used for tables and columns? (snake_case, camelCase, PascalCase?)
+- What entity relationships exist? Check schema definitions or model files for foreign keys, join tables, and associations.
+
+### Auth
+- Auth strategy detected as supabase, but no auth middleware was found. How do API routes at the API directory validate authentication? Is it middleware, per-route checks, or RLS?
+- No protected route patterns detected. Which routes require authentication? What does the protection pattern look like?
+- Where does auth-related code live? (auth utils, guards, middleware, session management)
+- Auth is supabase. Are there OAuth providers configured? Any MFA/2FA methods enabled?
+
+## Quality Requirements
+
+1. **Every claim MUST cite a file path** (e.g., `src/lib/supabase/server.ts`)
+2. Include **2-3 DO/DON'T code examples** per rule using REAL patterns from this codebase
+3. Target **1000-2500 words** per rule
+4. **Keep the existing frontmatter** (description, globs, priority) — update description to be more specific
+5. Do NOT recommend tools/libraries not in this project's dependencies
+6. Replace generic advice with patterns specific to THIS project
+
+---
+
+## Rule 1: database.mdc
+
+Read `.cursor/rules/database.mdc`, then rewrite it with project-specific depth.
+
+**Analyze these files/areas first:**
+- Database client/ORM files (check `src/lib/`, `src/db/`, `prisma/`, `supabase/`)
+- Migration files and directories
+- Query patterns in API route handlers
+- Schema definitions or model files
+
+**Required sections in the rewritten rule:**
+1. Database type and access pattern (how THIS project queries the DB)
+2. Migration workflow (exact commands, directory, tooling)
+3. Query patterns with DO/DON'T code examples from the codebase
+4. Entity relationships (tables, models, their connections)
+5. Schema conventions (naming, types, constraints)
+
+---
+
+## Rule 2: auth-patterns.mdc
+
+Read `.cursor/rules/auth-patterns.mdc`, then rewrite it with project-specific depth.
+
+**Analyze these files/areas first:**
+- Auth client/middleware files (check `src/lib/auth/`, `src/middleware*`, `src/lib/supabase/`)
+- Protected API routes — how they validate authentication
+- Role/permission checks in route handlers or middleware
+- Session/token handling patterns
+
+**Required sections in the rewritten rule:**
+1. Auth strategy details (how auth works in THIS project, not generic)
+2. Auth middleware/guard pattern with DO/DON'T code examples
+3. Protected vs public routes (which routes need auth, which don't)
+4. Permission model (how roles/permissions are checked)
+5. Auth-related file locations
+
+---
+
+## Rule 3: security.mdc
+
+Read `.cursor/rules/security.mdc`, then rewrite it with project-specific depth.
+
+**Analyze these files/areas first:**
+- Input validation patterns (check API route handlers for validation)
+- Environment files and secrets handling
+- CORS configuration
+- Security middleware or headers
+
+**Required sections in the rewritten rule:**
+1. Input validation pattern with DO/DON'T code examples
+2. Secrets management (how env vars and secrets are handled)
+3. Security middleware stack
+4. CORS and headers configuration
+
+
+---
+
+After rewriting all 3 rules, summarize what you found and changed.

@@ -1,0 +1,58 @@
+---
+description: "Enforce frontend UI patterns when building components or pages in seeker1"
+globs:
+  - "**/components/**"
+  - "**/pages/**"
+  - "**/*.tsx"
+  - "**/*.jsx"
+alwaysApply: false
+priority: 25
+---
+
+# Frontend Patterns
+
+**Routing**: next-router
+
+## Layout Patterns
+
+This project uses the following layout approaches:
+
+- tailwind-flex/grid
+
+> Follow the existing layout patterns. Do not introduce alternative layout systems.
+
+
+## Modal Pattern
+
+Implementation: **custom-modal**
+
+> Use the existing modal implementation. Do not introduce alternative modal libraries.
+
+## Loading Patterns
+
+This project uses the following loading state patterns:
+
+- **skeleton**
+- **loading-state**
+
+> Follow these patterns for loading states. Use skeleton screens for content placeholders and loading states for interactive elements.
+
+## Error Boundaries
+
+No error boundaries detected. Consider adding error boundaries for new feature areas to prevent full-page crashes.
+
+
+
+## Routing
+
+Library: **next-router**
+
+> Follow the existing routing patterns. New routes should follow the same structure as existing ones.
+
+## Rules
+
+1. Follow the existing component structure and patterns
+2. Use the project's established loading, error, and empty state patterns
+3. Keep components focused — split large components into smaller, reusable pieces
+5. Use the existing `custom-modal` for all modals and dialogs
+

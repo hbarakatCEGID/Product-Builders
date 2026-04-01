@@ -1,5 +1,5 @@
 ---
-description: "Security rules and patterns for seeker1"
+description: "Enforce security rules and prevent vulnerabilities when writing code in seeker1"
 globs:
 alwaysApply: true
 priority: 50
@@ -21,6 +21,13 @@ priority: 50
 
 
 
+
+## Environment Files
+
+- `.env.example`
+
+> Only `.env.example` should be committed. Actual `.env` files must be in `.gitignore`.
+
 ## Company Security Standards
 
 - **SEC-001** (critical): Never hardcode secrets, API keys, passwords, or tokens in source code.
@@ -30,6 +37,7 @@ priority: 50
 - **SEC-005** (high): Store passwords using bcrypt, argon2, or scrypt. Never use MD5 or SHA for passwords.
 - **SEC-006** (medium): Set appropriate HTTP security headers (X-Frame-Options, CSP, HSTS).
 - **SEC-007** (medium): Never commit .env files or credentials files to version control.
+
 
 ## Before You Submit
 

@@ -1,5 +1,5 @@
 ---
-description: "Coding conventions for {{ profile.metadata.name }}"
+description: "Enforce coding conventions and naming patterns when writing {{ profile.tech_stack.primary_language or '' }} code in {{ profile.metadata.name }}"
 globs:
 {% if profile.tech_stack.primary_language == 'Python' %}
   - "**/*.py"
@@ -22,6 +22,8 @@ priority: 30
 
 {% if profile.conventions.naming_convention %}
 **Naming**: {{ profile.conventions.naming_convention }}
+{% elif profile.implicit_conventions_deep.naming_philosophy %}
+**Naming philosophy**: {{ profile.implicit_conventions_deep.naming_philosophy }}
 {% endif %}
 {% if profile.conventions.file_naming_convention %}
 **File naming**: {{ profile.conventions.file_naming_convention }}
@@ -75,14 +77,16 @@ priority: 30
 
 1. Follow existing naming conventions — consistency over personal preference
 2. Match the file naming pattern used throughout the project
+{% if profile.conventions.linter or profile.conventions.formatter %}
 3. Run the linter and formatter before committing
+{% endif %}
 {% if profile.conventions.naming_convention == 'snake_case' %}
 4. Use `snake_case` for variables, functions, and file names
 {% elif profile.conventions.naming_convention == 'camelCase' %}
 4. Use `camelCase` for variables and functions, `PascalCase` for classes and components
 {% endif %}
 
-{% if profile.implicit_conventions_deep.naming_philosophy %}
+{% if profile.implicit_conventions_deep.naming_philosophy and profile.conventions.naming_convention %}
 ## Naming Philosophy
 
 {{ profile.implicit_conventions_deep.naming_philosophy }}
@@ -99,5 +103,13 @@ priority: 30
 
 {% for habit in profile.implicit_conventions_deep.code_organization_habits %}
 - {{ habit.pattern }}
+{% endfor %}
+{% endif %}
+
+{% if profile.conventions.anti_patterns %}
+## Convention Anti-Patterns Detected
+
+{% for ap in profile.conventions.anti_patterns %}
+- {{ ap }}
 {% endfor %}
 {% endif %}

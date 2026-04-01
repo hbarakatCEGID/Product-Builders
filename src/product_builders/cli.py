@@ -34,10 +34,12 @@ from product_builders.profiles.base import get_profile, resolve_role
 
 console = Console()
 
-# Valid ProductProfile fields that analyzers can populate
-_VALID_DIMENSIONS = frozenset(
-    ProductProfile.model_fields.keys()
-) - {"metadata", "scopes", "architecture_deep", "domain_model_deep", "implicit_conventions_deep"}
+_STATUS_STYLES: dict[str, str] = {
+    "success": "green",
+    "partial": "yellow",
+    "error": "red",
+    "skipped": "dim",
+}
 
 
 def _setup_logging(verbose: bool) -> None:
@@ -138,9 +140,7 @@ def analyze(
         if tech_analyzer and "tech_stack" in HEURISTIC_PROFILE_FIELDS:
             tech_result = tech_analyzer.safe_analyze(analysis_root)
             setattr(profile, "tech_stack", tech_result)
-            status_style = {"success": "green", "partial": "yellow", "error": "red", "skipped": "dim"}.get(
-                tech_result.status.value, "white"
-            )
+            status_style = _STATUS_STYLES.get(tech_result.status.value, "white")
             results_table.add_row(
                 tech_analyzer.name,
                 f"[{status_style}]{tech_result.status.value}[/{status_style}]",
@@ -175,12 +175,7 @@ def analyze(
             result = analyzer.safe_analyze(analysis_root, index=index)
             setattr(profile, analyzer.dimension, result)
 
-            status_style = {
-                "success": "green",
-                "partial": "yellow",
-                "error": "red",
-                "skipped": "dim",
-            }.get(result.status.value, "white")
+            status_style = _STATUS_STYLES.get(result.status.value, "white")
 
             details = result.error_message or ""
             results_table.add_row(
@@ -239,6 +234,10 @@ def generate(ctx: click.Context, name: str, role_alias: str | None, validate: bo
     If profiles/<name>/overrides.yaml exists, its values are merged into the
     profile before generation, allowing post-analysis corrections without
     re-running analyze.
+
+    After generation, open the product repo in Cursor and trigger the
+    enrichment meta-rules (enrich-critical, enrich-architecture, etc.)
+    to produce project-specific rules grounded in the actual codebase.
     """
     config: Config = ctx.obj["config"]
 
@@ -538,7 +537,7 @@ def export(ctx: click.Context, name: str, target: str, role_alias: str | None) -
     if not product_dir.exists():
         raise click.ClickException(f"No profile found for '{name}'. Run 'analyze' first.")
 
-    console.print(f"\n[bold blue]Exporting[/bold blue] [green]{name}[/green] → {target_path}\n")
+    console.print(f"\n[bold blue]Exporting[/bold blue] [green]{name}[/green] -> {target_path}\n")
 
     import shutil
 
@@ -950,6 +949,62 @@ def feedback(ctx: click.Context, name: str, rule: str, issue: str) -> None:
         encoding="utf-8",
     )
     console.print(f"[green]Feedback recorded[/green] for [cyan]{rule}[/cyan] on [green]{name}[/green]")
+
+
+# ---------------------------------------------------------------------------
+# setup-product (one-shot: analyze + generate + export)
+# ---------------------------------------------------------------------------
+
+@main.command(name="setup-product")
+@click.argument("repo_path", type=click.Path(exists=True, file_okay=False, resolve_path=True))
+@click.option("--name", "-n", required=True, help="Product name.")
+@click.option("--profile", "-p", "role_alias", default=None, help="Contributor role (pm, designer, engineer, etc.).")
+@click.option("--heuristic-only", is_flag=True, help="Skip enrichment meta-rule generation.")
+@click.option("--regenerate", is_flag=True, help="Skip analysis, use existing profile, regenerate + re-export.")
+@click.pass_context
+def setup_product(
+    ctx: click.Context,
+    repo_path: str,
+    name: str,
+    role_alias: str | None,
+    heuristic_only: bool,
+    regenerate: bool,
+) -> None:
+    """Set up a product in one step: analyze, generate rules, and export.
+
+    This is the recommended way to set up a product. It combines
+    analyze + generate + export into a single command.
+
+    After running, open the product repo in Cursor and reference
+    @enrich-all to generate project-specific rules (~15 min, optional).
+    """
+    console.print(f"\n[bold blue]Setting up[/bold blue] [green]{name}[/green] from {repo_path}\n")
+
+    # Step 1: Analyze (unless --regenerate with existing profile)
+    if not regenerate:
+        ctx.invoke(
+            analyze,
+            repo_path=repo_path,
+            name=name,
+            heuristic_only=heuristic_only,
+        )
+
+    # Step 2: Generate rules + enrichment meta-rule
+    ctx.invoke(generate, name=name, role_alias=role_alias, validate=False)
+
+    # Step 3: Export to the product repo
+    ctx.invoke(export, name=name, target=repo_path, role_alias=role_alias)
+
+    # Next steps guidance
+    if not heuristic_only:
+        console.print(f"""
+  [bold]Next step:[/bold]
+    1. Open {repo_path} in Cursor
+    2. Reference [cyan]@enrich-all[/cyan] and tell Cursor to run the enrichment
+    3. Cursor will rewrite rules with project-specific depth (~15 min)
+
+    [dim]This step is optional - template rules work immediately.[/dim]
+""")
 
 
 if __name__ == "__main__":

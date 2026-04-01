@@ -1,5 +1,5 @@
 ---
-description: "{{ profile.metadata.name }} — Product overview, tech stack, and contributor context"
+description: "{{ profile.metadata.name }} — project overview, tech stack summary, and contributor context"
 globs:
 alwaysApply: true
 priority: 40
@@ -29,10 +29,16 @@ priority: 40
 {% if profile.tech_stack.package_managers %}
 - **Package managers**: {{ profile.tech_stack.package_managers | join(', ') }}
 {% endif %}
+{% if profile.tech_stack.runtime_versions %}
+- **Runtimes**: {% for rt, ver in profile.tech_stack.runtime_versions.items() %}{{ rt }} {{ ver }}{% if not loop.last %}, {% endif %}{% endfor %}
+
+{% endif %}
 
 ## Project Structure
 
-{% if profile.structure.module_organization %}
+{% if profile.architecture_deep.layering_pattern %}
+- **Architecture**: {{ profile.architecture_deep.layering_pattern }}
+{% elif profile.structure.module_organization %}
 - **Organization**: {{ profile.structure.module_organization }}
 {% endif %}
 {% if profile.structure.source_directories %}
@@ -53,19 +59,33 @@ priority: 40
 > Keep domain concepts within their bounded context.
 {% endif %}
 
-{% if profile.database.orm %}
+{% if profile.database.database_type or profile.database.orm %}
 ## Database
 
-- **ORM**: {{ profile.database.orm }}{% if profile.database.orm_version %} {{ profile.database.orm_version }}{% endif %}
-
-{% if profile.database.migration_tool %}
-- **Migrations**: {{ profile.database.migration_tool }}
-{% endif %}
 {% if profile.database.database_type %}
 - **Database**: {{ profile.database.database_type }}
 {% endif %}
+{% if profile.database.orm %}
+- **ORM**: {{ profile.database.orm }}{% if profile.database.orm_version %} {{ profile.database.orm_version }}{% endif %}
+
+{% endif %}
+{% if profile.database.migration_tool %}
+- **Migrations**: {{ profile.database.migration_tool }}{% if profile.database.migration_directory %} (`{{ profile.database.migration_directory }}`){% endif %}
+
+{% elif profile.database.migration_directory %}
+- **Migrations directory**: `{{ profile.database.migration_directory }}`
+{% endif %}
 
 > **CRITICAL**: Never create or modify database migrations directly. Migration changes require engineering team involvement.
+{% endif %}
+
+{% if profile.auth.auth_strategy %}
+## Authentication
+
+- **Strategy**: {{ profile.auth.auth_strategy | upper }}
+{% if profile.auth.permission_model %}
+- **Permission model**: {{ profile.auth.permission_model | upper }}
+{% endif %}
 {% endif %}
 
 {% if profile.git_workflow.git_platform %}

@@ -33,7 +33,7 @@ def get_all_generators() -> list[BaseGenerator]:
 # ---------------------------------------------------------------------------
 _GENERATOR_MODULES = [
     "cursor_rules", "cursor_hooks", "cursor_permissions", "onboarding",
-    "review_checklist",
+    "review_checklist", "enrichment",
 ]
 
 for _mod_name in _GENERATOR_MODULES:

@@ -1,0 +1,184 @@
+---
+description: "Enrich all Cursor rules with project-specific patterns — reference this rule and ask Cursor to run the enrichment"
+globs:
+alwaysApply: false
+priority: 5
+---
+
+# Enrich Rules — {{ profile.metadata.name }}
+
+Rewrite the template-generated Cursor rules with project-specific depth.
+Work through **4 phases**. After each phase, **save the rewritten files and summarize** what you found before continuing.
+
+## What We Already Know
+
+{% if profile.tech_stack.primary_language %}- **Language**: {{ profile.tech_stack.primary_language }}{% endif %}
+
+{% if profile.tech_stack.frameworks %}- **Frameworks**: {% for fw in profile.tech_stack.frameworks %}{{ fw.name }}{% if fw.version %} {{ fw.version }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}
+
+{% if profile.database.database_type %}- **Database**: {{ profile.database.database_type }}{% if profile.database.orm %} (ORM: {{ profile.database.orm }}){% else %} (no ORM detected){% endif %}{% endif %}
+
+{% if profile.database.migration_directory %}- **Migrations**: `{{ profile.database.migration_directory }}`{% endif %}
+
+{% if profile.auth.auth_strategy %}- **Auth**: {{ profile.auth.auth_strategy }}{% if profile.auth.permission_model %} / {{ profile.auth.permission_model }}{% endif %}{% endif %}
+
+{% if profile.api.api_style %}- **API**: {{ profile.api.api_style }}{% endif %}
+
+{% if profile.api.api_directories %}- **API dirs**: {{ profile.api.api_directories | join(', ') }}{% endif %}
+
+{% if profile.testing.test_framework %}- **Testing**: {{ profile.testing.test_framework }}{% endif %}
+
+{% if profile.conventions.linter %}- **Linter**: {{ profile.conventions.linter }}{% if profile.conventions.linter_config_path %} (`{{ profile.conventions.linter_config_path }}`){% endif %}{% endif %}
+
+{% if profile.design_ui.component_library %}- **UI library**: {{ profile.design_ui.component_library }}{% if profile.design_ui.component_library_version %} {{ profile.design_ui.component_library_version }}{% endif %}{% endif %}
+
+{% if profile.design_ui.css_methodology %}- **CSS**: {{ profile.design_ui.css_methodology }}{% endif %}
+
+{% if profile.structure.source_directories %}- **Source dirs**: {{ profile.structure.source_directories | join(', ') }}{% endif %}
+
+{% if profile.user_flows.route_count %}- **Routes**: {{ profile.user_flows.route_count }} detected{% endif %}
+
+{% if profile.structure.is_monorepo %}- **Monorepo**: yes{% if profile.structure.monorepo_tool %} ({{ profile.structure.monorepo_tool }}){% endif %}{% endif %}
+
+{% set has_gaps = gap_questions.architecture or gap_questions.database or gap_questions.auth or gap_questions.conventions %}
+{% if has_gaps %}
+## What We Couldn't Determine (Fill These Gaps)
+
+{% if gap_questions.database %}
+### Database
+{% for q in gap_questions.database %}
+- {{ q }}
+{% endfor %}
+{% endif %}
+
+{% if gap_questions.auth %}
+### Auth
+{% for q in gap_questions.auth %}
+- {{ q }}
+{% endfor %}
+{% endif %}
+
+{% if gap_questions.architecture %}
+### Architecture
+{% for q in gap_questions.architecture %}
+- {{ q }}
+{% endfor %}
+{% endif %}
+
+{% if gap_questions.conventions %}
+### Conventions
+{% for q in gap_questions.conventions %}
+- {{ q }}
+{% endfor %}
+{% endif %}
+{% endif %}
+
+## Quality Requirements
+
+1. **Every claim MUST cite a file path** (e.g., `src/lib/supabase/server.ts`)
+2. Include **2-3 DO/DON'T code examples** per rule using REAL patterns from this codebase
+3. Target **1000-2500 words** for critical/architecture rules, **500-1000 words** for supporting rules
+4. **Keep the existing frontmatter** (description, globs, priority) — update description to be more specific
+5. Do NOT recommend tools/libraries not in this project's dependencies
+6. Replace generic advice with patterns specific to THIS project
+
+For each rule: READ the current version in `.cursor/rules/`, ANALYZE the codebase, then REWRITE the file with project-specific depth.
+
+---
+
+## Phase 1: Critical Rules (~5 min)
+
+Rewrite these 3 rules first — they prevent data loss and security issues.
+
+{% for rule in phases.critical %}
+### {{ rule.name }}
+
+Read `.cursor/rules/{{ rule.name }}`, then rewrite it.
+
+**Analyze first:**
+{% for hint in rule.analyze_hints %}
+- {{ hint }}
+{% endfor %}
+
+**Required sections:**
+{% for section in rule.required_sections %}
+- {{ section }}
+{% endfor %}
+
+{% endfor %}
+
+**After rewriting all 3 rules, summarize what you found. Wait for confirmation before Phase 2.**
+
+---
+
+## Phase 2: Architecture & Conventions (~5 min)
+
+{% for rule in phases.architecture %}
+### {{ rule.name }}
+
+Read `.cursor/rules/{{ rule.name }}`, then rewrite it.
+
+**Analyze first:**
+{% for hint in rule.analyze_hints %}
+- {{ hint }}
+{% endfor %}
+
+**Required sections:**
+{% for section in rule.required_sections %}
+- {{ section }}
+{% endfor %}
+
+{% endfor %}
+
+**Summarize findings. Wait for confirmation before Phase 3.**
+
+---
+
+## Phase 3: Frontend & UI (~5 min)
+
+{% for rule in phases.frontend %}
+### {{ rule.name }}
+
+Read `.cursor/rules/{{ rule.name }}`, then rewrite it.
+
+**Analyze first:**
+{% for hint in rule.analyze_hints %}
+- {{ hint }}
+{% endfor %}
+
+**Required sections:**
+{% for section in rule.required_sections %}
+- {{ section }}
+{% endfor %}
+
+{% endfor %}
+
+**Summarize findings. Wait for confirmation before Phase 4.**
+
+---
+
+## Phase 4: Supporting Rules (~3 min)
+
+These are lower-priority. Keep them concise (500-1000 words each).
+If a rule file doesn't exist (dimension was skipped), create it only if relevant data exists in the codebase.
+
+{% for rule in phases.supporting %}
+### {{ rule.name }}
+
+{% if rule.analyze_hints %}
+**Analyze first:**
+{% for hint in rule.analyze_hints %}
+- {{ hint }}
+{% endfor %}
+{% endif %}
+
+{% if rule.required_sections %}
+**Required sections:**
+{% for section in rule.required_sections %}
+- {{ section }}
+{% endfor %}
+{% endif %}
+
+{% endfor %}
+
+**Summarize all changes across all 4 phases. Enrichment complete.**

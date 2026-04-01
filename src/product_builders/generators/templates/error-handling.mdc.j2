@@ -1,5 +1,5 @@
 ---
-description: "Error handling and logging conventions for {{ profile.metadata.name }}"
+description: "Enforce error handling and logging conventions when writing error handling or logging code in {{ profile.metadata.name }}"
 globs:
 alwaysApply: true
 priority: 30
@@ -9,12 +9,19 @@ priority: 30
 
 {% if profile.error_handling.error_strategy %}
 **Strategy**: {{ profile.error_handling.error_strategy }}
+{% elif profile.implicit_conventions_deep.error_handling_philosophy %}
+**Philosophy**: {{ profile.implicit_conventions_deep.error_handling_philosophy }}
 {% endif %}
 {% if profile.error_handling.logging_framework %}
 **Logger**: {{ profile.error_handling.logging_framework }}
+{% elif profile.error_handling.logging_frameworks %}
+**Loggers**: {{ profile.error_handling.logging_frameworks | join(', ') }}
 {% endif %}
 {% if profile.error_handling.monitoring_integration %}
 **Monitoring**: {{ profile.error_handling.monitoring_integration }}
+{% endif %}
+{% if profile.error_handling.structured_logging %}
+**Structured logging**: Yes
 {% endif %}
 
 ## Rules
@@ -35,15 +42,31 @@ priority: 30
 3. Log errors with appropriate severity levels
 {% endif %}
 
-{% if profile.error_handling.logging_framework %}
+{% if profile.error_handling.custom_error_classes %}
+## Custom Error Classes
+
+Use these existing error classes — do not create duplicates:
+
+{% for cls in profile.error_handling.custom_error_classes %}
+- `{{ cls }}`
+{% endfor %}
+
+> Extend these classes for new error types. Do not use generic `Error` or `Exception`.
+{% endif %}
+
+{% if profile.error_handling.logging_framework or profile.error_handling.logging_frameworks %}
 ## Logging
 
-- Use `{{ profile.error_handling.logging_framework }}` — do not introduce alternative loggers
+- Use `{{ profile.error_handling.logging_framework or profile.error_handling.logging_frameworks | first }}` — do not introduce alternative loggers
 {% if profile.error_handling.logging_config_file %}
 - Config: `{{ profile.error_handling.logging_config_file }}`
 {% endif %}
 - Use appropriate log levels: DEBUG for development, INFO for operations, WARN for recoverable issues, ERROR for failures
+{% if profile.error_handling.structured_logging %}
+- This project uses **structured logging** — include key-value context in log entries (request IDs, user IDs, etc.)
+{% else %}
 - Include structured context in log entries (request IDs, user IDs, etc.)
+{% endif %}
 - Never log sensitive data (passwords, tokens, PII)
 {% endif %}
 
@@ -55,16 +78,6 @@ priority: 30
 - Add breadcrumbs for debugging context where available
 {% endif %}
 
-{% if profile.error_handling.custom_error_classes %}
-## Custom Error Classes
-
-Use these existing error classes — do not create duplicates:
-
-{% for cls in profile.error_handling.custom_error_classes %}
-- `{{ cls }}`
-{% endfor %}
-{% endif %}
-
 {% if profile.error_handling.error_response_format %}
 ## Error Response Format
 
@@ -73,8 +86,24 @@ Format: **{{ profile.error_handling.error_response_format }}**
 All API error responses must follow the same structure. Check existing error handlers for the exact format.
 {% endif %}
 
-{% if profile.implicit_conventions_deep.error_handling_philosophy %}
+{% if profile.error_handling.error_recovery_patterns %}
+## Error Recovery Patterns
+
+{% for pattern in profile.error_handling.error_recovery_patterns %}
+- {{ pattern }}
+{% endfor %}
+{% endif %}
+
+{% if profile.implicit_conventions_deep.error_handling_philosophy and profile.error_handling.error_strategy %}
 ## Error Handling Philosophy
 
 {{ profile.implicit_conventions_deep.error_handling_philosophy }}
+{% endif %}
+
+{% if profile.error_handling.anti_patterns %}
+## Error Handling Anti-Patterns Detected
+
+{% for ap in profile.error_handling.anti_patterns %}
+- {{ ap }}
+{% endfor %}
 {% endif %}

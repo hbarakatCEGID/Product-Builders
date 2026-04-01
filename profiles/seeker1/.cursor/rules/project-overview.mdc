@@ -1,5 +1,5 @@
 ---
-description: "seeker1 — Product overview, tech stack, and contributor context"
+description: "seeker1 — project overview, tech stack summary, and contributor context"
 globs:
 alwaysApply: true
 priority: 40
@@ -21,18 +21,15 @@ priority: 40
 - **Source directories**: src
 
 
+## Database
 
-## Contributor Context
+- **Database**: postgresql
 
-You are assisting a **Product Manager** working on **seeker1**.
+> **CRITICAL**: Never create or modify database migrations directly. Migration changes require engineering team involvement.
 
-### You CAN help with:
-- frontend_ui
+## Authentication
 
-### Read-only (can view but not modify):
-- api
-- backend_logic
+- **Strategy**: SUPABASE
+- **Permission model**: RBAC
 
-### Requires engineering involvement:
-- database → suggest creating a Jira issue
-- configuration → suggest creating a Jira issue
+

@@ -545,8 +545,8 @@ class TestRegistry:
 
     def test_all_generators_registered(self) -> None:
         generators = get_all_generators()
-        assert len(generators) == 5, (
-            f"Expected 5 generators, got {len(generators)}: "
+        assert len(generators) == 6, (
+            f"Expected 6 generators, got {len(generators)}: "
             f"{[g.name for g in generators]}"
         )
 
@@ -577,7 +577,7 @@ class TestCrossGenerator:
         self, minimal_profile: ProductProfile, tmp_path: Path
     ) -> None:
         generators = get_all_generators()
-        assert len(generators) == 5
+        assert len(generators) == 6
 
         all_paths: list[Path] = []
         for gen in generators:
@@ -592,7 +592,7 @@ class TestCrossGenerator:
         self, rich_profile: ProductProfile, tmp_path: Path
     ) -> None:
         generators = get_all_generators()
-        assert len(generators) == 5
+        assert len(generators) == 6
 
         all_paths: list[Path] = []
         for gen in generators:

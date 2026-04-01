@@ -1,5 +1,5 @@
 ---
-description: "API conventions and patterns for {{ profile.metadata.name }}"
+description: "Enforce {{ profile.api.api_style or 'API' }} conventions when editing API routes or endpoints in {{ profile.metadata.name }}"
 globs:
   {% for d in profile.api.api_directories %}- "{{ d }}/**"
   {% endfor %}
@@ -17,6 +17,16 @@ priority: 30
 {% endif %}
 {% if profile.api.response_format %}
 **Response format**: {{ profile.api.response_format }}
+{% endif %}
+
+{% if profile.api.api_directories %}
+## API Directories
+
+{% for d in profile.api.api_directories %}
+- `{{ d }}/`
+{% endfor %}
+
+> Place new API endpoints in the appropriate directory following the existing structure.
 {% endif %}
 
 ## Rules
@@ -75,4 +85,22 @@ All list endpoints must support pagination.
 {% endfor %}
 
 > Place new business logic in the appropriate location following the existing patterns.
+{% endif %}
+
+{% if profile.domain_model_deep.entity_relationships %}
+## API Resource Relationships
+
+The following entity relationships should be reflected in API design:
+
+{% for rel in profile.domain_model_deep.entity_relationships %}
+- **{{ rel.from_entity }}** → **{{ rel.to_entity }}** ({{ rel.type }})
+{% endfor %}
+{% endif %}
+
+{% if profile.api.anti_patterns %}
+## API Anti-Patterns Detected
+
+{% for ap in profile.api.anti_patterns %}
+- {{ ap }}
+{% endfor %}
 {% endif %}

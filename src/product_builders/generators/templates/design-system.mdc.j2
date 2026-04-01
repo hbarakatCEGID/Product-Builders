@@ -1,11 +1,12 @@
 ---
-description: "Design system and UI component patterns for {{ profile.metadata.name }}"
+description: "Enforce {{ profile.design_ui.component_library or profile.design_ui.css_methodology or 'design system' }} patterns when editing UI components or styles in {{ profile.metadata.name }}"
 globs:
   {% for d in profile.design_ui.styling_directories %}- "{{ d }}/**"
   {% endfor %}
   - "**/*.css"
   - "**/*.scss"
   - "**/*.less"
+  - "**/components/**"
 alwaysApply: false
 priority: 25
 ---
@@ -18,6 +19,9 @@ priority: 25
 {% endif %}
 {% if profile.design_ui.css_methodology %}
 **CSS methodology**: {{ profile.design_ui.css_methodology }}
+{% endif %}
+{% if profile.design_ui.icon_library %}
+**Icon library**: {{ profile.design_ui.icon_library }}
 {% endif %}
 
 ## Rules
@@ -77,4 +81,32 @@ All UI changes must be responsive. Test on mobile, tablet, and desktop viewports
 Theme: **{{ profile.design_ui.theme_provider }}**
 
 > Use the theme provider for consistent styling. Do not hardcode colors or spacing values.
+{% endif %}
+
+{% if profile.design_ui.icon_library %}
+## Icons
+
+- Library: **{{ profile.design_ui.icon_library }}**
+- Use icons from this library — do not add icon SVGs or alternative icon packages
+{% endif %}
+
+{% if profile.design_ui.component_doc_tool %}
+## Component Documentation
+
+- Tool: **{{ profile.design_ui.component_doc_tool }}**
+- Document new components in the component documentation system
+{% endif %}
+
+{% if profile.design_ui.font_strategy %}
+## Font Strategy
+
+{{ profile.design_ui.font_strategy }}
+{% endif %}
+
+{% if profile.design_ui.anti_patterns %}
+## Design Anti-Patterns Detected
+
+{% for ap in profile.design_ui.anti_patterns %}
+- {{ ap }}
+{% endfor %}
 {% endif %}

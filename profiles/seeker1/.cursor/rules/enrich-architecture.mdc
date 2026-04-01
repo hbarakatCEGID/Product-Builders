@@ -1,0 +1,123 @@
+---
+description: "Enrich architecture rules (architecture, conventions, errors, API) with project-specific patterns"
+globs:
+alwaysApply: false
+priority: 5
+---
+
+# Enrich Architecture Rules — seeker1
+
+Rewrite 4 architecture-related Cursor rule files with project-specific depth.
+For each rule: READ the current version in `.cursor/rules/`, ANALYZE the codebase, then REWRITE with real patterns.
+
+## What We Already Know
+
+- **Language**: TypeScript
+- **Frameworks**: next ^15, react ^19
+- **Organization**: flat
+- **Key dirs**: docs, src, src/app, src/app/api, src/components, src/lib, src/lib/pipeline/__tests__, src/lib/supabase/__tests__, src/types, supabase/migrations
+- **Linter**: eslint (`eslint.config.mjs`)
+
+- **Error strategy**: exceptions
+
+- **API**: rest
+
+## Gaps to Fill (Priority)
+
+### Architecture
+- We detected next but couldn't determine the architecture pattern. Is the project layered (route handlers → services → data access), feature-based, or something else? Check src.
+- These directories were detected: docs, src, src/app, src/app/api, src/components. Are they bounded contexts / domain modules, or just structural grouping? Which ones depend on each other?
+- What is the dependency direction? Do outer layers depend on inner layers, or is it ad-hoc? Check import statements across modules.
+
+### Conventions
+- What naming convention is followed? (camelCase, snake_case, PascalCase for variables/functions/classes?) Check 5+ files for consistent patterns.
+- Linter (eslint) is configured but import ordering couldn't be determined. Are imports grouped by type (stdlib → external → local)?
+- No logging framework detected. How does this project log? Console.log, a logger library, or a custom solution?
+- What format do API error responses follow? Is there a standard error envelope (e.g., {error: {code, message}})?
+- No data fetching library detected (React Query, SWR, etc.). How does this project fetch data from API routes? Custom hooks, fetch() calls, or another pattern?
+
+## Quality Requirements
+
+1. **Every claim MUST cite a file path** (e.g., `src/components/Button.tsx`)
+2. Include **2-3 DO/DON'T code examples** per rule using REAL patterns from this codebase
+3. Target **1000-2500 words** per rule
+4. **Keep the existing frontmatter** — update description to be more specific
+5. Do NOT recommend tools/libraries not in this project's dependencies
+6. Replace generic advice with patterns specific to THIS project
+
+---
+
+## Rule 1: architecture.mdc
+
+Read `.cursor/rules/architecture.mdc`, then rewrite it with project-specific depth.
+
+**Analyze these files/areas first:**
+- Top-level directory structure and module organization
+- Import patterns across modules (dependency direction)
+- Shared utility/helper locations
+- Feature vs layer organization
+
+**Required sections in the rewritten rule:**
+1. Architecture pattern (layered, feature-based, etc.) with evidence
+2. Module boundaries table (module → depends on → evidence)
+3. Dependency direction rule with DO/DON'T examples
+4. Where to place new code (decision tree by type of change)
+
+---
+
+## Rule 2: coding-conventions.mdc
+
+Read `.cursor/rules/coding-conventions.mdc`, then rewrite it with project-specific depth.
+
+**Analyze these files/areas first:**
+- 5+ representative source files for naming patterns
+- Import ordering across files
+- Linter/formatter config files
+- Type annotation patterns
+
+**Required sections in the rewritten rule:**
+1. Naming conventions with real examples from the codebase
+2. Import ordering pattern with example
+3. Code organization habits (how features are structured)
+4. DO/DON'T pairs showing the project's actual style vs common mistakes
+
+---
+
+## Rule 3: error-handling.mdc
+
+Read `.cursor/rules/error-handling.mdc`, then rewrite it with project-specific depth.
+
+**Analyze these files/areas first:**
+- Error handling in API route handlers
+- Custom error classes or error utilities
+- Logging patterns across the codebase
+- Error response format in API responses
+
+**Required sections in the rewritten rule:**
+1. Error handling strategy with code examples from the project
+2. Custom error classes (if any) with usage patterns
+3. Logging pattern with DO/DON'T examples
+4. API error response format with example
+
+---
+
+## Rule 4: api-patterns.mdc
+
+Read `.cursor/rules/api-patterns.mdc`, then rewrite it with project-specific depth.
+
+**Analyze these files/areas first:**
+- API route handler files (check route.ts, controller files)
+- Request validation patterns
+- Response format consistency
+- Pagination, filtering, sorting patterns
+
+**Required sections in the rewritten rule:**
+1. Route handler pattern with DO/DON'T code examples
+2. Request validation approach with examples
+3. Response format (standard envelope, error format)
+4. Complete route inventory with HTTP methods
+
+
+---
+
+After rewriting all 4 rules, summarize what you found and changed.

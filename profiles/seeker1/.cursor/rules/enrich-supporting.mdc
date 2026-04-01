@@ -1,0 +1,139 @@
+---
+description: "Enrich supporting rules (testing, performance, a11y, i18n, CI/CD, git) with project-specific patterns"
+globs:
+alwaysApply: false
+priority: 5
+---
+
+# Enrich Supporting Rules — seeker1
+
+Rewrite 6 supporting Cursor rule files with project-specific depth.
+For each rule: READ the current version in `.cursor/rules/`, ANALYZE the codebase, then REWRITE with real patterns.
+
+**Note**: Some of these rules may have been skipped during template generation (no relevant data detected). If a rule file doesn't exist in `.cursor/rules/`, create it from scratch based on what you find in the codebase.
+
+## What We Already Know
+
+- **Language**: TypeScript
+- **Frameworks**: next ^15, react ^19
+- **Test framework**: vitest
+
+
+
+
+- **Image optimization**: next/image
+- **A11y tools**: testing-library
+
+## Quality Requirements
+
+1. **Every claim MUST cite a file path**
+2. Include **DO/DON'T code examples** where applicable
+3. Target **500-1500 words** per rule (these are supporting rules — be concise)
+4. **Keep the existing frontmatter** — update description to be more specific
+5. Do NOT recommend tools/libraries not in this project's dependencies
+6. If a dimension has NO relevant data in the codebase, keep the rule minimal
+
+---
+
+## Rule 1: testing.mdc
+
+Read `.cursor/rules/testing.mdc` (if it exists), then rewrite with project-specific depth.
+
+**Analyze these files/areas first:**
+- Existing test files for patterns
+- Test setup/configuration files
+- Mock and fixture patterns
+- Test directory structure
+
+**Required sections in the rewritten rule:**
+1. Test file pattern with example from the project
+2. Test structure (describe/it, arrange-act-assert, etc.)
+3. Mocking pattern with examples
+4. How to run tests
+
+---
+
+## Rule 2: performance.mdc
+
+Read `.cursor/rules/performance.mdc` (if it exists), then rewrite with project-specific depth.
+
+**Analyze these files/areas first:**
+- Image optimization usage
+- Code splitting / lazy loading patterns
+- Caching configuration
+- Bundle configuration
+
+**Required sections in the rewritten rule:**
+1. Performance patterns used in this project
+2. Image and asset optimization approach
+3. Caching strategy
+
+---
+
+## Rule 3: accessibility.mdc
+
+Read `.cursor/rules/accessibility.mdc` (if it exists), then rewrite with project-specific depth.
+
+**Analyze these files/areas first:**
+- ARIA attribute usage in components
+- Semantic HTML patterns
+- Keyboard navigation implementations
+- Form accessibility patterns
+
+**Required sections in the rewritten rule:**
+1. Accessibility patterns found in the project
+2. ARIA usage examples
+3. Semantic HTML patterns
+
+---
+
+## Rule 4: i18n.mdc
+
+Read `.cursor/rules/i18n.mdc` (if it exists), then rewrite with project-specific depth.
+
+**Analyze these files/areas first:**
+- Translation files and directories
+- i18n library usage in components
+- Locale configuration
+
+**Required sections in the rewritten rule:**
+1. i18n setup and usage pattern
+2. How to add new translations
+
+---
+
+## Rule 5: cicd.mdc
+
+Read `.cursor/rules/cicd.mdc` (if it exists), then rewrite with project-specific depth.
+
+**Analyze these files/areas first:**
+- CI/CD configuration files
+- Build scripts and commands
+- Deployment configuration
+
+**Required sections in the rewritten rule:**
+1. CI/CD pipeline overview
+2. Build and deployment commands
+3. Required checks before merge
+
+---
+
+## Rule 6: git-workflow.mdc
+
+Read `.cursor/rules/git-workflow.mdc` (if it exists), then rewrite with project-specific depth.
+
+**Analyze these files/areas first:**
+- PR templates and contributing guidelines
+- Branch naming in recent commits
+- Commit message patterns
+- CODEOWNERS file
+
+**Required sections in the rewritten rule:**
+1. Commit message convention with examples from git log
+2. Branch naming pattern
+3. PR workflow and review requirements
+
+
+---
+
+After rewriting all applicable rules, summarize what you found and changed.

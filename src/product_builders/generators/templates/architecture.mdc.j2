@@ -1,5 +1,5 @@
 ---
-description: "Architecture and module boundaries for {{ profile.metadata.name }}"
+description: "Enforce architecture boundaries and module organization when adding or modifying code in {{ profile.metadata.name }}"
 globs:
 alwaysApply: false
 priority: 40
@@ -7,7 +7,9 @@ priority: 40
 
 # Architecture
 
-{% if profile.structure.module_organization %}
+{% if profile.architecture_deep.layering_pattern %}
+**Pattern**: {{ profile.architecture_deep.layering_pattern }}
+{% elif profile.structure.module_organization %}
 **Organization**: {{ profile.structure.module_organization }}
 {% endif %}
 
@@ -30,12 +32,12 @@ priority: 40
 
 > Respect these boundaries. Do not introduce circular dependencies.
 {% elif profile.structure.key_directories %}
-Key modules:
-
+| Directory | Purpose |
+|-----------|---------|
 {% for dir in profile.structure.key_directories %}
-- `{{ dir.path }}`{% if dir.purpose %} — {{ dir.purpose }}{% endif %}
-
+| `{{ dir.path }}` | {{ dir.purpose or 'See project docs' }} |
 {% endfor %}
+
 {% endif %}
 
 {% if profile.architecture_deep.bounded_contexts %}
@@ -48,6 +50,16 @@ Key modules:
 > Keep domain concepts within their bounded context. Cross-context communication should use defined interfaces.
 {% endif %}
 
+{% if profile.domain_model_deep.business_logic_locations %}
+## Business Logic Locations
+
+{% for loc in profile.domain_model_deep.business_logic_locations %}
+- `{{ loc.path }}` — {{ loc.description }}
+{% endfor %}
+
+> Place new business logic in the appropriate location. Do not scatter logic across layers.
+{% endif %}
+
 {% if profile.structure.source_directories %}
 ## Source Layout
 
@@ -56,6 +68,33 @@ Key modules:
 {% endfor %}
 
 > Place new code in the appropriate directory following the existing structure.
+{% endif %}
+
+{% if profile.structure.is_monorepo %}
+## Monorepo
+
+{% if profile.structure.monorepo_tool %}
+- Tool: **{{ profile.structure.monorepo_tool }}**
+{% endif %}
+{% if profile.structure.sub_projects %}
+- Sub-projects: {{ profile.structure.sub_projects | join(', ') }}
+{% endif %}
+
+> Respect package boundaries. Shared code goes in the designated shared packages.
+{% endif %}
+
+{% if profile.implicit_conventions_deep.abstraction_level %}
+## Abstraction Style
+
+{{ profile.implicit_conventions_deep.abstraction_level }}
+{% endif %}
+
+{% if profile.implicit_conventions_deep.code_organization_habits %}
+## Code Organization Patterns
+
+{% for habit in profile.implicit_conventions_deep.code_organization_habits %}
+- {{ habit.pattern }}
+{% endfor %}
 {% endif %}
 
 ## Rules

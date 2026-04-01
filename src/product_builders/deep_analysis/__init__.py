@@ -17,6 +17,7 @@ from product_builders.deep_analysis.ingest import (
 )
 from product_builders.deep_analysis.prompts import (
     build_adaptive_questions,
+    build_gap_aware_questions,
     get_output_yaml_example,
 )
 from product_builders.deep_analysis.schema import (
@@ -29,6 +30,7 @@ __all__ = [
     "DEEP_SECTIONS",
     "DeepAnalysisYAML",
     "build_adaptive_questions",
+    "build_gap_aware_questions",
     "get_output_yaml_example",
     "ingest_deep_analysis",
     "is_evidence_key",

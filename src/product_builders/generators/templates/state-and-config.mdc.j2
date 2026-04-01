@@ -1,5 +1,5 @@
 ---
-description: "State management and configuration patterns for {{ profile.metadata.name }}"
+description: "Enforce state management and configuration patterns when managing app state or config in {{ profile.metadata.name }}"
 globs:
 alwaysApply: false
 priority: 25
@@ -7,10 +7,15 @@ priority: 25
 
 # State Management & Configuration
 
-{% if profile.state_management.state_library %}
+{% if profile.state_management.state_library or profile.state_management.state_patterns %}
 ## State Management
 
+{% if profile.state_management.state_library %}
 - **Library**: {{ profile.state_management.state_library }}
+{% endif %}
+{% if profile.state_management.state_libraries | length > 1 %}
+- **Libraries**: {{ profile.state_management.state_libraries | join(', ') }}
+{% endif %}
 {% if profile.state_management.data_fetching_library %}
 - **Data fetching**: {{ profile.state_management.data_fetching_library }}
 {% endif %}
@@ -32,7 +37,7 @@ priority: 25
 {% endfor %}
 {% endif %}
 
-> Use the existing state management library. Do not introduce alternative state solutions.
+> Use the existing state management {% if profile.state_management.state_library %}library{% else %}patterns{% endif %}. Do not introduce alternative state solutions.
 {% endif %}
 
 {% if profile.env_config.config_approach %}

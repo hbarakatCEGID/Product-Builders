@@ -1,5 +1,5 @@
 ---
-description: "State management and configuration patterns for seeker1"
+description: "Enforce state management and configuration patterns when managing app state or config in seeker1"
 globs:
 alwaysApply: false
 priority: 25
@@ -7,6 +7,14 @@ priority: 25
 
 # State Management & Configuration
 
+## State Management
+
+
+### Patterns
+
+- React Context / hooks
+
+> Use the existing state management patterns. Do not introduce alternative state solutions.
 
 ## Configuration
 
@@ -17,6 +25,8 @@ priority: 25
 - `.env.example`
 
 > Never commit `.env` files with real secrets. Use `.env.example` as a template.
+
+
 
 
 

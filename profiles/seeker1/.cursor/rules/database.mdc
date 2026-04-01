@@ -1,9 +1,10 @@
 ---
-description: "Database patterns, ORM conventions, and migration rules for seeker1"
+description: "Enforce postgresql patterns and migration rules when editing data layer files in seeker1"
 globs:
-
-
-alwaysApply: true
+  - "**/models/**"
+  - "**/entities/**"
+  - "**/schema*"
+alwaysApply: false
 priority: 50
 ---
 
@@ -17,6 +18,18 @@ priority: 50
 2. **NEVER** write raw SQL when the ORM provides the functionality
 3. **NEVER** modify existing migration files — create a new migration instead
 4. **ALWAYS** test migrations on a local database before committing
+
+## Database Access
+
+No ORM detected. This project likely queries the database via:
+- A database client library (check `src/lib/` or `src/db/` for the client wrapper)
+- Direct SQL or a query builder
+- Use the project's existing database access pattern — do not introduce a new ORM
+- Check for existing query helpers before writing raw queries
+
+
+
+
 
 
 

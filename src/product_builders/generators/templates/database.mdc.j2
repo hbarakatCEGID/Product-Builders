@@ -1,11 +1,14 @@
 ---
-description: "Database patterns, ORM conventions, and migration rules for {{ profile.metadata.name }}"
+description: "Enforce {{ profile.database.database_type or 'database' }} patterns and migration rules when editing data layer files in {{ profile.metadata.name }}"
 globs:
-  {% if profile.database.migration_directory %}- "{{ profile.database.migration_directory }}/**"{% endif %}
-
-  {% if profile.database.seed_directory %}- "{{ profile.database.seed_directory }}/**"{% endif %}
-
-alwaysApply: true
+  {% if profile.database.migration_directory %}- "{{ profile.database.migration_directory }}/**"
+  {% endif %}
+  {% if profile.database.seed_directory %}- "{{ profile.database.seed_directory }}/**"
+  {% endif %}
+  - "**/models/**"
+  - "**/entities/**"
+  - "**/schema*"
+alwaysApply: false
 priority: 50
 ---
 
@@ -14,12 +17,15 @@ priority: 50
 {% if profile.database.database_type %}
 **Database**: {{ profile.database.database_type }}
 {% endif %}
+{% if profile.database.database_types | length > 1 %}
+**Additional databases**: {{ profile.database.database_types | join(', ') }}
+{% endif %}
 {% if profile.database.orm %}
 **ORM**: {{ profile.database.orm }}{% if profile.database.orm_version %} {{ profile.database.orm_version }}{% endif %}
 
-{% if profile.database.orm_version %}
-**Version**: {{ profile.database.orm_version }}
 {% endif %}
+{% if profile.database.connection_pooling %}
+**Connection pooling**: {{ profile.database.connection_pooling }}
 {% endif %}
 
 ## Critical Rules
@@ -29,15 +35,27 @@ priority: 50
 3. **NEVER** modify existing migration files — create a new migration instead
 4. **ALWAYS** test migrations on a local database before committing
 
-{% if profile.database.migration_tool %}
+{% if profile.database.migration_tool or profile.database.migration_directory %}
 ## Migration Workflow
 
+{% if profile.database.migration_tool %}
 - Tool: `{{ profile.database.migration_tool }}`
+{% endif %}
 {% if profile.database.migration_directory %}
 - Migrations directory: `{{ profile.database.migration_directory }}`
 {% endif %}
 - Run migrations locally before committing
 - Each migration should be atomic and reversible when possible
+{% elif not profile.database.orm and profile.database.database_type %}
+## Database Access
+
+{% if profile.database.database_type == 'postgresql' %}
+No ORM detected. This project likely queries the database via:
+- A database client library (check `src/lib/` or `src/db/` for the client wrapper)
+- Direct SQL or a query builder
+{% endif %}
+- Use the project's existing database access pattern — do not introduce a new ORM
+- Check for existing query helpers before writing raw queries
 {% endif %}
 
 {% if profile.database.schema_naming_convention %}
@@ -45,6 +63,24 @@ priority: 50
 
 - Naming convention: **{{ profile.database.schema_naming_convention }}**
 - Follow this convention for all model/table/column names
+{% endif %}
+
+{% if profile.database.relationship_patterns %}
+## Relationship Patterns
+
+Detected patterns in the schema:
+
+{% for pattern in profile.database.relationship_patterns %}
+- {{ pattern }}
+{% endfor %}
+{% endif %}
+
+{% if profile.database.schema_patterns %}
+## Schema Patterns
+
+{% for pattern in profile.database.schema_patterns %}
+- {{ pattern }}
+{% endfor %}
 {% endif %}
 
 {% if profile.database.has_seeds %}
@@ -65,4 +101,24 @@ priority: 50
 {% endfor %}
 
 > Respect these relationships when creating or modifying queries.
+{% endif %}
+
+{% if profile.domain_model_deep.domain_vocabulary %}
+## Domain Vocabulary
+
+Key domain terms used in the data model:
+
+{% for entry in profile.domain_model_deep.domain_vocabulary %}
+- **{{ entry.term }}**
+{% endfor %}
+
+> Use these terms consistently. Do not introduce synonyms.
+{% endif %}
+
+{% if profile.database.anti_patterns %}
+## Database Anti-Patterns Detected
+
+{% for ap in profile.database.anti_patterns %}
+- {{ ap }}
+{% endfor %}
 {% endif %}

@@ -1,5 +1,5 @@
 ---
-description: "Error handling and logging conventions for seeker1"
+description: "Enforce error handling and logging conventions when writing error handling or logging code in seeker1"
 globs:
 alwaysApply: true
 priority: 30
@@ -15,6 +15,9 @@ priority: 30
 2. Always include meaningful error messages with context
 3. Catch specific exceptions — never catch-all without re-throwing
 4. Log errors before re-throwing or returning error responses
+
+
+
 
 
 

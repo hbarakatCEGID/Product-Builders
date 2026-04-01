@@ -12,7 +12,7 @@ from pathlib import Path
 
 from product_builders.generators.base import BaseGenerator
 from product_builders.generators.registry import register
-from product_builders.generators.scopes import build_zone_map
+from product_builders.generators.scopes import build_role_zone_context
 from product_builders.models.profile import ProductProfile
 from product_builders.models.scopes import ContributorRole
 from product_builders.profiles.base import DEFAULT_PROFILES
@@ -51,24 +51,13 @@ class OnboardingGenerator(BaseGenerator):
         self, profile: ProductProfile, output_dir: Path, role: ContributorRole
     ) -> Path:
         prof_def = DEFAULT_PROFILES.get(role)
-        scope = profile.scopes.get_scope(role)
-
-        writable_zones: dict[str, list[str]] = {}
-        readonly_zones: dict[str, list[str]] = {}
-        forbidden_zones: dict[str, list[str]] = {}
-
-        if scope:
-            writable_zones = build_zone_map(profile, scope.allowed_zones)
-            readonly_zones = build_zone_map(profile, scope.read_only_zones)
-            forbidden_zones = build_zone_map(profile, scope.forbidden_zones)
+        zones = build_role_zone_context(profile, role)
 
         context = {
             "profile": profile,
             "role": role.value,
             "role_display_name": prof_def.display_name if prof_def else role.value,
-            "writable_zones": writable_zones,
-            "readonly_zones": readonly_zones,
-            "forbidden_zones": forbidden_zones,
+            **zones,
             "blocked_commands": prof_def.blocked_shell_commands if prof_def else [],
         }
 
@@ -79,6 +68,7 @@ class OnboardingGenerator(BaseGenerator):
     def _generate_bootstrap(self, profile: ProductProfile, output_dir: Path) -> Path:
         from product_builders.deep_analysis.prompts import (
             build_adaptive_questions,
+            build_gap_aware_questions,
             get_output_yaml_example,
         )
 
@@ -86,6 +76,7 @@ class OnboardingGenerator(BaseGenerator):
             "bootstrap-meta-rule.mdc.j2",
             profile=profile,
             adaptive_questions=build_adaptive_questions(profile),
+            gap_questions=build_gap_aware_questions(profile),
             yaml_example=get_output_yaml_example(profile),
         )
         return self.write_file(

@@ -1,5 +1,5 @@
 ---
-description: "Bootstrap meta-rule: structured deep analysis prompts for seeker1"
+description: "Bootstrap meta-rule: gap-aware deep analysis prompts for seeker1"
 globs:
 alwaysApply: false
 priority: 10
@@ -8,68 +8,175 @@ priority: 10
 # Deep Analysis — seeker1
 
 This rule provides structured prompts for Cursor-assisted deep analysis.
-Run each step in sequence. Each step builds on the previous one.
+Run all steps in sequence. **For each finding, cite the file path that proves it.**
 
-## Prerequisites
+Write ALL findings to a single file: **`deep-analysis.yaml`** in the repo root.
 
-Heuristic analysis has been completed. The following was detected:
-- Primary language: TypeScript
-- Frameworks: next, react
+After completing all steps, run:
+```
+product-builders ingest-deep --name seeker1 --repo .
+```
 
-- Auth: supabase
+---
+
+## What We Already Know (Heuristic Analysis Results)
+
+- **Primary language**: TypeScript
+- **Frameworks**: next ^15, react ^19
+- **Database**: postgresql (no ORM detected)
+
+- **Auth**: supabase / rbac
+- **API style**: rest
+
+- **Testing**: vitest
+- **Source dirs**: src
+- **Linter**: eslint (`eslint.config.mjs`)
+- **UI library**: shadcn
+- **CSS**: tailwind
+- **Routes detected**: 21
+
+---
+
+## What We Couldn't Determine (Gaps to Fill)
+
+The heuristic analysis left these gaps. Your deep analysis should **prioritize filling these specific gaps**:
+
+### Architecture Gaps
+- We detected next but couldn't determine the architecture pattern. Is the project layered (route handlers → services → data access), feature-based, or something else? Check src.
+- These directories were detected: docs, src, src/app, src/app/api, src/components. Are they bounded contexts / domain modules, or just structural grouping? Which ones depend on each other?
+- What is the dependency direction? Do outer layers depend on inner layers, or is it ad-hoc? Check import statements across modules.
+
+### Database Gaps
+- We detected postgresql but no ORM. How does the project query the database? Direct client library? Query builder? Raw SQL? (Supabase detected — check for Supabase client usage)
+- Database (postgresql) detected but no migration directory found. Are migrations managed externally (e.g., Supabase dashboard, hosted service) or is there an undiscovered migration directory?
+- What naming convention is used for tables and columns? (snake_case, camelCase, PascalCase?)
+- What entity relationships exist? Check schema definitions or model files for foreign keys, join tables, and associations.
+
+### Auth Gaps
+- Auth strategy detected as supabase, but no auth middleware was found. How do API routes at the API directory validate authentication? Is it middleware, per-route checks, or RLS?
+- No protected route patterns detected. Which routes require authentication? What does the protection pattern look like?
+- Where does auth-related code live? (auth utils, guards, middleware, session management)
+- Auth is supabase. Are there OAuth providers configured? Any MFA/2FA methods enabled?
+
+### Convention Gaps
+- What naming convention is followed? (camelCase, snake_case, PascalCase for variables/functions/classes?) Check 5+ files for consistent patterns.
+- Linter (eslint) is configured but import ordering couldn't be determined. Are imports grouped by type (stdlib → external → local)?
+- No logging framework detected. How does this project log? Console.log, a logger library, or a custom solution?
+- What format do API error responses follow? Is there a standard error envelope (e.g., {error: {code, message}})?
+- No data fetching library detected (React Query, SWR, etc.). How does this project fetch data from API routes? Custom hooks, fetch() calls, or another pattern?
+
 ---
 
 ## Step 1: Architecture Deep-Dive
 
-Analyze the codebase architecture:
+**Priority**: Fill the architecture gaps listed above. Then also address:
 
-1. What layering pattern is used? (MVC, Clean Architecture, Hexagonal, etc.)
-2. What is the dependency direction? (top-down, dependency inversion, etc.)
-3. Identify bounded contexts or domain boundaries
-4. Map module boundaries — which modules depend on which?
+1. What is the top-level layering pattern (e.g. layered, hexagonal, feature-based)?
+2. What is the primary dependency direction between modules?
+3. Are there identifiable bounded contexts or major subsystems?
+4. Map cross-module dependencies -- which modules import from which?
+5. Are you using App Router or Pages Router pattern?
+6. Where does business logic live -- route handlers, lib/, or a service layer?
 
 Start by examining: src
 
-> Save findings to the deep analysis profile.
+**For each finding, cite the file path that proves it.**
+
+Write findings to the `architecture_deep` section of `deep-analysis.yaml`.
 
 ---
 
 ## Step 2: Domain Model Analysis
 
-Analyze the domain model:
+**Priority**: Fill the database gaps listed above. Then also address:
 
-1. List the core domain vocabulary (key nouns/verbs used throughout the code)
-2. Map entity relationships (1:1, 1:N, M:N)
-3. Locate business logic — where do domain rules live?
-4. Identify value objects vs entities vs aggregates
+1. Where do domain rules live?
+2. Identify value objects vs entities
+3. Do API resources map 1:1 to domain entities or are there aggregation endpoints?
+4. What naming patterns appear in model/entity definitions?
+5. Are there explicit domain events, commands, or query objects?
 
+Start by examining database-related files — look for model definitions, schema files, or database client usage.
 
-> Save findings to the deep analysis profile.
+**For each finding, cite the file path that proves it.**
+
+Write findings to the `domain_model_deep` section of `deep-analysis.yaml`.
 
 ---
 
 ## Step 3: Implicit Conventions
 
-Identify conventions not captured by linters or formatters:
+**Priority**: Fill the convention gaps listed above. Then also address:
 
-1. Naming philosophy — is the project verbose or terse? Domain-specific terms?
-2. Abstraction level — thin controllers + fat services? Or logic in controllers?
-3. Code organization habits — how are new features added? What's the "shape" of a feature?
-4. Error handling philosophy — fail fast? Defensive? Optimistic?
+1. Naming philosophy -- verbose or terse?
+2. Abstraction level -- thin controllers + fat services?
+3. Beyond eslint, what naming patterns are consistently followed?
+4. What's the test file organization pattern?
+5. Test naming conventions?
 
 Examine at least 5 representative files across different areas of the codebase.
 
-> Save findings to the deep analysis profile.
+**For each finding, cite the file path that proves it.**
+
+Write findings to the `implicit_conventions_deep` section of `deep-analysis.yaml`.
 
 ---
 
-## Step 4: Rule Refinement
+## Output Format
 
-Using the deep analysis results, refine the generated Cursor rules:
+Write the complete `deep-analysis.yaml` file using this exact structure:
 
-1. Review each .mdc rule file in `.cursor/rules/`
-2. Add project-specific constraints discovered in steps 1-3
-3. Add examples from the actual codebase where helpful
-4. Verify that forbidden patterns match actual anti-patterns found
+```yaml
+architecture_deep:
+  layering_pattern: "Feature-based modules with shared hooks"
+  layering_evidence: "src/features/ contains isolated feature folders"
+  dependency_direction: "features -> shared -> lib (inward)"
+  dependency_evidence: "src/features/orders/hooks.ts imports from src/shared/api-client.ts"
+  bounded_contexts:
+    - name: "Orders"
+      evidence: "src/features/orders/ with own components, hooks, and types"
+    - name: "Dashboard"
+      evidence: "src/features/dashboard/ aggregates data from multiple domains"
+  module_boundaries:
+    src/features/orders:
+      depends_on: ["src/shared", "src/lib"]
+      evidence: "src/features/orders/hooks.ts imports from src/shared/api-client.ts"
+    src/features/dashboard:
+      depends_on: ["src/features/orders", "src/shared"]
+      evidence: "src/features/dashboard/components/OrderSummary.tsx imports useOrders hook"
 
-> After this step, the rules are production-ready.
+domain_model_deep:
+  domain_vocabulary:
+    - term: "Order"
+      evidence: "src/features/orders/types.ts:Order interface"
+    - term: "CartItem"
+      evidence: "src/features/cart/types.ts:CartItem interface"
+  entity_relationships:
+    - from: "Order"
+      to: "User"
+      type: "many-to-one"
+      evidence: "src/features/orders/types.ts:Order.userId"
+    - from: "Order"
+      to: "CartItem"
+      type: "one-to-many"
+      evidence: "src/features/orders/types.ts:Order.items: CartItem[]"
+  business_logic_locations:
+    - path: "src/features/orders/hooks/"
+      description: "Order CRUD operations and state management via React Query"
+      evidence: "src/features/orders/hooks/useCreateOrder.ts"
+
+implicit_conventions_deep:
+  naming_philosophy: "PascalCase components, camelCase hooks prefixed with 'use'"
+  naming_evidence: "OrderList.tsx, useOrders.ts, useCreateOrder.ts"
+  abstraction_level: "Thin route components, logic in custom hooks"
+  abstraction_evidence: "src/features/orders/pages/OrdersPage.tsx delegates to useOrders hook"
+  code_organization_habits:
+    - pattern: "Feature folders with collocated components, hooks, types, and tests"
+      evidence: "src/features/orders/{components,hooks,types.ts,__tests__}"
+    - pattern: "Barrel exports via index.ts in each feature"
+      evidence: "src/features/orders/index.ts re-exports public API"
+  error_handling_philosophy: "Error boundaries at feature level with toast notifications"
+  error_evidence: "src/shared/components/ErrorBoundary.tsx wraps each feature route"
+```
+
+> **Important**: Every finding must include an `evidence` field citing the file path or code example that proves it. The `ingest-deep` command validates these citations.

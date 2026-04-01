@@ -1,0 +1,103 @@
+---
+description: "Document route structure and navigation patterns for {{ profile.metadata.name }}"
+globs:
+  {% for d in profile.user_flows.page_directories %}- "{{ d }}/**"
+  {% endfor %}
+alwaysApply: false
+priority: 20
+---
+
+# Routes & Navigation
+
+{% if profile.user_flows.navigation_type %}
+**Navigation**: {{ profile.user_flows.navigation_type }}
+{% endif %}
+{% if profile.user_flows.route_count %}
+**Total routes**: {{ profile.user_flows.route_count }}
+{% endif %}
+
+{% if profile.user_flows.route_files %}
+## Route Map
+
+{% set ns = namespace(pages=[], apis=[]) %}
+{% for route in profile.user_flows.route_files %}
+{% if '/api/' in route or '\\api\\' in route %}
+{% set ns.apis = ns.apis + [route] %}
+{% else %}
+{% set ns.pages = ns.pages + [route] %}
+{% endif %}
+{% endfor %}
+
+{% if ns.pages %}
+### Pages
+
+{% for route in ns.pages %}
+- `{{ route | replace('\\', '/') }}`
+{% endfor %}
+{% endif %}
+
+{% if ns.apis %}
+### API Routes
+
+{% for route in ns.apis %}
+- `{{ route | replace('\\', '/') }}`
+{% endfor %}
+{% endif %}
+
+> New routes should follow the same naming and directory structure as existing ones.
+{% endif %}
+
+{% if profile.user_flows.dynamic_routes %}
+## Dynamic Routes
+
+{% for route in profile.user_flows.dynamic_routes %}
+- `{{ route | replace('\\', '/') }}`
+{% endfor %}
+
+> Follow the dynamic route parameter naming pattern used in existing routes.
+{% endif %}
+
+{% if profile.user_flows.auth_protected_routes %}
+## Route Protection
+
+Auth-protected routes are detected. New routes that require authentication should follow the same protection pattern.
+{% endif %}
+
+## Error & Status Pages
+
+{% if profile.user_flows.has_404_page %}
+- 404 page: **Configured**
+{% else %}
+- 404 page: **Not detected** — consider adding a custom 404 page
+{% endif %}
+{% if profile.user_flows.has_error_page %}
+- Error page: **Configured**
+{% else %}
+- Error page: **Not detected** — consider adding a custom error page
+{% endif %}
+
+{% if profile.user_flows.lazy_routes %}
+## Lazy Loading
+
+Routes use lazy loading. New routes should also be lazy-loaded for optimal performance.
+{% endif %}
+
+## Rules
+
+1. Follow the existing route naming and directory structure
+2. Place new pages in `{{ profile.user_flows.page_directories | first | default('src/app') }}/`
+3. API routes should follow RESTful conventions matching existing endpoints
+{% if not profile.user_flows.has_404_page %}
+4. Add a custom 404 page for better user experience
+{% endif %}
+{% if not profile.user_flows.has_error_page %}
+5. Add a custom error page for graceful error handling
+{% endif %}
+
+{% if profile.user_flows.anti_patterns %}
+## Route Anti-Patterns Detected
+
+{% for ap in profile.user_flows.anti_patterns %}
+- {{ ap }}
+{% endfor %}
+{% endif %}

@@ -1,0 +1,109 @@
+---
+description: "Enrich frontend rules (design, patterns, routes, state) with project-specific patterns"
+globs:
+alwaysApply: false
+priority: 5
+---
+
+# Enrich Frontend Rules — seeker1
+
+Rewrite 4 frontend-related Cursor rule files with project-specific depth.
+For each rule: READ the current version in `.cursor/rules/`, ANALYZE the codebase, then REWRITE with real patterns.
+
+## What We Already Know
+
+- **Language**: TypeScript
+- **Frameworks**: next ^15, react ^19
+- **UI library**: shadcn ^4.0.5
+- **CSS**: tailwind
+- **Router**: next-router
+- **Loading patterns**: skeleton, loading-state
+- **Modal**: custom-modal
+
+- **State patterns**: React Context / hooks
+- **Routes**: 21 detected
+- **Navigation**: next-app-router
+## Quality Requirements
+
+1. **Every claim MUST cite a file path** (e.g., `src/components/Modal.tsx`)
+2. Include **2-3 DO/DON'T code examples** per rule using REAL patterns from this codebase
+3. Target **1000-2500 words** per rule
+4. **Keep the existing frontmatter** — update description to be more specific
+5. Do NOT recommend tools/libraries not in this project's dependencies
+6. Replace generic advice with patterns specific to THIS project
+
+---
+
+## Rule 1: design-system.mdc
+
+Read `.cursor/rules/design-system.mdc`, then rewrite it with project-specific depth.
+
+**Analyze these files/areas first:**
+- Component library usage patterns (imports, composition)
+- Styling approach (Tailwind classes, CSS modules, etc.)
+- Shared component directory
+- Theme/token configuration
+
+**Required sections in the rewritten rule:**
+1. Component library usage with DO/DON'T examples
+2. Styling pattern with examples from the project
+3. Shared components inventory
+4. Theme/design token usage
+
+---
+
+## Rule 2: frontend-patterns.mdc
+
+Read `.cursor/rules/frontend-patterns.mdc`, then rewrite it with project-specific depth.
+
+**Analyze these files/areas first:**
+- Form implementations across the app
+- Modal/dialog components
+- Loading state patterns (skeletons, spinners)
+- Error boundary components
+
+**Required sections in the rewritten rule:**
+1. Form handling pattern with code examples
+2. Loading state pattern with examples
+3. Modal/dialog pattern with examples
+4. Component composition patterns
+
+---
+
+## Rule 3: user-flows.mdc
+
+Read `.cursor/rules/user-flows.mdc`, then rewrite it with project-specific depth.
+
+**Analyze these files/areas first:**
+- Page components and their route structure
+- Navigation components and patterns
+- Protected vs public pages
+- Dynamic route parameters
+
+**Required sections in the rewritten rule:**
+1. Complete route map organized by feature area
+2. Route naming convention with examples
+3. Navigation pattern
+4. Protected routes and auth requirements
+
+---
+
+## Rule 4: state-and-config.mdc
+
+Read `.cursor/rules/state-and-config.mdc`, then rewrite it with project-specific depth.
+
+**Analyze these files/areas first:**
+- State management usage (Context, Redux, Zustand, etc.)
+- Data fetching patterns (hooks, API calls)
+- Environment configuration files
+- Feature flag patterns
+
+**Required sections in the rewritten rule:**
+1. State management pattern with code examples
+2. Data fetching pattern with DO/DON'T examples
+3. Environment configuration approach
+
+
+---
+
+After rewriting all 4 rules, summarize what you found and changed.

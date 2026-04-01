@@ -1,5 +1,5 @@
 ---
-description: "Architecture and module boundaries for seeker1"
+description: "Enforce architecture boundaries and module organization when adding or modifying code in seeker1"
 globs:
 alwaysApply: false
 priority: 40
@@ -12,18 +12,20 @@ priority: 40
 
 ## Module Boundaries
 
-Key modules:
+| Directory | Purpose |
+|-----------|---------|
+| `docs` | Documentation |
+| `src` | Source code |
+| `src/app` | Application code |
+| `src/app/api` | API endpoints |
+| `src/components` | UI components |
+| `src/lib` | Library code |
+| `src/lib/pipeline/__tests__` | Test files (Jest convention) |
+| `src/lib/supabase/__tests__` | Test files (Jest convention) |
+| `src/types` | TypeScript type definitions |
+| `supabase/migrations` | Database migrations |
 
-- `docs` — Documentation
-- `src` — Source code
-- `src/app` — Application code
-- `src/app/api` — API endpoints
-- `src/components` — UI components
-- `src/lib` — Library code
-- `src/lib/pipeline/__tests__` — Test files (Jest convention)
-- `src/lib/supabase/__tests__` — Test files (Jest convention)
-- `src/types` — TypeScript type definitions
-- `supabase/migrations` — Database migrations
+
 
 
 ## Source Layout
@@ -31,6 +33,9 @@ Key modules:
 - `src/`
 
 > Place new code in the appropriate directory following the existing structure.
+
+
+
 
 ## Rules
 

@@ -1,5 +1,5 @@
 ---
-description: "Git workflow and commit conventions for {{ profile.metadata.name }}"
+description: "Enforce git workflow and commit conventions when creating commits or PRs in {{ profile.metadata.name }}"
 globs:
 alwaysApply: true
 priority: 30
@@ -63,4 +63,29 @@ Use **{{ profile.git_workflow.merge_strategy }}** merges.
 ## Release Strategy
 
 Tagging pattern: **{{ profile.git_workflow.release_tagging }}**
+{% if profile.git_workflow.release_tool %}
+Release tool: **{{ profile.git_workflow.release_tool }}**
+{% endif %}
+{% endif %}
+
+{% if profile.git_workflow.codeowners_path %}
+## Code Owners
+
+- Path: `{{ profile.git_workflow.codeowners_path }}`
+- Check CODEOWNERS to identify required reviewers for the files you changed
+{% endif %}
+
+{% if profile.git_workflow.changelog_path %}
+## Changelog
+
+- Path: `{{ profile.git_workflow.changelog_path }}`
+- Update the changelog for user-facing changes
+{% endif %}
+
+{% if profile.git_workflow.anti_patterns %}
+## Git Workflow Anti-Patterns Detected
+
+{% for ap in profile.git_workflow.anti_patterns %}
+- {{ ap }}
+{% endfor %}
 {% endif %}

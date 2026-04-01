@@ -1,5 +1,5 @@
 ---
-description: "Git workflow and commit conventions for seeker1"
+description: "Enforce git workflow and commit conventions when creating commits or PRs in seeker1"
 globs:
 alwaysApply: true
 priority: 30
@@ -19,3 +19,7 @@ Write clear, descriptive commit messages. Start with a verb in imperative mood.
 1. Never force-push to the main branch
 2. Keep commits atomic — one logical change per commit
 3. Run tests locally before pushing
+
+
+
+

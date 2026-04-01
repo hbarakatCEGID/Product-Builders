@@ -1,9 +1,10 @@
 ---
-description: "Design system and UI component patterns for seeker1"
+description: "Enforce shadcn patterns when editing UI components or styles in seeker1"
 globs:
   - "**/*.css"
   - "**/*.scss"
   - "**/*.less"
+  - "**/components/**"
 alwaysApply: false
 priority: 25
 ---
@@ -30,3 +31,8 @@ priority: 25
 Strategy: **tailwind-responsive**
 
 All UI changes must be responsive. Test on mobile, tablet, and desktop viewports.
+
+
+
+
+

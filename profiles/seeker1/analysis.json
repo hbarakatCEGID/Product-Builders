@@ -556,7 +556,7 @@
   },
   "domain_model_deep": {
     "domain_vocabulary": [],
-    "entity_relationships": {},
+    "entity_relationships": [],
     "business_logic_locations": []
   },
   "implicit_conventions_deep": {
