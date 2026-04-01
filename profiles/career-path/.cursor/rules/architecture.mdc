@@ -1,0 +1,97 @@
+---
+description: "Enforce architecture boundaries and module organization when adding or modifying code in career-path"
+globs:
+alwaysApply: false
+priority: 40
+---
+
+# Architecture
+
+**Organization**: feature-based
+
+
+## Module Boundaries
+
+| Directory | Purpose |
+|-----------|---------|
+| `docs` | Documentation |
+| `dr-cs-api/app` | Application code |
+| `dr-cs-api/app/helpers` | Helper functions |
+| `dr-cs-api/ci/docker` | Docker configuration |
+| `dr-cs-api/config` | Configuration files |
+| `dr-cs-api/containers/config` | Configuration files |
+| `dr-cs-api/features` | Feature modules |
+| `dr-cs-api/public` | Static public assets |
+| `dr-cs-api/routes` | Route definitions |
+| `dr-cs-api/storage/app` | Application code |
+| `dr-cs-api/storage/app/public` | Static public assets |
+| `dr-cs-api/storage/framework/views` | View components / templates |
+| `dr-cs-api/tests` | Test files |
+| `dr-cs-api/tests/Unit/helpers` | Helper functions |
+| `dr-cs-frontend/__mocks__/@/helpers` | Helper functions |
+| `dr-cs-frontend/__mocks__/@/services` | Business logic services |
+| `dr-cs-frontend/__tests__` | Test files (Jest convention) |
+| `dr-cs-frontend/__tests__/CodeceptJs/src` | Source code |
+| `dr-cs-frontend/__tests__/unit/api` | API endpoints |
+| `dr-cs-frontend/__tests__/unit/components` | UI components |
+| `dr-cs-frontend/__tests__/unit/helpers` | Helper functions |
+| `dr-cs-frontend/__tests__/unit/middleware` | Middleware layers |
+| `dr-cs-frontend/__tests__/unit/pages` | Page components / routes |
+| `dr-cs-frontend/__tests__/unit/plugins` | Plugin modules |
+| `dr-cs-frontend/__tests__/unit/services` | Business logic services |
+| `dr-cs-frontend/__tests__/unit/store` | State store |
+| `dr-cs-frontend/api` | API endpoints |
+| `dr-cs-frontend/api/interfaces` | Interface definitions |
+| `dr-cs-frontend/api/models` | Data models / entities |
+| `dr-cs-frontend/assets` | Media and asset files |
+| `dr-cs-frontend/components` | UI components |
+| `dr-cs-frontend/docs` | Documentation |
+| `dr-cs-frontend/helpers` | Helper functions |
+| `dr-cs-frontend/middleware` | Middleware layers |
+| `dr-cs-frontend/modules/dr-cache/__tests__` | Test files (Jest convention) |
+| `dr-cs-frontend/pages` | Page components / routes |
+| `dr-cs-frontend/pages/auth` | Authentication module |
+| `dr-cs-frontend/plugins` | Plugin modules |
+| `dr-cs-frontend/server/log/middleware` | Middleware layers |
+| `dr-cs-frontend/server/plugins` | Plugin modules |
+| `dr-cs-frontend/server/utils` | Utility functions |
+| `dr-cs-frontend/services` | Business logic services |
+| `dr-cs-frontend/static` | Static files |
+| `dr-cs-frontend/static/tarteaucitron/css` | CSS files |
+| `dr-cs-frontend/store` | State store |
+| `packages` | Shared packages (monorepo) |
+| `packages/dr-cs-builder-app/public` | Static public assets |
+| `packages/dr-cs-builder-app/src` | Source code |
+| `packages/dr-cs-builder-app/src/api` | API endpoints |
+| `packages/dr-cs-builder-app/src/config` | Configuration files |
+| `packages/dr-cs-builder-app/src/interfaces` | Interface definitions |
+| `packages/dr-cs-builder-app/src/pages` | Page components / routes |
+| `packages/dr-cs-builder-app/src/plugins` | Plugin modules |
+| `packages/dr-cs-builder-app/src/services` | Business logic services |
+| `packages/dr-cs-builder-components/src` | Source code |
+| `packages/dr-cs-builder-components/src/helpers` | Helper functions |
+| `packages/dr-cs-builder-components/src/interfaces` | Interface definitions |
+| `packages/dr-cs-builder-components/src/static` | Static files |
+| `packages/dr-cs-builder-components/src/utils` | Utility functions |
+| `packages/dr-cs-builder-showcase/__tests__` | Test files (Jest convention) |
+| `packages/dr-cs-builder-showcase/scripts` | Build / utility scripts |
+| `packages/dr-cs-builder-styles/src` | Source code |
+
+
+
+
+
+## Monorepo
+
+- Sub-projects: packages\dr-cs-builder-app, packages\dr-cs-builder-components, packages\dr-cs-builder-showcase, packages\dr-cs-builder-styles
+
+> Respect package boundaries. Shared code goes in the designated shared packages.
+
+
+
+## Rules
+
+1. Follow the existing module organization — do not restructure without explicit approval
+2. Keep dependencies flowing in one direction (see module boundaries above)
+3. New modules should follow the same patterns as existing ones
+4. Shared utilities go in the designated utilities/helpers directory

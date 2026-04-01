@@ -1,0 +1,81 @@
+---
+description: "Contributor guide for Engineer role on career-path"
+globs:
+alwaysApply: true
+priority: 45
+---
+
+# Contributor Guide — Engineer
+
+You are assisting a **Engineer** working on **career-path**.
+
+
+## Your Access Scope
+
+### Full Access (read + write)
+
+**frontend_ui**:
+- `dr-cs-frontend\components/**`
+- `dr-cs-frontend\pages/**`
+- `dr-cs-api\storage\framework\views/**`
+- `dr-cs-frontend\static\tarteaucitron\css/**`
+- `dr-cs-api\public/**`
+- `dr-cs-frontend\static/**`
+- `dr-cs-frontend\components/**`
+- `dr-cs-frontend\pages/**`
+- `dr-cs-api\storage\framework\views/**`
+- `dr-cs-frontend\components/**`
+- `dr-cs-frontend\pages/**`
+- `dr-cs-api\storage\framework\views/**`
+**frontend_logic**:
+- `dr-cs-frontend\store/**`
+- `dr-cs-frontend\store/**`
+**api**:
+- `dr-cs-frontend\api/**`
+- `dr-cs-api\routes/**`
+- `dr-cs-frontend\api/**`
+- `dr-cs-api\routes/**`
+- `dr-cs-api\routes/**`
+- `dr-cs-frontend\api/**`
+**backend_logic**:
+- `dr-cs-frontend\services/**`
+- `dr-cs-frontend\services/**`
+- `dr-cs-frontend\services/**`
+**database**:
+- `dr-cs-frontend\api\models/**`
+- `dr-cs-api\database/**`
+- `dr-cs-frontend\api\models/**`
+- `dr-cs-frontend\api\models/**`
+**infrastructure**:
+- `.gitlab/**`
+- `dr-cs-api\ci\docker/**`
+- `docker*`
+- `Dockerfile`
+- `*.yml`
+- `*.yaml`
+**security**:
+- `dr-cs-frontend\pages\auth/**`
+- `dr-cs-frontend\pages\auth/**`
+- `dr-cs-frontend\pages\auth/**`
+- `dr-cs-frontend\pages\auth/**`
+**configuration**:
+- `dr-cs-api\config/**`
+- `.env*`
+- `config/**`
+**tests**:
+- `dr-cs-api\tests/**`
+- `dr-cs-frontend\__tests__/**`
+- `dr-cs-api\specs/**`
+- `dr-cs-frontend\__tests__/**`
+**fixtures**:
+- `dr-cs-api\storage\framework\cache\data/**`
+
+
+
+## Behavioral Rules
+
+1. You have full access. Follow all project conventions.
+2. Run tests before committing.
+3. Create PRs for review — do not push directly to main.
+
+

@@ -1,0 +1,36 @@
+---
+description: "Dependency management for career-path"
+globs:
+  - "package.json"
+  - "requirements*.txt"
+  - "pyproject.toml"
+  - "Gemfile"
+  - "Cargo.toml"
+  - "go.mod"
+  - "*.csproj"
+  - "pom.xml"
+alwaysApply: false
+priority: 25
+---
+
+# Dependencies
+
+## Key Libraries
+
+
+## Manifest Files
+
+- `package.json`
+
+## Lock File
+
+Lock file: `yarn.lock`
+
+> Always commit the lock file. Never manually edit it.
+
+## Rules
+
+1. Add new dependencies through the package manager — never edit manifests manually
+2. Prefer well-maintained, actively developed libraries
+3. Keep dev dependencies separate from production dependencies
+4. Run security audits regularly (`npm audit`, `pip-audit`, etc.)

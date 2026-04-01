@@ -1,0 +1,132 @@
+zones:
+  frontend_ui:
+    paths:
+    - dr-cs-frontend\components/**
+    - dr-cs-frontend\pages/**
+    - dr-cs-api\storage\framework\views/**
+    - dr-cs-frontend\static\tarteaucitron\css/**
+    - dr-cs-api\public/**
+    - dr-cs-frontend\static/**
+    - dr-cs-frontend\components/**
+    - dr-cs-frontend\pages/**
+    - dr-cs-api\storage\framework\views/**
+    - dr-cs-frontend\components/**
+    - dr-cs-frontend\pages/**
+    - dr-cs-api\storage\framework\views/**
+  frontend_logic:
+    paths:
+    - dr-cs-frontend\store/**
+    - dr-cs-frontend\store/**
+  api:
+    paths:
+    - dr-cs-frontend\api/**
+    - dr-cs-api\routes/**
+    - dr-cs-frontend\api/**
+    - dr-cs-api\routes/**
+    - dr-cs-api\routes/**
+    - dr-cs-frontend\api/**
+  backend_logic:
+    paths:
+    - dr-cs-frontend\services/**
+    - dr-cs-frontend\services/**
+    - dr-cs-frontend\services/**
+  database:
+    paths:
+    - dr-cs-frontend\api\models/**
+    - dr-cs-api\database/**
+    - dr-cs-frontend\api\models/**
+    - dr-cs-frontend\api\models/**
+  infrastructure:
+    paths:
+    - .gitlab/**
+    - dr-cs-api\ci\docker/**
+    - docker*
+    - Dockerfile
+    - '*.yml'
+    - '*.yaml'
+  security:
+    paths:
+    - dr-cs-frontend\pages\auth/**
+    - dr-cs-frontend\pages\auth/**
+    - dr-cs-frontend\pages\auth/**
+    - dr-cs-frontend\pages\auth/**
+  configuration:
+    paths:
+    - dr-cs-api\config/**
+    - .env*
+    - config/**
+  tests:
+    paths:
+    - dr-cs-api\tests/**
+    - dr-cs-frontend\__tests__/**
+    - dr-cs-api\specs/**
+    - dr-cs-frontend\__tests__/**
+  fixtures:
+    paths:
+    - dr-cs-api\storage\framework\cache\data/**
+contributor_scopes:
+  engineer:
+    allowed_zones:
+    - frontend_ui
+    - frontend_logic
+    - api
+    - backend_logic
+    - database
+    - infrastructure
+    - security
+    - configuration
+    - tests
+    - fixtures
+    read_only_zones: []
+    forbidden_zones: []
+  technical_pm:
+    allowed_zones:
+    - frontend_ui
+    - frontend_logic
+    - api
+    read_only_zones:
+    - backend_logic
+    - tests
+    forbidden_zones:
+    - database
+    - infrastructure
+    - security
+    - configuration
+  product_manager:
+    allowed_zones:
+    - frontend_ui
+    - frontend_logic
+    read_only_zones:
+    - api
+    - backend_logic
+    forbidden_zones:
+    - database
+    - infrastructure
+    - security
+    - configuration
+  designer:
+    allowed_zones:
+    - frontend_ui
+    read_only_zones:
+    - frontend_logic
+    forbidden_zones:
+    - api
+    - backend_logic
+    - database
+    - infrastructure
+    - security
+    - configuration
+  qa_tester:
+    allowed_zones:
+    - tests
+    - fixtures
+    read_only_zones:
+    - frontend_ui
+    - frontend_logic
+    - api
+    - backend_logic
+    forbidden_zones:
+    - database
+    - infrastructure
+    - security
+    - configuration

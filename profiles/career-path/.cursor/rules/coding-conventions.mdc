@@ -1,0 +1,51 @@
+---
+description: "Enforce coding conventions and naming patterns when writing TypeScript code in career-path"
+globs:
+  - "**/*.ts"
+  - "**/*.tsx"
+alwaysApply: false
+priority: 30
+---
+
+# Coding Conventions
+
+**Naming**: camelCase
+**File naming**: PascalCase
+
+
+## Formatter
+
+- **Tool**: prettier
+- **Config**: `.prettierrc.json`
+
+> Code must be formatted before committing. Do not fight the formatter.
+
+## Editor Config
+
+- **Path**: `.editorconfig`
+
+> Ensure your editor respects `.editorconfig` for consistent whitespace and encoding.
+
+
+## Company Quality Standards
+
+- **QUA-001** (high): All new code must include corresponding tests.
+- **QUA-002** (high): Follow the existing code style and conventions of the project.
+- **QUA-003** (medium): Functions should do one thing. Keep functions under 50 lines where possible.
+- **QUA-004** (medium): Use meaningful variable and function names. Avoid single-letter names except in short lambdas.
+- **QUA-005** (medium): Handle errors explicitly. Never swallow exceptions silently.
+- **QUA-006** (low): Remove dead code, unused imports, and commented-out code before merging.
+
+## Rules
+
+1. Follow existing naming conventions — consistency over personal preference
+2. Match the file naming pattern used throughout the project
+3. Run the linter and formatter before committing
+4. Use `camelCase` for variables and functions, `PascalCase` for classes and components
+
+
+
+
+## Convention Anti-Patterns Detected
+
+- MEDIUM: no linter configured — code quality issues will not be caught automatically

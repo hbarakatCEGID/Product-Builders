@@ -1,0 +1,166 @@
+---
+description: "Bootstrap meta-rule: gap-aware deep analysis prompts for career-path"
+globs:
+alwaysApply: false
+priority: 10
+---
+
+# Deep Analysis — career-path
+
+This rule provides structured prompts for Cursor-assisted deep analysis.
+Run all steps in sequence. **For each finding, cite the file path that proves it.**
+
+Write ALL findings to a single file: **`deep-analysis.yaml`** in the repo root.
+
+After completing all steps, run:
+```
+product-builders ingest-deep --name career-path --repo .
+```
+
+---
+
+## What We Already Know (Heuristic Analysis Results)
+
+- **Primary language**: TypeScript
+
+
+
+
+
+
+
+
+
+
+
+- **Routes detected**: 2
+- **Monorepo**: yes
+---
+
+## What We Couldn't Determine (Gaps to Fill)
+
+The heuristic analysis left these gaps. Your deep analysis should **prioritize filling these specific gaps**:
+
+### Architecture Gaps
+- What architecture pattern does this project follow? (layered, hexagonal, feature-based, flat?) Examine the directory structure under the source directory.
+- These directories were detected: docs, dr-cs-api/app, dr-cs-api/app/helpers, dr-cs-api/ci/docker, dr-cs-api/config. Are they bounded contexts / domain modules, or just structural grouping? Which ones depend on each other?
+- What is the dependency direction? Do outer layers depend on inner layers, or is it ad-hoc? Check import statements across modules.
+
+
+
+### Convention Gaps
+- No logging framework detected. How does this project log? Console.log, a logger library, or a custom solution?
+- No data fetching library detected (React Query, SWR, etc.). How does this project fetch data from API routes? Custom hooks, fetch() calls, or another pattern?
+
+---
+
+## Step 1: Architecture Deep-Dive
+
+**Priority**: Fill the architecture gaps listed above. Then also address:
+
+1. What is the top-level layering pattern (e.g. layered, hexagonal, feature-based)?
+2. What is the primary dependency direction between modules?
+3. Are there identifiable bounded contexts or major subsystems?
+4. Map cross-module dependencies -- which modules import from which?
+5. How do packages/apps depend on each other?
+6. Is there a shared library layer?
+
+
+**For each finding, cite the file path that proves it.**
+
+Write findings to the `architecture_deep` section of `deep-analysis.yaml`.
+
+---
+
+## Step 2: Domain Model Analysis
+
+Analyze the domain model and business logic:
+
+1. Where do domain rules live?
+2. Identify value objects vs entities
+3. What naming patterns appear in model/entity definitions?
+4. Are there explicit domain events, commands, or query objects?
+
+
+**For each finding, cite the file path that proves it.**
+
+Write findings to the `domain_model_deep` section of `deep-analysis.yaml`.
+
+---
+
+## Step 3: Implicit Conventions
+
+**Priority**: Fill the convention gaps listed above. Then also address:
+
+1. Naming philosophy -- verbose or terse?
+2. Abstraction level -- thin controllers + fat services?
+3. Beyond prettier, what naming patterns are consistently followed?
+4. How are imports organized -- grouped by type, alphabetical, or ad hoc?
+5. Are there consistent patterns for error messages and log formatting?
+
+Examine at least 5 representative files across different areas of the codebase.
+
+**For each finding, cite the file path that proves it.**
+
+Write findings to the `implicit_conventions_deep` section of `deep-analysis.yaml`.
+
+---
+
+## Output Format
+
+Write the complete `deep-analysis.yaml` file using this exact structure:
+
+```yaml
+architecture_deep:
+  layering_pattern: "Feature-based modules with shared hooks"
+  layering_evidence: "src/features/ contains isolated feature folders"
+  dependency_direction: "features -> shared -> lib (inward)"
+  dependency_evidence: "src/features/orders/hooks.ts imports from src/shared/api-client.ts"
+  bounded_contexts:
+    - name: "Orders"
+      evidence: "src/features/orders/ with own components, hooks, and types"
+    - name: "Dashboard"
+      evidence: "src/features/dashboard/ aggregates data from multiple domains"
+  module_boundaries:
+    src/features/orders:
+      depends_on: ["src/shared", "src/lib"]
+      evidence: "src/features/orders/hooks.ts imports from src/shared/api-client.ts"
+    src/features/dashboard:
+      depends_on: ["src/features/orders", "src/shared"]
+      evidence: "src/features/dashboard/components/OrderSummary.tsx imports useOrders hook"
+
+domain_model_deep:
+  domain_vocabulary:
+    - term: "Order"
+      evidence: "src/features/orders/types.ts:Order interface"
+    - term: "CartItem"
+      evidence: "src/features/cart/types.ts:CartItem interface"
+  entity_relationships:
+    - from: "Order"
+      to: "User"
+      type: "many-to-one"
+      evidence: "src/features/orders/types.ts:Order.userId"
+    - from: "Order"
+      to: "CartItem"
+      type: "one-to-many"
+      evidence: "src/features/orders/types.ts:Order.items: CartItem[]"
+  business_logic_locations:
+    - path: "src/features/orders/hooks/"
+      description: "Order CRUD operations and state management via React Query"
+      evidence: "src/features/orders/hooks/useCreateOrder.ts"
+
+implicit_conventions_deep:
+  naming_philosophy: "PascalCase components, camelCase hooks prefixed with 'use'"
+  naming_evidence: "OrderList.tsx, useOrders.ts, useCreateOrder.ts"
+  abstraction_level: "Thin route components, logic in custom hooks"
+  abstraction_evidence: "src/features/orders/pages/OrdersPage.tsx delegates to useOrders hook"
+  code_organization_habits:
+    - pattern: "Feature folders with collocated components, hooks, types, and tests"
+      evidence: "src/features/orders/{components,hooks,types.ts,__tests__}"
+    - pattern: "Barrel exports via index.ts in each feature"
+      evidence: "src/features/orders/index.ts re-exports public API"
+  error_handling_philosophy: "Error boundaries at feature level with toast notifications"
+  error_evidence: "src/shared/components/ErrorBoundary.tsx wraps each feature route"
+```
+
+> **Important**: Every finding must include an `evidence` field citing the file path or code example that proves it. The `ingest-deep` command validates these citations.

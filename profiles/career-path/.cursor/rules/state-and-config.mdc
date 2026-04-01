@@ -1,0 +1,25 @@
+---
+description: "Enforce state management and configuration patterns when managing app state or config in career-path"
+globs:
+alwaysApply: false
+priority: 25
+---
+
+# State Management & Configuration
+
+## State Management
+
+- **Library**: vuex
+
+
+> Use the existing state management library. Do not introduce alternative state solutions.
+
+
+
+
+
+## Rules
+
+1. Use environment variables or config files for environment-specific values — never hardcode
+2. Manage application state through vuex — do not introduce alternative state libraries
+4. Keep configuration separate from business logic

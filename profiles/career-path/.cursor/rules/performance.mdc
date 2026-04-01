@@ -1,0 +1,45 @@
+---
+description: "Enforce performance patterns when optimizing or adding features in career-path"
+globs:
+alwaysApply: false
+priority: 20
+---
+
+# Performance
+
+
+## Rules
+
+1. Profile before optimizing — measure, don't guess
+2. Avoid N+1 queries — use eager loading / data loaders where available
+3. Add database indexes for columns used in WHERE, JOIN, and ORDER BY
+4. Use pagination for all list queries
+5. Consider caching for expensive computations and frequently-read data
+
+
+
+## Code Splitting
+
+Code splitting is configured. Use dynamic imports for:
+- Route-level components
+- Large third-party libraries
+- Feature-specific code
+
+
+
+
+
+
+
+## Performance Anti-Patterns Detected
+
+- MEDIUM: no web performance monitoring detected (web-vitals, Lighthouse CI, etc.)
+- LOW: no image optimization library detected
+
+## Company Performance Standards
+
+- **PERF-001** (high): Avoid N+1 query patterns. Use eager loading or batch queries for related data.
+- **PERF-002** (medium): Use pagination for all list endpoints. Never return unbounded result sets.
+- **PERF-003** (medium): Lazy-load heavy components and images. Use code splitting for large bundles.
+- **PERF-004** (low): Cache expensive computations and API responses where appropriate.
+- **PERF-005** (medium): Set appropriate cache headers for static assets (immutable for hashed files).

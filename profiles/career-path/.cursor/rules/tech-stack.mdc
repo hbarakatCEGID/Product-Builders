@@ -1,0 +1,30 @@
+---
+description: "Tech stack constraints and version requirements for career-path"
+globs:
+alwaysApply: true
+priority: 35
+---
+
+# Tech Stack
+
+**Primary language**: TypeScript
+
+## Languages & Versions
+
+- **TypeScript**: 53.0% of codebase
+- **Vue**: 16.3% of codebase
+- **SCSS**: 13.8% of codebase
+- **PHP**: 13.3% of codebase
+- **JavaScript**: 3.4% of codebase
+- **Shell**: 0.1% of codebase
+- **HTML**: 0.1% of codebase
+- **CSS**: 0.1% of codebase
+
+
+
+
+## Package Managers
+
+yarn
+
+> Use **yarn** for all dependency operations. Do not mix package managers.

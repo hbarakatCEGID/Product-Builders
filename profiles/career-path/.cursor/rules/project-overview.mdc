@@ -1,0 +1,28 @@
+---
+description: "career-path — project overview, tech stack summary, and contributor context"
+globs:
+alwaysApply: true
+priority: 40
+---
+
+# career-path
+
+
+## Tech Stack
+
+- **Primary language**: TypeScript
+- **Languages**: TypeScript, Vue, SCSS, PHP, JavaScript, Shell, HTML, CSS
+- **Package managers**: yarn
+
+## Project Structure
+
+- **Organization**: feature-based
+- **Monorepo**: Yes
+
+
+
+
+## Git Workflow
+
+- **Platform**: gitlab
+

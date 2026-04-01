@@ -1,0 +1,34 @@
+---
+description: "Enforce git workflow and commit conventions when creating commits or PRs in career-path"
+globs:
+alwaysApply: true
+priority: 30
+---
+
+# Git Workflow
+
+**Platform**: gitlab
+
+## Commit Messages
+
+Write clear, descriptive commit messages. Start with a verb in imperative mood.
+
+
+
+## Rules
+
+1. Never force-push to the main branch
+2. Keep commits atomic — one logical change per commit
+3. Run tests locally before pushing
+
+
+
+## Changelog
+
+- Path: `CHANGELOG.md`
+- Update the changelog for user-facing changes
+
+## Git Workflow Anti-Patterns Detected
+
+- MEDIUM: no CODEOWNERS file — code review responsibility is unclear
+- LOW: no commit message convention enforced

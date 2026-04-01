@@ -1,0 +1,26 @@
+---
+description: "CI/CD pipeline for career-path"
+globs:
+  - ".github/workflows/**"
+  - ".gitlab-ci.yml"
+  - "Jenkinsfile"
+  - "azure-pipelines.yml"
+  - ".circleci/**"
+alwaysApply: false
+priority: 20
+---
+
+# CI/CD
+
+## Platform
+
+**gitlab-ci** — `.gitlab-ci.yml`
+
+
+
+## Rules
+
+1. All changes must pass CI before merging
+2. Do not modify CI/CD configuration without team review
+3. Keep build steps fast — cache dependencies where possible
+4. Never commit secrets to CI configuration files

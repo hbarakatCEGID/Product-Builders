@@ -1,0 +1,858 @@
+{
+  "metadata": {
+    "name": "career-path",
+    "description": "",
+    "repo_path": "C:\\Users\\BARAKAT\\OneDrive - CEGID\\Documents\\GitHub\\careers-site-master",
+    "repo_url": "",
+    "git_platform": null,
+    "sub_project": null,
+    "analysis_timestamp": "2026-04-01T14:48:39.574378Z",
+    "analysis_version": "0.1.0",
+    "last_commit_sha": null,
+    "product_family": null
+  },
+  "tech_stack": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "anti_patterns": [
+      "MEDIUM: no framework detected — project structure may be unclear to AI assistants"
+    ],
+    "languages": {
+      "TypeScript": 53.0,
+      "Vue": 16.3,
+      "SCSS": 13.8,
+      "PHP": 13.3,
+      "JavaScript": 3.4,
+      "Shell": 0.1,
+      "HTML": 0.1,
+      "CSS": 0.1
+    },
+    "primary_language": "TypeScript",
+    "frameworks": [],
+    "build_tools": [],
+    "package_managers": [
+      "yarn"
+    ],
+    "runtime_versions": {}
+  },
+  "database": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "anti_patterns": [],
+    "database_type": null,
+    "database_types": [],
+    "orm": null,
+    "orm_version": null,
+    "migration_tool": null,
+    "migration_directory": null,
+    "schema_naming_convention": null,
+    "relationship_patterns": [],
+    "has_seeds": false,
+    "seed_directory": null,
+    "connection_pooling": null,
+    "schema_patterns": []
+  },
+  "auth": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "anti_patterns": [
+      "HIGH: no authentication strategy detected",
+      "MEDIUM: no rate limiting detected on auth endpoints"
+    ],
+    "auth_strategy": null,
+    "auth_middleware": [
+      "dr-cs-api\\app\\BackOffice\\Api\\middleware\\AuthorizedCareersSite.php",
+      "dr-cs-api\\app\\BackOffice\\Api\\middleware\\AuthorizedCareersSite.php"
+    ],
+    "permission_model": "abac",
+    "protected_route_patterns": [],
+    "auth_directories": [],
+    "mfa_methods": [],
+    "oauth_providers": [],
+    "rate_limiting": null
+  },
+  "dependencies": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "anti_patterns": [],
+    "dependencies": [
+      {
+        "name": "prettier",
+        "version": "^2.6.0",
+        "is_dev": true,
+        "category": "formatting"
+      },
+      {
+        "name": "ts-node",
+        "version": "^10.7.0",
+        "is_dev": true,
+        "category": ""
+      }
+    ],
+    "dependency_manifest_files": [
+      "package.json"
+    ],
+    "lock_file": "yarn.lock"
+  },
+  "error_handling": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "anti_patterns": [
+      "HIGH: no error handling strategy detected",
+      "MEDIUM: no structured logging — log aggregation will be difficult",
+      "MEDIUM: no error monitoring integration (Sentry, Datadog, etc.)"
+    ],
+    "error_strategy": null,
+    "logging_framework": null,
+    "logging_frameworks": [],
+    "logging_config_file": null,
+    "monitoring_integration": null,
+    "error_response_format": null,
+    "custom_error_classes": [],
+    "structured_logging": false,
+    "error_recovery_patterns": []
+  },
+  "i18n": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "anti_patterns": [],
+    "i18n_framework": null,
+    "translation_file_format": null,
+    "translation_directories": [],
+    "default_locale": null,
+    "supported_locales": [],
+    "string_externalization_pattern": null,
+    "message_format": null,
+    "rtl_languages": [],
+    "translation_management": null
+  },
+  "state_management": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "anti_patterns": [],
+    "state_library": "vuex",
+    "state_libraries": [],
+    "data_fetching_library": null,
+    "data_fetching_libraries": [],
+    "store_structure": null,
+    "state_patterns": [],
+    "form_library": null,
+    "realtime_library": null
+  },
+  "env_config": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "anti_patterns": [
+      "LOW: no feature flag system detected — feature rollout requires redeployment"
+    ],
+    "config_approach": null,
+    "config_approaches": [],
+    "env_files": [],
+    "has_docker": false,
+    "dockerfile_path": null,
+    "docker_compose_path": null,
+    "feature_flags_system": null,
+    "config_directories": [],
+    "secrets_management": null,
+    "kubernetes_detected": false
+  },
+  "git_workflow": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "anti_patterns": [
+      "MEDIUM: no CODEOWNERS file — code review responsibility is unclear",
+      "LOW: no commit message convention enforced"
+    ],
+    "git_platform": "gitlab",
+    "branch_naming_strategy": null,
+    "commit_message_format": null,
+    "pr_template_path": null,
+    "merge_strategy": null,
+    "required_reviewers": null,
+    "ci_config_path": ".gitlab-ci.yml",
+    "release_tagging": null,
+    "codeowners_path": null,
+    "changelog_path": "CHANGELOG.md",
+    "release_tool": null
+  },
+  "structure": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "anti_patterns": [
+      "MEDIUM: monorepo structure but no monorepo tooling (Turborepo, Nx, etc.)",
+      "MEDIUM: no standard source directory (src/, lib/, app/) — project layout may be unclear"
+    ],
+    "root_directories": [
+      "ci",
+      "docs",
+      "dr-cs-api",
+      "dr-cs-frontend",
+      "packages"
+    ],
+    "source_directories": [],
+    "key_directories": [
+      {
+        "path": "docs",
+        "purpose": "Documentation"
+      },
+      {
+        "path": "dr-cs-api/app",
+        "purpose": "Application code"
+      },
+      {
+        "path": "dr-cs-api/app/helpers",
+        "purpose": "Helper functions"
+      },
+      {
+        "path": "dr-cs-api/ci/docker",
+        "purpose": "Docker configuration"
+      },
+      {
+        "path": "dr-cs-api/config",
+        "purpose": "Configuration files"
+      },
+      {
+        "path": "dr-cs-api/containers/config",
+        "purpose": "Configuration files"
+      },
+      {
+        "path": "dr-cs-api/features",
+        "purpose": "Feature modules"
+      },
+      {
+        "path": "dr-cs-api/public",
+        "purpose": "Static public assets"
+      },
+      {
+        "path": "dr-cs-api/routes",
+        "purpose": "Route definitions"
+      },
+      {
+        "path": "dr-cs-api/storage/app",
+        "purpose": "Application code"
+      },
+      {
+        "path": "dr-cs-api/storage/app/public",
+        "purpose": "Static public assets"
+      },
+      {
+        "path": "dr-cs-api/storage/framework/views",
+        "purpose": "View components / templates"
+      },
+      {
+        "path": "dr-cs-api/tests",
+        "purpose": "Test files"
+      },
+      {
+        "path": "dr-cs-api/tests/Unit/helpers",
+        "purpose": "Helper functions"
+      },
+      {
+        "path": "dr-cs-frontend/__mocks__/@/helpers",
+        "purpose": "Helper functions"
+      },
+      {
+        "path": "dr-cs-frontend/__mocks__/@/services",
+        "purpose": "Business logic services"
+      },
+      {
+        "path": "dr-cs-frontend/__tests__",
+        "purpose": "Test files (Jest convention)"
+      },
+      {
+        "path": "dr-cs-frontend/__tests__/CodeceptJs/src",
+        "purpose": "Source code"
+      },
+      {
+        "path": "dr-cs-frontend/__tests__/unit/api",
+        "purpose": "API endpoints"
+      },
+      {
+        "path": "dr-cs-frontend/__tests__/unit/components",
+        "purpose": "UI components"
+      },
+      {
+        "path": "dr-cs-frontend/__tests__/unit/helpers",
+        "purpose": "Helper functions"
+      },
+      {
+        "path": "dr-cs-frontend/__tests__/unit/middleware",
+        "purpose": "Middleware layers"
+      },
+      {
+        "path": "dr-cs-frontend/__tests__/unit/pages",
+        "purpose": "Page components / routes"
+      },
+      {
+        "path": "dr-cs-frontend/__tests__/unit/plugins",
+        "purpose": "Plugin modules"
+      },
+      {
+        "path": "dr-cs-frontend/__tests__/unit/services",
+        "purpose": "Business logic services"
+      },
+      {
+        "path": "dr-cs-frontend/__tests__/unit/store",
+        "purpose": "State store"
+      },
+      {
+        "path": "dr-cs-frontend/api",
+        "purpose": "API endpoints"
+      },
+      {
+        "path": "dr-cs-frontend/api/interfaces",
+        "purpose": "Interface definitions"
+      },
+      {
+        "path": "dr-cs-frontend/api/models",
+        "purpose": "Data models / entities"
+      },
+      {
+        "path": "dr-cs-frontend/assets",
+        "purpose": "Media and asset files"
+      },
+      {
+        "path": "dr-cs-frontend/components",
+        "purpose": "UI components"
+      },
+      {
+        "path": "dr-cs-frontend/docs",
+        "purpose": "Documentation"
+      },
+      {
+        "path": "dr-cs-frontend/helpers",
+        "purpose": "Helper functions"
+      },
+      {
+        "path": "dr-cs-frontend/middleware",
+        "purpose": "Middleware layers"
+      },
+      {
+        "path": "dr-cs-frontend/modules/dr-cache/__tests__",
+        "purpose": "Test files (Jest convention)"
+      },
+      {
+        "path": "dr-cs-frontend/pages",
+        "purpose": "Page components / routes"
+      },
+      {
+        "path": "dr-cs-frontend/pages/auth",
+        "purpose": "Authentication module"
+      },
+      {
+        "path": "dr-cs-frontend/plugins",
+        "purpose": "Plugin modules"
+      },
+      {
+        "path": "dr-cs-frontend/server/log/middleware",
+        "purpose": "Middleware layers"
+      },
+      {
+        "path": "dr-cs-frontend/server/plugins",
+        "purpose": "Plugin modules"
+      },
+      {
+        "path": "dr-cs-frontend/server/utils",
+        "purpose": "Utility functions"
+      },
+      {
+        "path": "dr-cs-frontend/services",
+        "purpose": "Business logic services"
+      },
+      {
+        "path": "dr-cs-frontend/static",
+        "purpose": "Static files"
+      },
+      {
+        "path": "dr-cs-frontend/static/tarteaucitron/css",
+        "purpose": "CSS files"
+      },
+      {
+        "path": "dr-cs-frontend/store",
+        "purpose": "State store"
+      },
+      {
+        "path": "packages",
+        "purpose": "Shared packages (monorepo)"
+      },
+      {
+        "path": "packages/dr-cs-builder-app/public",
+        "purpose": "Static public assets"
+      },
+      {
+        "path": "packages/dr-cs-builder-app/src",
+        "purpose": "Source code"
+      },
+      {
+        "path": "packages/dr-cs-builder-app/src/api",
+        "purpose": "API endpoints"
+      },
+      {
+        "path": "packages/dr-cs-builder-app/src/config",
+        "purpose": "Configuration files"
+      },
+      {
+        "path": "packages/dr-cs-builder-app/src/interfaces",
+        "purpose": "Interface definitions"
+      },
+      {
+        "path": "packages/dr-cs-builder-app/src/pages",
+        "purpose": "Page components / routes"
+      },
+      {
+        "path": "packages/dr-cs-builder-app/src/plugins",
+        "purpose": "Plugin modules"
+      },
+      {
+        "path": "packages/dr-cs-builder-app/src/services",
+        "purpose": "Business logic services"
+      },
+      {
+        "path": "packages/dr-cs-builder-components/src",
+        "purpose": "Source code"
+      },
+      {
+        "path": "packages/dr-cs-builder-components/src/helpers",
+        "purpose": "Helper functions"
+      },
+      {
+        "path": "packages/dr-cs-builder-components/src/interfaces",
+        "purpose": "Interface definitions"
+      },
+      {
+        "path": "packages/dr-cs-builder-components/src/static",
+        "purpose": "Static files"
+      },
+      {
+        "path": "packages/dr-cs-builder-components/src/utils",
+        "purpose": "Utility functions"
+      },
+      {
+        "path": "packages/dr-cs-builder-showcase/__tests__",
+        "purpose": "Test files (Jest convention)"
+      },
+      {
+        "path": "packages/dr-cs-builder-showcase/scripts",
+        "purpose": "Build / utility scripts"
+      },
+      {
+        "path": "packages/dr-cs-builder-styles/src",
+        "purpose": "Source code"
+      }
+    ],
+    "module_organization": "feature-based",
+    "is_monorepo": true,
+    "monorepo_tool": null,
+    "sub_projects": [
+      "packages\\dr-cs-builder-app",
+      "packages\\dr-cs-builder-components",
+      "packages\\dr-cs-builder-showcase",
+      "packages\\dr-cs-builder-styles"
+    ]
+  },
+  "conventions": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "anti_patterns": [
+      "MEDIUM: no linter configured — code quality issues will not be caught automatically"
+    ],
+    "linter": null,
+    "linter_config_path": null,
+    "formatter": "prettier",
+    "formatter_config_path": ".prettierrc.json",
+    "editorconfig_path": ".editorconfig",
+    "import_ordering": null,
+    "naming_convention": "camelCase",
+    "file_naming_convention": "PascalCase"
+  },
+  "security": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "anti_patterns": [
+      "MEDIUM: no dependency vulnerability scanning detected (Snyk, Dependabot, Renovate, etc.)",
+      "HIGH: no input validation library detected",
+      "MEDIUM: no Content-Security-Policy (CSP) headers detected"
+    ],
+    "input_validation": null,
+    "cors_config": null,
+    "secrets_management": null,
+    "csp_headers": false,
+    "security_middleware": [],
+    "vulnerability_scanning": null
+  },
+  "testing": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "anti_patterns": [
+      "HIGH: test files found but no test framework configured"
+    ],
+    "test_framework": null,
+    "test_runner": null,
+    "test_directories": [],
+    "test_file_pattern": null,
+    "mocking_library": null,
+    "coverage_tool": null,
+    "coverage_config_path": null,
+    "fixture_patterns": [],
+    "e2e_framework": null,
+    "api_testing_tools": [],
+    "visual_regression_tool": null,
+    "contract_testing_tool": null,
+    "test_organization": null,
+    "snapshot_testing": false
+  },
+  "cicd": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "anti_patterns": [
+      "MEDIUM: CI pipeline exists but no deployment targets detected"
+    ],
+    "platform": "gitlab-ci",
+    "config_path": ".gitlab-ci.yml",
+    "build_steps": [],
+    "deployment_targets": [],
+    "required_checks": [],
+    "caching_detected": true,
+    "matrix_builds": true,
+    "deployment_patterns": [],
+    "release_tool": null
+  },
+  "design_ui": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "anti_patterns": [
+      "MEDIUM: no CSS methodology or component library — styling will lack consistency",
+      "MEDIUM: no responsive strategy detected — may have mobile usability issues"
+    ],
+    "css_methodology": null,
+    "component_library": null,
+    "component_library_version": null,
+    "design_tokens_format": null,
+    "design_tokens_path": null,
+    "responsive_strategy": null,
+    "theme_provider": null,
+    "styling_directories": [],
+    "uses_shared_design_system": false,
+    "shared_design_system_name": null,
+    "icon_library": null,
+    "component_doc_tool": null,
+    "font_strategy": null
+  },
+  "accessibility": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "anti_patterns": [
+      "MEDIUM: no accessibility testing tools detected (axe-core, jest-axe, pa11y, etc.)",
+      "MEDIUM: no ARIA attributes detected — interactive elements may not be accessible",
+      "HIGH: low semantic HTML usage — excessive use of div/span instead of semantic elements",
+      "MEDIUM: no form accessibility patterns detected (label associations, aria-required, etc.)",
+      "LOW: no focus management patterns detected (skip links, focus trapping, etc.)"
+    ],
+    "wcag_level": null,
+    "a11y_testing_tools": [],
+    "aria_usage_detected": false,
+    "semantic_html_score": "low",
+    "keyboard_navigation": false,
+    "color_contrast_config": null,
+    "form_accessibility": [],
+    "focus_management_patterns": []
+  },
+  "api": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "anti_patterns": [],
+    "api_style": null,
+    "route_structure": null,
+    "api_directories": [],
+    "openapi_spec_path": null,
+    "request_validation": null,
+    "response_format": null,
+    "pagination_pattern": null,
+    "versioning_strategy": null
+  },
+  "performance": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "anti_patterns": [
+      "MEDIUM: no web performance monitoring detected (web-vitals, Lighthouse CI, etc.)",
+      "LOW: no image optimization library detected"
+    ],
+    "caching_strategy": null,
+    "lazy_loading": false,
+    "code_splitting": true,
+    "bundle_size_config": null,
+    "image_optimization": null,
+    "n_plus_one_prevention": null,
+    "performance_monitoring": null,
+    "web_vitals_monitoring": null,
+    "service_worker_detected": false,
+    "cdn_detected": null
+  },
+  "frontend_patterns": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "anti_patterns": [
+      "MEDIUM: no error boundary detected — unhandled errors may crash the UI",
+      "LOW: no loading/skeleton patterns detected"
+    ],
+    "layout_patterns": [],
+    "form_libraries": [],
+    "modal_pattern": null,
+    "list_virtualization": null,
+    "error_boundary": false,
+    "loading_patterns": [],
+    "routing_library": null,
+    "animation_library": null
+  },
+  "user_flows": {
+    "status": "success",
+    "error_message": null,
+    "raw_data": {},
+    "anti_patterns": [
+      "MEDIUM: no 404 page — users will see default browser error",
+      "MEDIUM: no error page — unhandled errors will show raw stack traces"
+    ],
+    "route_count": 2,
+    "route_files": [
+      "packages\\dr-cs-builder-app\\src\\plugins\\router.ts",
+      "dr-cs-frontend\\configs\\router.config.ts"
+    ],
+    "navigation_type": null,
+    "auth_protected_routes": true,
+    "has_404_page": false,
+    "has_error_page": false,
+    "page_directories": [],
+    "dynamic_routes": [],
+    "lazy_routes": false
+  },
+  "architecture_deep": {
+    "layering_pattern": null,
+    "layering_evidence": null,
+    "dependency_direction": null,
+    "dependency_evidence": null,
+    "bounded_contexts": [],
+    "module_boundaries": {}
+  },
+  "domain_model_deep": {
+    "domain_vocabulary": [],
+    "entity_relationships": [],
+    "business_logic_locations": []
+  },
+  "implicit_conventions_deep": {
+    "naming_philosophy": null,
+    "naming_evidence": null,
+    "abstraction_level": null,
+    "abstraction_evidence": null,
+    "code_organization_habits": [],
+    "error_handling_philosophy": null,
+    "error_evidence": null
+  },
+  "scopes": {
+    "zones": [
+      {
+        "name": "frontend_ui",
+        "paths": [
+          "dr-cs-frontend\\components/**",
+          "dr-cs-frontend\\pages/**",
+          "dr-cs-api\\storage\\framework\\views/**",
+          "dr-cs-frontend\\static\\tarteaucitron\\css/**",
+          "dr-cs-api\\public/**",
+          "dr-cs-frontend\\static/**",
+          "dr-cs-frontend\\components/**",
+          "dr-cs-frontend\\pages/**",
+          "dr-cs-api\\storage\\framework\\views/**",
+          "dr-cs-frontend\\components/**",
+          "dr-cs-frontend\\pages/**",
+          "dr-cs-api\\storage\\framework\\views/**"
+        ]
+      },
+      {
+        "name": "frontend_logic",
+        "paths": [
+          "dr-cs-frontend\\store/**",
+          "dr-cs-frontend\\store/**"
+        ]
+      },
+      {
+        "name": "api",
+        "paths": [
+          "dr-cs-frontend\\api/**",
+          "dr-cs-api\\routes/**",
+          "dr-cs-frontend\\api/**",
+          "dr-cs-api\\routes/**",
+          "dr-cs-api\\routes/**",
+          "dr-cs-frontend\\api/**"
+        ]
+      },
+      {
+        "name": "backend_logic",
+        "paths": [
+          "dr-cs-frontend\\services/**",
+          "dr-cs-frontend\\services/**",
+          "dr-cs-frontend\\services/**"
+        ]
+      },
+      {
+        "name": "database",
+        "paths": [
+          "dr-cs-frontend\\api\\models/**",
+          "dr-cs-api\\database/**",
+          "dr-cs-frontend\\api\\models/**",
+          "dr-cs-frontend\\api\\models/**"
+        ]
+      },
+      {
+        "name": "infrastructure",
+        "paths": [
+          ".gitlab/**",
+          "dr-cs-api\\ci\\docker/**",
+          "docker*",
+          "Dockerfile",
+          "*.yml",
+          "*.yaml"
+        ]
+      },
+      {
+        "name": "security",
+        "paths": [
+          "dr-cs-frontend\\pages\\auth/**",
+          "dr-cs-frontend\\pages\\auth/**",
+          "dr-cs-frontend\\pages\\auth/**",
+          "dr-cs-frontend\\pages\\auth/**"
+        ]
+      },
+      {
+        "name": "configuration",
+        "paths": [
+          "dr-cs-api\\config/**",
+          ".env*",
+          "config/**"
+        ]
+      },
+      {
+        "name": "tests",
+        "paths": [
+          "dr-cs-api\\tests/**",
+          "dr-cs-frontend\\__tests__/**",
+          "dr-cs-api\\specs/**",
+          "dr-cs-frontend\\__tests__/**"
+        ]
+      },
+      {
+        "name": "fixtures",
+        "paths": [
+          "dr-cs-api\\storage\\framework\\cache\\data/**"
+        ]
+      }
+    ],
+    "contributor_scopes": [
+      {
+        "role": "engineer",
+        "allowed_zones": [
+          "frontend_ui",
+          "frontend_logic",
+          "api",
+          "backend_logic",
+          "database",
+          "infrastructure",
+          "security",
+          "configuration",
+          "tests",
+          "fixtures"
+        ],
+        "read_only_zones": [],
+        "forbidden_zones": []
+      },
+      {
+        "role": "technical_pm",
+        "allowed_zones": [
+          "frontend_ui",
+          "frontend_logic",
+          "api"
+        ],
+        "read_only_zones": [
+          "backend_logic",
+          "tests"
+        ],
+        "forbidden_zones": [
+          "database",
+          "infrastructure",
+          "security",
+          "configuration"
+        ]
+      },
+      {
+        "role": "product_manager",
+        "allowed_zones": [
+          "frontend_ui",
+          "frontend_logic"
+        ],
+        "read_only_zones": [
+          "api",
+          "backend_logic"
+        ],
+        "forbidden_zones": [
+          "database",
+          "infrastructure",
+          "security",
+          "configuration"
+        ]
+      },
+      {
+        "role": "designer",
+        "allowed_zones": [
+          "frontend_ui"
+        ],
+        "read_only_zones": [
+          "frontend_logic"
+        ],
+        "forbidden_zones": [
+          "api",
+          "backend_logic",
+          "database",
+          "infrastructure",
+          "security",
+          "configuration"
+        ]
+      },
+      {
+        "role": "qa_tester",
+        "allowed_zones": [
+          "tests",
+          "fixtures"
+        ],
+        "read_only_zones": [
+          "frontend_ui",
+          "frontend_logic",
+          "api",
+          "backend_logic"
+        ],
+        "forbidden_zones": [
+          "database",
+          "infrastructure",
+          "security",
+          "configuration"
+        ]
+      }
+    ]
+  }
+}
